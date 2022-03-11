@@ -1,24 +1,37 @@
 # Eleos
 
-## Folder structure
+- [Eleos](#eleos)
+  - [Project structure](#project-structure)
+  - [Development / Testing](#development--testing)
+    - [Software Requirements](#software-requirements)
+    - [Summary of settings](#summary-of-settings)
+    - [Project Setup](#project-setup)
+    - [Workflow](#workflow)
+  - [Deployment (TODO)](#deployment-todo)
+
+## Project structure
 ```
 .
 ├── .github/workflows       
 │   ├── backend.yml         # Backend testing workflow
 │   ├── frontend.yml        # Frontend testing workflow
 │   └── blockchain.yml      # Smart contract testing workflow
+|
 ├── backend                 
 │   ├── test                # Mocha/Chai test files
 │   ├── src                 # Koa/Mongoose.js source files
 │   ├── index.js            # Main
 │   └── ...                 
+|
 ├── frontend                
 │   ├── test                # Jest test files
 │   └── ...                 # Nuxt.js/Vue.js source files
+|
 ├── blockchain              
 │   ├── contracts           # Solidity source files
 │   ├── test                # Truffle test files
-│   └── ...                 
+│   └── ...      
+|           
 ├── README.md
 ├── .gitignore
 └── ...   
@@ -59,7 +72,7 @@ __Note: Same steps can be taken for `backend` / `frontend` / `blockchain`__
     npm install
     ```
 
-### Developing/Testing
+### Workflow
 
 __Note: Same steps can be taken for `backend` / `frontend` / `blockchain`__
 
@@ -99,4 +112,4 @@ __Note: Same steps can be taken for `backend` / `frontend` / `blockchain`__
 8) Commit and push your code to your remote branch.
 9) Create pull request and merge after PR reviews.
 
-### Deployment (TODO)
+## Deployment (TODO)
