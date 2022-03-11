@@ -7,13 +7,16 @@
 │   ├── backend.yml         # Backend testing workflow
 │   ├── frontend.yml        # Frontend testing workflow
 │   └── blockchain.yml      # Smart contract testing workflow
-├── backend                 # Koa/Mongose.js source files
+├── backend                 
 │   ├── test                # Mocha/Chai test files
+│   ├── src                 # Koa/Mongoose.js source files
+│   ├── index.js            # Main
 │   └── ...                 
-├── frontend                # Nuxt.js/Vue.js source files
+├── frontend                
 │   ├── test                # Jest test files
-│   └── ...                 
-├── blockchain              # Solidity source files
+│   └── ...                 # Nuxt.js/Vue.js source files
+├── blockchain              
+│   ├── contracts           # Solidity source files
 │   ├── test                # Truffle test files
 │   └── ...                 
 ├── README.md
@@ -48,7 +51,7 @@ __Note: Same steps can be taken for `backend` / `frontend` / `blockchain`__
     ```
 2) Change current working directory to respective directory:
     ```bash
-    cd /path/to/eleos/<backend|frontend|blockchain>
+    cd /path/to/Eleos/<backend|frontend|blockchain>
     ```
 
 3) Install `npm` packages:
@@ -79,9 +82,9 @@ __Note: Same steps can be taken for `backend` / `frontend` / `blockchain`__
         --name mongo mongo
     ```
 
-4) Change your current working directory to `/path/to/<backend|frontend|blockchain>/` and write your code in it.
+4) Change your current working directory to `/path/to/Eleos/<backend|frontend|blockchain>/` and write your code in it.
    ```bash
-   cd /path/to/eleos/<backend|frontend|blockchain>/
+   cd /path/to/Eleos/<backend|frontend|blockchain>/
    ```
 5) Write your test code in `./test/`
 6) Run your test code.
