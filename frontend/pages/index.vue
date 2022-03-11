@@ -1,52 +1,83 @@
 <template>
-  <section class="section">
-    <div class="columns is-mobile">
-      <card
-        title="Free"
-        icon="github"
-      >
-        Open source on <a href="https://github.com/buefy/buefy">
-          GitHub
-        </a>
-      </card>
+  <div>
+    <section class="hero is-success is-large">
+      <!-- Hero head: will stick at the top -->
+      <div class="hero-head">
+        <eleos-navbar />
+      </div>
 
-      <card
-        title="Responsive"
-        icon="cellphone-link"
-      >
-        <b class="has-text-grey">
-          Every
-        </b> component is responsive
-      </card>
-
-      <card
-        title="Modern"
-        icon="alert-decagram"
-      >
-        Built with <a href="https://vuejs.org/">
-          Vue.js
-        </a> and <a href="http://bulma.io/">
-          Bulma
-        </a>
-      </card>
-
-      <card
-        title="Lightweight"
-        icon="arrange-bring-to-front"
-      >
-        No other internal dependency
-      </card>
-    </div>
-  </section>
+      <!-- Hero content: will be in the middle -->
+      <div class="hero-body">
+        <div class="has-text-centered">
+          <p class="title">
+            Welcome to Eleos
+          </p>
+          <p class="subtitle">
+            The decentralized charity fundraiser platform
+          </p>
+        </div>
+      </div>
+    </section>
+    <section class="section container">
+      <div>
+        <b-field label="Sign with your key">
+          <b-input v-model="signData" />
+          <p class="control">
+            <b-button type="is-primary" label="Sign" @click="sign" />
+          </p>
+        </b-field>
+      </div>
+      <div v-if="signature">
+        {{ signature }}
+      </div>
+    </section>
+  </div>
 </template>
 
 <script>
-import Card from '~/components/Card'
+import EleosNavbar from '~/components/Navbar'
 
 export default {
   name: 'IndexPage',
   components: {
-    Card
+    EleosNavbar
+  },
+  layout: 'empty',
+  data () {
+    return {
+      ethereumSupported: false,
+      signData: '',
+      signature: ''
+    }
+  },
+  methods: {
+    async sign () {
+      if (await this.isEthereumSupported()) {
+        const account = await window.web3.eth.getAccounts()
+        try {
+          this.signature = await window.web3.eth.personal.sign(this.signData, account[0])
+        } catch (err) {
+          this.signature = 'Signing operation declined.'
+        }
+      }
+    },
+    async isEthereumSupported () {
+      if (window.ethereum) {
+        window.web3 = new this.$Web3(window.ethereum)
+        try {
+          // Request account access
+          await window.ethereum.enable()
+          console.log('This browser is supported for ethereum')
+          return true
+        } catch (error) {
+          console.log(error)
+          return false
+        }
+      } else {
+        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
+      }
+    }
   }
 }
+
 </script>
