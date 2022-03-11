@@ -59,6 +59,8 @@ export default {
         } catch (err) {
           this.signature = 'Signing operation declined.'
         }
+      } else {
+        this.signature = 'No ethereum wallet extension detected! Please install an ethereum wallet extension (e.g. Metamask)!'
       }
     },
     async isEthereumSupported () {
