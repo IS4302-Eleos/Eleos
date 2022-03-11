@@ -1,0 +1,50 @@
+name: Test Smart Contracts
+on: [push, pull_request]
+
+jobs:
+  blockchain-ci:
+
+    runs-on: ubuntu-latest
+
+    services:
+
+      ganache:
+        image: trufflesuite/ganache-cli
+        ports:
+          - 8545:8545
+
+    steps: 
+      - name: Clone repo 
+        uses: actions/checkout@v2
+
+      - name: Merge to master
+        if: ${{ !env.ACT }}
+        run: git checkout --progress --force ${{ github.sha }}
+      
+      - name: Setup node (If running in Github Actions)
+        if: ${{ !env.ACT }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: blockchain/package-lock.json
+
+      - name: Setup node (If running locally via act)
+        if: ${{ env.ACT }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        working-directory: ./blockchain
+        run: npm install
+
+      - name: Run linter
+        working-directory: ./blockchain
+        run: npm run lint
+      
+      - name: Truffle
+        working-directory: ./blockchain
+        run: |
+          npx truffle compile
+          npx truffle test

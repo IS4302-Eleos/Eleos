@@ -1,0 +1,8 @@
+# Compiled smart contracts
+blockchain/build/
+
+
+# Node 
+backend/node_modules/
+frontend/node_modules/
+blockchain/node_modules/
