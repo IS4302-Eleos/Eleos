@@ -14,4 +14,4 @@ router.get('/', async (ctx) => {
 app.use(koaBody());
 app.use(router.routes());
 app.use(router.allowedMethods());
-app.listen(config.API_PORT);
+app.listen(config.app.port);
