@@ -28,17 +28,20 @@
         <campaign-card class="column is-one-third" title="Lions Home for The Elders" :current-amount="10" :target-amount="5" :end-date="new Date('2022/04/01')" />
       </div>
     </section>
+    <eleos-footer />
   </div>
 </template>
 
 <script>
 import EleosNavbar from '~/components/Navbar'
 import CampaignCard from '~/components/CampaignCard'
+import EleosFooter from '~/components/Footer'
 
 export default {
   name: 'IndexPage',
   components: {
     EleosNavbar,
+    EleosFooter,
     CampaignCard
   },
   layout: 'empty',
