@@ -1,12 +1,10 @@
 <template>
   <div>
     <section class="hero is-success is-large">
-      <!-- Hero head: will stick at the top -->
       <div class="hero-head">
         <eleos-navbar />
       </div>
 
-      <!-- Hero content: will be in the middle -->
       <div class="hero-body">
         <div class="has-text-centered">
           <p class="title">
@@ -19,16 +17,15 @@
       </div>
     </section>
     <section class="section container">
-      <div>
-        <b-field label="Sign with your key">
-          <b-input v-model="signData" />
-          <p class="control">
-            <b-button type="is-primary" label="Sign" @click="sign" />
-          </p>
-        </b-field>
-      </div>
-      <div v-if="signature">
-        {{ signature }}
+      <h3 class="title is-3">
+        Active Campaigns
+      </h3>
+      <div class="columns is-multiline">
+        <campaign-card class="column is-one-third" />
+        <campaign-card class="column is-one-third" title="Help Ukraine Now" />
+        <campaign-card class="column is-one-third" title="Red Cross For Ukraine" :current-amount="1" :target-amount="100" :end-date="new Date('2022/03/15')" />
+        <campaign-card class="column is-one-third" title="SPCA" :current-amount="1" :target-amount="0" :end-date="new Date('2022/12/12')" />
+        <campaign-card class="column is-one-third" title="Lions Home for The Elders" :current-amount="10" :target-amount="5" :end-date="new Date('2022/04/01')" />
       </div>
     </section>
   </div>
@@ -36,50 +33,19 @@
 
 <script>
 import EleosNavbar from '~/components/Navbar'
+import CampaignCard from '~/components/CampaignCard'
 
 export default {
   name: 'IndexPage',
   components: {
-    EleosNavbar
+    EleosNavbar,
+    CampaignCard
   },
   layout: 'empty',
   data () {
-    return {
-      ethereumSupported: false,
-      signData: '',
-      signature: ''
-    }
+    return {}
   },
-  methods: {
-    async sign () {
-      if (await this.isEthereumSupported()) {
-        const account = await window.web3.eth.getAccounts()
-        try {
-          this.signature = await window.web3.eth.personal.sign(this.signData, account[0])
-        } catch (err) {
-          this.signature = 'Signing operation declined.'
-        }
-      } else {
-        this.signature = 'No ethereum wallet extension detected! Please install an ethereum wallet extension (e.g. Metamask)!'
-      }
-    },
-    async isEthereumSupported () {
-      if (window.ethereum) {
-        window.web3 = new this.$Web3(window.ethereum)
-        try {
-          // Request account access
-          await window.ethereum.enable()
-          console.log('This browser is supported for ethereum')
-          return true
-        } catch (error) {
-          console.log(error)
-          return false
-        }
-      } else {
-        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
-      }
-    }
-  }
+  methods: {}
 }
 
 </script>
