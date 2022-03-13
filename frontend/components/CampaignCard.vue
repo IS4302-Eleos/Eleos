@@ -28,6 +28,10 @@
 export default {
   name: 'CampaignCard',
   props: {
+    id: {
+      type: String,
+      default: null
+    },
     title: {
       type: String,
       default: null
