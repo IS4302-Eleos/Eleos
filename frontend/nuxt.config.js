@@ -41,7 +41,8 @@ export default {
     // https://go.nuxtjs.dev/buefy
     'nuxt-buefy',
     '@nuxt/http',
-    'nuxt-web3'
+    'nuxt-web3',
+    '@nuxtjs/dayjs'
   ],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
