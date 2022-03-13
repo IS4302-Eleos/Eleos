@@ -13,10 +13,8 @@ export default {
       return redirect('/')
     }
 
-    if (/\/campaign[/][0-9a-fA-F]{1,3}[/]{1,3}/.test(route.path)) {
-      return redirect(route.path + 'info')
-    } else if (/\/campaign[/][0-9a-fA-F]{1,3}/.test(route.path)) {
-      return redirect(route.path + '/info')
+    if (/\/campaign[/][0-9a-fA-F]{1,3}[/]{0,1}$/.test(route.path)) {
+      return redirect('/campaign/' + route.params.campaignAddress + '/info')
     }
   }
 }
