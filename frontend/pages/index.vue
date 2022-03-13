@@ -18,7 +18,6 @@
           Every
         </b> component is responsive
       </card>
-
       <card
         title="Modern"
         icon="alert-decagram"
