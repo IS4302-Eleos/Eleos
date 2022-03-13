@@ -49,7 +49,6 @@ export default {
   },
 
   router: {
-    base: '/',
     extendRoutes (routes, resolve) {
       routes.push({
         name: 'redirect',
