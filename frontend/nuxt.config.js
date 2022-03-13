@@ -51,9 +51,9 @@ export default {
   router: {
     extendRoutes (routes, resolve) {
       routes.push({
-        name: 'redirectCampaignPath',
-        path: '/campaign/:campaignAddress/',
-        component: resolve(__dirname, 'pages/campaign/_campaignAddress/info')
+        name: 'redirect',
+        path: '*',
+        component: resolve(__dirname, 'pages/index')
       })
     }
   }
