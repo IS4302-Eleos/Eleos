@@ -16,7 +16,6 @@ contract Campaign {
     // Mappings of address to donation amount
     mapping(address => uint) public donations;
 
-    // Events
     event donated(address donorAddress, uint256 amount);
     event withdrawn(address withdrawerAddress, uint256 amount, address toAddress);
 
@@ -31,7 +30,6 @@ contract Campaign {
         targetAmount = _targetAmount;
     }
 
-    // Modifiers
     // Checks if the donation value is not zero.
     modifier notZeroDonationValue(uint256 value) {
         require(value > 0, "Donation value needs to be more than zero...");
@@ -50,7 +48,6 @@ contract Campaign {
         _;
     }
 
-    // Main functionalities
     // Donates eth to the campaign. The ether is held in this contract.
     function donate() public payable notZeroDonationValue(msg.value) {
         totalDonatedSum += msg.value;
@@ -64,7 +61,6 @@ contract Campaign {
         emit withdrawn(msg.sender, amount, beneficiaryAddress);
     }
 
-    // Getters
     function getCampaignName() public view returns (string memory) {
         return campaignName;
     }
