@@ -1,5 +1,5 @@
 <template>
-  <nuxt-link to="/">
+  <nuxt-link :to="id ? { name: 'campaign-campaignAddress-info', params: { campaignAddress: id } } : '/'">
     <div class="box">
       <h4 class="title is-4">
         <template v-if="title != null">

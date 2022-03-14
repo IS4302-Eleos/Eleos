@@ -22,7 +22,7 @@
       </h3>
       <div class="columns is-multiline">
         <campaign-card class="column is-one-third" />
-        <campaign-card class="column is-one-third" title="Help Ukraine Now" />
+        <campaign-card id="a" class="column is-one-third" title="Help Ukraine Now" />
         <campaign-card class="column is-one-third" title="Red Cross For Ukraine" :current-amount="1" :target-amount="100" :end-date="new Date('2022/03/15')" />
         <campaign-card class="column is-one-third" title="SPCA" :current-amount="1" :target-amount="0" :end-date="new Date('2022/12/12')" />
         <campaign-card class="column is-one-third" title="Lions Home for The Elders" :current-amount="10" :target-amount="5" :end-date="new Date('2022/04/01')" />
