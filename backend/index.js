@@ -15,7 +15,7 @@ router.get('/', async (ctx) => {
   ctx.body = JSON.stringify({ api_version: '1.0.0' })
 })
 
-router.all('/graphql',graphqlHTTP({
+router.all('/graphql', graphqlHTTP({
   schema: schema,
   graphiql: config.graphiql
 }))

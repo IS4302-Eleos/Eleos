@@ -1,10 +1,11 @@
-import { schemaComposer } from 'graphql-compose';
-import { composeMongoose } from 'graphql-compose-mongoose';
-import Campaign from '../models/campaign.js';
+import { schemaComposer } from 'graphql-compose'
+import { composeMongoose } from 'graphql-compose-mongoose'
+import Campaign from '../models/campaign.js'
 
-const CampaignTC =  composeMongoose(Campaign,{})
+const CampaignTC = composeMongoose(Campaign, {})
+
 schemaComposer.Query.addFields({
-  campaigns: CampaignTC.mongooseResolvers.findMany(),
+  campaigns: CampaignTC.mongooseResolvers.findMany()
   // testroute: {
   //   type: CampaignTC,
   //   args:{address: 'String'},
@@ -19,4 +20,4 @@ schemaComposer.Mutation.addFields({
   createCampaign: CampaignTC.mongooseResolvers.createOne()
 })
 
-export default schemaComposer.buildSchema();
+export default schemaComposer.buildSchema()
