@@ -42,5 +42,7 @@ contract("CampaignFactory", (accounts) => {
     // Update new campaign instance
     const campaignAddress = tx.logs[0].args.campaignAddress;
     campaignInstance = await Campaign.at(campaignAddress);
+
+    console.log("Campaign has been deployed at " + campaignInstance);
   });
 });
