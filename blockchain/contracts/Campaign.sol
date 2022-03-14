@@ -1,7 +1,6 @@
 pragma solidity >= 0.5.0;
 
 contract Campaign {
-
     string campaignName;
     string campaignDescription;
     string organizationURL;
