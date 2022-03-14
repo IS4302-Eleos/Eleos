@@ -14,8 +14,8 @@ contract Campaign {
     // Mappings of address to donation amount
     mapping(address => uint) public donations;
 
-    event Donated(address donorAddress, uint256 amount);
-    event Withdrawn(
+    event Donate(address donorAddress, uint256 amount);
+    event Withdraw(
         address withdrawerAddress,
         uint256 amount,
         address toAddress
@@ -71,7 +71,7 @@ contract Campaign {
     function donate() public payable notZeroDonationValue(msg.value) {
         totalDonationAmount += msg.value;
         donations[msg.sender] += msg.value;
-        emit Donated(msg.sender, msg.value);
+        emit Donate(msg.sender, msg.value);
     }
 
     // Withdraws the specified eth amount from this campaign contract.
@@ -82,7 +82,7 @@ contract Campaign {
         hasAvailableDonationBalance(amount)
     {
         beneficiaryAddress.transfer(amount);
-        emit Withdrawn(msg.sender, amount, beneficiaryAddress);
+        emit Withdraw(msg.sender, amount, beneficiaryAddress);
     }
 
     function getCampaignName() public view returns (string memory) {
