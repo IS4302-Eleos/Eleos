@@ -13,7 +13,7 @@ contract Campaign {
     uint256 totalDonationAmount = 0;
 
     // Mappings of address to donation amount
-    mapping(address => uint) public donations;
+    mapping(address => uint256) public donations;
 
     event Donate(address donorAddress, uint256 amount);
     event Withdraw(
