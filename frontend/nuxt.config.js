@@ -51,6 +51,5 @@ export default {
   publicRuntimeConfig: {
   },
   privateRuntimeConfig: {
-
   }
 }
