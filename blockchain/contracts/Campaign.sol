@@ -14,8 +14,8 @@ contract Campaign {
     // Mappings of address to donation amount
     mapping(address => uint) public donations;
 
-    event donated(address donorAddress, uint256 amount);
-    event withdrawn(
+    event Donated(address donorAddress, uint256 amount);
+    event Withdrawn(
         address withdrawerAddress,
         uint256 amount,
         address toAddress
@@ -39,7 +39,10 @@ contract Campaign {
 
     // Checks if the donation value is not zero.
     modifier notZeroDonationValue(uint256 value) {
-        require(value > 0, "Donation value needs to be more than zero...");
+        require(
+            value > 0,
+            "Value of 0 donated..."
+        );
         _;
     }
 
@@ -50,7 +53,7 @@ contract Campaign {
         bool isBeneficiaryAddress = withdrawerAddress == beneficiaryAddress;
         require(
             isCampaignOwnerAddress || isBeneficiaryAddress,
-            "Only campaign owner or beneficiary can initiate/access withdraw..."
+            "Not owner or beneficiary..."
         );
         _;
     }
@@ -59,7 +62,7 @@ contract Campaign {
     modifier hasAvailableDonationBalance(uint256 value) {
         require(
             address(this).balance >= value,
-            "There is not enough donation funds to withdraw this amount..."
+            "Not enough balance..."
         );
         _;
     }
@@ -68,7 +71,7 @@ contract Campaign {
     function donate() public payable notZeroDonationValue(msg.value) {
         totalDonationAmount += msg.value;
         donations[msg.sender] += msg.value;
-        emit donated(msg.sender, msg.value);
+        emit Donated(msg.sender, msg.value);
     }
 
     // Withdraws the specified eth amount from this campaign contract.
@@ -79,7 +82,7 @@ contract Campaign {
         hasAvailableDonationBalance(amount)
     {
         beneficiaryAddress.transfer(amount);
-        emit withdrawn(msg.sender, amount, beneficiaryAddress);
+        emit Withdrawn(msg.sender, amount, beneficiaryAddress);
     }
 
     function getCampaignName() public view returns (string memory) {
