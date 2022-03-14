@@ -29,7 +29,7 @@ contract Campaign {
         address payable _beneficiaryAddress,
         address _campaignOwnerAddress,
         uint256 _targetDonationAmount
-    ) public {
+    ) {
         campaignName = _campaignName;
         organisationUrl = _organisationUrl;
         endTimestamp = _endTimestamp;
