@@ -48,7 +48,10 @@ contract Campaign {
     modifier equalsCampaignOwnerOrBeneficary(address withdrawerAddress) {
         bool isCampaignOwnerAddress = withdrawerAddress == campaignOwnerAddress;
         bool isBeneficiaryAddress = withdrawerAddress == beneficiaryAddress;
-        require(isCampaignOwnerAddress || isBeneficiaryAddress);
+        require(
+            isCampaignOwnerAddress || isBeneficiaryAddress,
+            "Only campaign owner or beneficiary can initiate/access withdraw..."
+        );
         _;
     }
 
