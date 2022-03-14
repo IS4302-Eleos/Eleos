@@ -8,10 +8,10 @@ contract Campaign {
     uint64 endTimestamp;
     address payable beneficiaryAddress;
     address campaignOwnerAddress;
-    uint256 targetAmount;
+    uint256 targetDonationAmount;
 
     // Default starting donated sum
-    uint256 totalDonatedSum = 0;
+    uint256 totalDonationAmount = 0;
 
     // Mappings of address to donation amount
     mapping(address => uint) public donations;
@@ -30,7 +30,7 @@ contract Campaign {
         uint64 _endTimestamp,
         address payable _beneficiaryAddress,
         address _campaignOwnerAddress,
-        uint256 _targetAmount
+        uint256 _targetDonationAmount
     ) public {
         campaignName = _campaignName;
         campaignDescription = _campaignDescription;
@@ -38,7 +38,7 @@ contract Campaign {
         endTimestamp = _endTimestamp;
         beneficiaryAddress = _beneficiaryAddress;
         campaignOwnerAddress = _campaignOwnerAddress;
-        targetAmount = _targetAmount;
+        targetDonationAmount = _targetDonationAmount;
     }
 
     // Checks if the donation value is not zero.
@@ -67,7 +67,7 @@ contract Campaign {
 
     // Donates eth to the campaign. The ether is held in this contract.
     function donate() public payable notZeroDonationValue(msg.value) {
-        totalDonatedSum += msg.value;
+        totalDonationAmount += msg.value;
         donations[msg.sender] += msg.value;
         emit donated(msg.sender, msg.value);
     }
@@ -107,8 +107,8 @@ contract Campaign {
         return campaignOwnerAddress;
     }
 
-    function getTotalDonatedSum() public view returns (uint256) {
-        return totalDonatedSum;
+    function getTotalDonationAmount() public view returns (uint256) {
+        return totalDonationAmount;
     }
 
     function getOwnDonationAmount() public view returns (uint256) {
