@@ -2,7 +2,9 @@ import Koa from 'koa'
 import Router from '@koa/router'
 import koaBody from 'koa-body'
 import config from './config.js'
+import initdb from './database.js'
 
+initdb()
 const app = new Koa()
 const router = new Router()
 
