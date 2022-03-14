@@ -1,39 +1,51 @@
 export const state = () => ({
+  isConnected: false
 })
 
 export const getters = {
 }
 
 export const mutations = {
+  setConnected (state, isConnected) {
+    state.isConnected = isConnected
+  }
 }
 
 export const actions = {
-  async isWalletConnected (context) {
-    // Check if browser can access the ethereum network
-    if (!window.ethereum) {
-      console.info(
-        'Non-Ethereum browser detected. You should consider trying MetaMask!'
-      )
+  // Check if the browser can access the ethereum network
+  hasProvider (context) {
+    const ethereumProvider = window.ethereum
+    if (ethereumProvider) {
+      // Inject web3
+      window.web3 = new this.$Web3(window.ethereum)
+      return true
+    } else {
+      console.info('Non-Ethereum browser detected. You should consider trying MetaMask!')
+      return false
+    }
+  },
+  // Request account access from user
+  async requestAccounts (context) {
+    if (await !this.dispatch('hasProvider')) {
       return false
     }
 
-    window.web3 = new this.$Web3(window.ethereum)
-
-    // Connect wallet
+    // Request account access
     try {
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
 
       // Connected if accounts is not empty
-      return !!accounts[0]
+      if (accounts.length > 0) {
+        this.commit('setConnected', true)
+        return accounts
+      } else {
+        this.commit('setConnected', false)
+        return false
+      }
     } catch (error) {
       console.error(error)
+      this.commit('setConnected', false)
       return false
-    }
-  },
-  async getWalletAddress (context) {
-    if (await this.dispatch('isWalletConnected')) {
-      const accounts = await window.web3.eth.getAccounts()
-      return accounts[0]
     }
   }
 }
