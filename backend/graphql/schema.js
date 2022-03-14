@@ -1,18 +1,22 @@
-import {buildSchema} from 'graphql';
+import { schemaComposer } from 'graphql-compose';
+import { composeMongoose } from 'graphql-compose-mongoose';
+import Campaign from '../models/campaign.js';
 
-export default buildSchema(`
-type Campaign {
-    id: ID,
-    address: String,
-    title: String
-    allDay: Boolean
-    start: String,
-    end: String
-  }
-  type Query {
-    campaigns: [Campaign]
-  }
-  type Mutation {
-    createCampaign(address: String!, title: String!, start: String, end: String): Campaign
-  }
-`)
+const CampaignTC =  composeMongoose(Campaign,{})
+schemaComposer.Query.addFields({
+  campaigns: CampaignTC.mongooseResolvers.findMany(),
+  // testroute: {
+  //   type: CampaignTC,
+  //   args:{address: 'String'},
+  //   resolve: async (source,args,context,info) =>{
+  //     const result = await Campaign.findOne({address: args.address});
+  //     return result;
+  //   }
+  // }
+})
+
+schemaComposer.Mutation.addFields({
+  createCampaign: CampaignTC.mongooseResolvers.createOne()
+})
+
+export default schemaComposer.buildSchema();

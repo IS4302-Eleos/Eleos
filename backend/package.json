@@ -17,6 +17,8 @@
   "dependencies": {
     "@koa/router": "^10.1.1",
     "dotenv": "^16.0.0",
+    "graphql-compose": "^9.0.7",
+    "graphql-compose-mongoose": "^9.7.1",
     "koa": "^2.13.4",
     "koa-body": "^4.2.0",
     "koa-graphql": "^0.12.0",

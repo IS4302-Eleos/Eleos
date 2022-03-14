@@ -4,7 +4,6 @@ import koaBody from 'koa-body'
 import { graphqlHTTP } from 'koa-graphql'
 import config from './config.js'
 import schema from './graphql/schema.js'
-import root from './graphql/root.js'
 import initdb from './database.js'
 
 initdb()
@@ -18,7 +17,6 @@ router.get('/', async (ctx) => {
 
 router.all('/graphql',graphqlHTTP({
   schema: schema,
-  rootValue: root,
   graphiql: config.graphiql
 }))
 app.use(koaBody()).use(router.routes()).use(router.allowedMethods())
