@@ -24,8 +24,8 @@
       </b-navbar-item>
       <b-navbar-item tag="div">
         <div class="buttons">
-          <a class="button is-success is-light" :disabled="isConnected" @click="requestAccounts">
-            {{ isConnected ? 'Connected' : 'Connect' }}
+          <a class="button is-success is-light" :disabled="!hasProvider || isConnected" @click="requestAccounts">
+            {{ hasProvider ? (isConnected ? 'Connected' : 'Connect') : 'No Provider' }}
           </a>
         </div>
       </b-navbar-item>
@@ -38,14 +38,22 @@ import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'EleosNavbar',
+  data () {
+    return {
+      hasProvider: false
+    }
+  },
   computed: {
     ...mapState([
       'isConnected'
     ])
   },
+  async mounted () {
+    this.hasProvider = await this.checkHasProvider()
+  },
   methods: {
     ...mapActions([
-      'hasProvider',
+      'checkHasProvider',
       'requestAccounts'
     ])
   }

@@ -13,7 +13,7 @@ export const mutations = {
 
 export const actions = {
   // Check if the browser can access the ethereum network
-  hasProvider (context) {
+  checkHasProvider (context) {
     const ethereumProvider = window.ethereum
     if (ethereumProvider) {
       // Inject web3
@@ -26,7 +26,7 @@ export const actions = {
   },
   // Request account access from user
   async requestAccounts (context) {
-    if (await !this.dispatch('hasProvider')) {
+    if (await !this.dispatch('checkHasProvider')) {
       return false
     }
 
