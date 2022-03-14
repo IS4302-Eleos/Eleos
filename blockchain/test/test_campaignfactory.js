@@ -91,6 +91,15 @@ contract("CampaignFactory", (accounts) => {
     );
   });
 
+  it("should not withdraw as other users", async () => {
+    const withdrawAmount = await campaignInstance.getTotalDonationAmount();
+
+    await truffleAssert.fails(
+      campaignInstance.withdraw(withdrawAmount, { from: donor }),
+      truffleAssert.ErrorType.REVERT
+    );
+  });
+
   it("should not withdraw more than total donations", async () => {
     const withdrawAmount = web3.utils.toWei("100", "ether");
 
