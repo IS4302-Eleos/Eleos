@@ -17,10 +17,21 @@ contract Campaign {
     mapping(address => uint) public donations;
 
     event donated(address donorAddress, uint256 amount);
-    event withdrawn(address withdrawerAddress, uint256 amount, address toAddress);
+    event withdrawn(
+        address withdrawerAddress,
+        uint256 amount,
+        address toAddress
+    );
 
-    constructor (string memory _campaignName, string memory _campaignDescription, string memory _organizationURL, uint64 _endTimestamp,
-            address payable _beneficiaryAddress, address _campaignOwnerAddress, uint256 _targetAmount) public {
+    constructor (
+        string memory _campaignName,
+        string memory _campaignDescription,
+        string memory _organizationURL,
+        uint64 _endTimestamp,
+        address payable _beneficiaryAddress,
+        address _campaignOwnerAddress,
+        uint256 _targetAmount
+    ) public {
         campaignName = _campaignName;
         campaignDescription = _campaignDescription;
         organizationURL = _organizationURL;
@@ -36,15 +47,21 @@ contract Campaign {
         _;
     }
 
-    // Checks if the withdrawer's address belongs to the campaign owner or the beneficiary.
+    // Checks if the withdrawer's address belongs
+    // to the campaign owner or the beneficiary.
     modifier equalsCampaignOwnerOrBeneficary(address withdrawerAddress) {
-        require(withdrawerAddress == campaignOwnerAddress || withdrawerAddress == beneficiaryAddress);
+        bool isCampaignOwnerAddress = withdrawerAddress == campaignOwnerAddress;
+        bool isBeneficiaryAddress = withdrawerAddress == beneficiaryAddress;
+        require(isCampaignOwnerAddress || isBeneficiaryAddress);
         _;
     }
 
     // Checks if there is enough donation balance available for withdrawing.
     modifier hasAvailableDonationBalance(uint256 value) {
-        require(address(this).balance >= value, "There is not enough donation funds to withdraw this amount...");
+        require(
+            address(this).balance >= value,
+            "There is not enough donation funds to withdraw this amount..."
+        );
         _;
     }
 
@@ -56,7 +73,12 @@ contract Campaign {
     }
 
     // Withdraws the specified eth amount from this campaign contract.
-    function withdraw(uint256 amount) public payable equalsCampaignOwnerOrBeneficary(msg.sender) hasAvailableDonationBalance(amount) {
+    function withdraw(uint256 amount)
+        public
+        payable
+        equalsCampaignOwnerOrBeneficary(msg.sender)
+        hasAvailableDonationBalance(amount)
+    {
         beneficiaryAddress.transfer(amount);
         emit withdrawn(msg.sender, amount, beneficiaryAddress);
     }
@@ -89,15 +111,19 @@ contract Campaign {
         return totalDonatedSum;
     }
 
-    function getDonationAmountByAddress(address donorAddress) public view returns (uint256) {
-        return donations[donorAddress];
-    }
-
     function getOwnDonationAmount() public view returns (uint256) {
         return donations[msg.sender];
     }
 
-    function getCurrentAvailableDonationBalance() public view returns (uint256) {
+    function getDonationAmountByAddress(address donorAddress)
+        public
+        view
+        returns (uint256)
+    {
+        return donations[donorAddress];
+    }
+
+    function getAvailableDonationBalance() public view returns (uint256) {
         return address(this).balance;
     }
 }
