@@ -51,5 +51,14 @@ export default {
   publicRuntimeConfig: {
   },
   privateRuntimeConfig: {
+    router: {
+      extendRoutes (routes, resolve) {
+        routes.push({
+          name: 'redirect',
+          path: '*',
+          component: resolve(__dirname, 'pages/index')
+        })
+      }
+    }
   }
 }
