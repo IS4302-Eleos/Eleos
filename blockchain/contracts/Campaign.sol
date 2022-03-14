@@ -2,8 +2,7 @@ pragma solidity >= 0.5.0;
 
 contract Campaign {
     string campaignName;
-    string campaignDescription;
-    string organizationURL;
+    string organisationUrl;
     uint64 endTimestamp;
     address payable beneficiaryAddress;
     address campaignOwnerAddress;
@@ -24,16 +23,14 @@ contract Campaign {
 
     constructor (
         string memory _campaignName,
-        string memory _campaignDescription,
-        string memory _organizationURL,
+        string memory _organisationUrl,
         uint64 _endTimestamp,
         address payable _beneficiaryAddress,
         address _campaignOwnerAddress,
         uint256 _targetDonationAmount
     ) public {
         campaignName = _campaignName;
-        campaignDescription = _campaignDescription;
-        organizationURL = _organizationURL;
+        organisationUrl = _organisationUrl;
         endTimestamp = _endTimestamp;
         beneficiaryAddress = _beneficiaryAddress;
         campaignOwnerAddress = _campaignOwnerAddress;
@@ -86,12 +83,8 @@ contract Campaign {
         return campaignName;
     }
 
-    function getCampaignDescription() public view returns (string memory) {
-        return campaignDescription;
-    }
-
-    function getOrganizationURL() public view returns (string memory) {
-        return organizationURL;
+    function getorganisationUrl() public view returns (string memory) {
+        return organisationUrl;
     }
 
     function getEndTimeStamp() public view returns (uint64) {
