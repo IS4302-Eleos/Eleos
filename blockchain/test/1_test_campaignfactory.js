@@ -1,5 +1,4 @@
 const truffleAssert = require("truffle-assertions");
-const assert = require("assert");
 
 const Campaign = artifacts.require("Campaign");
 const CampaignFactory = artifacts.require("CampaignFactory");
@@ -8,7 +7,6 @@ contract("CampaignFactory", (accounts) => {
   const deployingAccount = accounts[0];
   const beneficiary = accounts[1];
   const campaignOwner = accounts[2];
-  const donor = accounts[3];
 
   let campaignFactoryInstance;
   let campaignInstance;
