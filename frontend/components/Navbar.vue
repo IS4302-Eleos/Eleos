@@ -24,8 +24,8 @@
       </b-navbar-item>
       <b-navbar-item tag="div">
         <div class="buttons">
-          <a class="button is-success is-light" disabled>
-            Log in
+          <a class="button is-success is-light" :disabled="isConnected" @click="requestAccounts">
+            {{ isConnected ? 'Connected' : 'Connect' }}
           </a>
         </div>
       </b-navbar-item>
@@ -34,7 +34,20 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
+
 export default {
-  name: 'EleosNavbar'
+  name: 'EleosNavbar',
+  computed: {
+    ...mapState([
+      'isConnected'
+    ])
+  },
+  methods: {
+    ...mapActions([
+      'hasProvider',
+      'requestAccounts'
+    ])
+  }
 }
 </script>
