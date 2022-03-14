@@ -13,7 +13,7 @@
         </template>
         <b-skeleton :active="!hasDonationAmount" />
       </h6>
-      <b-progress class="mb-1" size="is-small" :type="hasDonationAmount ? 'is-success' : 'is-light'" :value="donationPercentage" />
+      <b-progress class="mb-1" size="is-small" :type="progressBarColor" :value="donationPercentage" />
       <p>
         <template v-if="endDate != null">
           Ending on: {{ endDatePretty }}
@@ -67,6 +67,15 @@ export default {
     },
     endDatePretty () {
       return this.$dayjs(this.endDate).format('YYYY/MM/DD')
+    },
+    progressBarColor () {
+      if (!this.hasDonationAmount) {
+        return 'is-light'
+      }
+      if (this.$dayjs().isAfter(this.$dayjs(this.endDate), 'day')) {
+        return 'is-warning'
+      }
+      return 'is-success'
     }
   }
 }

@@ -24,9 +24,12 @@
       </b-navbar-item>
       <b-navbar-item tag="div">
         <div class="buttons">
-          <a class="button is-success is-light" :disabled="!hasProvider || isConnected" @click="requestAccounts">
+          <b-button v-if="isConnected" type="is-primary" icon-left="plus-circle">
+            Start a Campaign
+          </b-button>
+          <b-button type="is-success" :disabled="!hasProvider || isConnected || isLoading" :loading="isLoading" @click="login">
             {{ hasProvider ? (isConnected ? 'Connected' : 'Connect') : 'No Provider' }}
-          </a>
+          </b-button>
         </div>
       </b-navbar-item>
     </template>
@@ -40,7 +43,8 @@ export default {
   name: 'EleosNavbar',
   data () {
     return {
-      hasProvider: false
+      hasProvider: false,
+      isLoading: true
     }
   },
   computed: {
@@ -49,13 +53,20 @@ export default {
     ])
   },
   async mounted () {
-    this.hasProvider = await this.checkHasProvider()
+    const results = await this.checkHasProvider()
+    this.hasProvider = !!results
+    this.isLoading = false
   },
   methods: {
     ...mapActions([
       'checkHasProvider',
-      'requestAccounts'
-    ])
+      'safelyRequestAccounts'
+    ]),
+    async login () {
+      this.isLoading = true
+      await this.safelyRequestAccounts()
+      this.isLoading = false
+    }
   }
 }
 </script>
