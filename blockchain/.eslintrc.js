@@ -3,18 +3,20 @@ module.exports = {
     es2021: true,
     node: true,
     mocha: true,
-    'truffle/globals': true
+    "truffle/globals": true
   },
   extends: [
-    'standard'
+    "standard"
   ],
   plugins: [
-    'truffle'
+    "truffle"
   ],
   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module'
+    ecmaVersion: "latest",
+    sourceType: "module"
   },
   rules: {
+    quotes: ["error", "double"],
+    semi: ["error", "always"]
   }
-}
+};
