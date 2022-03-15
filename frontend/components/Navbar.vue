@@ -7,11 +7,7 @@
         </h2>
       </b-navbar-item>
     </template>
-    <template #start>
-      <b-navbar-item tag="NuxtLink" :to="{ name: 'inspire' }">
-        Test
-      </b-navbar-item>
-    </template>
+    <template #start />
 
     <template #end>
       <b-navbar-item tag="div">
