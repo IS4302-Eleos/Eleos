@@ -244,7 +244,7 @@ export default {
         return false
       } else if (this.targetAmount < 0) {
         return false
-      } else if (this.endDate !== null && this.$dayjs().isBefore(this.$dayjs(this.endDate))) {
+      } else if (this.endDate !== null && this.$dayjs().isAfter(this.$dayjs(this.endDate))) {
         return false
       }
       return true
