@@ -5,11 +5,6 @@
 
 <script>
 export default {
-  name: 'CampaignAnonymousRouter',
-  middleware ({ route, redirect, from }) {
-    if (/\/campaign[/]{0,1}$/.test(route.path)) {
-      return redirect('/campaign/add')
-    }
-  }
+  name: 'CampaignAnonymousRouter'
 }
 </script>
