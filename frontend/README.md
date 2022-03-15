@@ -1,5 +1,10 @@
 # frontend
 
+## Recommended VSCode Extensions
+
+1. [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+2. [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur)
+
 ## Build Setup
 
 ```bash
