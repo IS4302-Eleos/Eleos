@@ -8,8 +8,18 @@ const validDynamicRoutes = [
   /[/]campaign[/].+[/]info$/
 ]
 
+const explicitInvalidRoutes = [
+  {
+    pathRegex: /[/]campaign[/]{0,1}$/,
+    targetPath: '/campaign/add'
+  },
+  {
+    pathRegex: /[/]campaign[/].+[/]{0,1}$/,
+    targetPath: '/campaign/:campaignAddress/info'
+  }
+]
+
 export default function ({ route, redirect, from }) {
-  console.log(route)
   const isValid = validatePath(route.path)
 
   if (!isValid) {
@@ -33,11 +43,15 @@ function validatePath (routePath) {
 }
 
 function decideInvalidRedirectPath (routePath, routeParams) {
-  if (/[/]campaign[/]{0,1}$/.test(routePath)) {
-    return '/campaign/add'
-  } else if (/[/]campaign[/].+[/]{0,1}$/.test(routePath)) {
-    return '/campaign/' + routeParams.campaignAddress + '/info'
-  } else {
-    return '/'
+  // Default redirect path for all other invalid paths
+  let finalPath = '/'
+  if (explicitInvalidRoutes[0].pathRegex.test(routePath)) {
+    finalPath = explicitInvalidRoutes[0].targetPath
+  } else if (explicitInvalidRoutes[1].pathRegex.test(routePath)) {
+    finalPath = explicitInvalidRoutes[1]
+      .targetPath
+      .replace(':campaignAddress', routeParams.campaignAddress)
   }
+
+  return finalPath
 }
