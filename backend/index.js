@@ -3,7 +3,7 @@ import Router from '@koa/router'
 import koaBody from 'koa-body'
 import { graphqlHTTP } from 'koa-graphql'
 import config from './config.js'
-import schema from './graphql/schema.js'
+import schema from './src/graphql/schema.js'
 import initdb from './src/database.js'
 
 initdb()
