@@ -23,7 +23,7 @@ export default function ({ route, redirect, from }) {
   const isValid = validatePath(route.path)
 
   if (!isValid) {
-    const finaPath = decideInvalidRedirectPath(route.path, route.params)
+    const finaPath = decideInvalidRedirectPath(route.path)
     return redirect(finaPath)
   }
 }
@@ -42,15 +42,17 @@ function validatePath (routePath) {
   return false
 }
 
-function decideInvalidRedirectPath (routePath, routeParams) {
+function decideInvalidRedirectPath (routePath) {
   // Default redirect path for all other invalid paths
   let finalPath = '/'
   if (explicitInvalidRoutes[0].pathRegex.test(routePath)) {
     finalPath = explicitInvalidRoutes[0].targetPath
   } else if (explicitInvalidRoutes[1].pathRegex.test(routePath)) {
+    const routeSplit = routePath.split('/').filter(i => i)
+    const campaignAddress = routeSplit[routeSplit.length - 1]
     finalPath = explicitInvalidRoutes[1]
       .targetPath
-      .replace(':campaignAddress', routeParams.campaignAddress)
+      .replace(':campaignAddress', campaignAddress)
   }
 
   return finalPath
