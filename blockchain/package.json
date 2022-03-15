@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "npx truffle test",
+    "build": "npx truffle build",
+    "deploy": "npx truffle deploy",
     "lint:js": "eslint --ext \".js\" .",
     "lint": "npm run lint:js && solhint contracts/**/*.sol",
     "lintfix": "npm run lint:js --fix && solhint --fix contracts/**/*.sol"
