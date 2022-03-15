@@ -199,6 +199,18 @@
 <script>
 export default {
   name: 'AddPage',
+  beforeRouteLeave (to, from, next) {
+    if (this.activeStep === 3) {
+      next()
+      return
+    }
+    const answer = window.confirm('Are you sure you want to leave? You have unsaved changed in this page.')
+    if (answer) {
+      next()
+    } else {
+      next(false)
+    }
+  },
   async middleware ({ store, redirect }) {
     if (!await store.dispatch('checkHasProvider') || !store.state.isConnected) {
       redirect('/')
