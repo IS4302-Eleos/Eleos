@@ -200,7 +200,7 @@
 export default {
   name: 'AddPage',
   async middleware ({ store, redirect }) {
-    if (await store.dispatch('checkHasProvider') && !store.state.isConnected) {
+    if (!await store.dispatch('checkHasProvider') || !store.state.isConnected) {
       redirect('/')
     }
   },
