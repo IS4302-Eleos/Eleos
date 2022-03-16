@@ -52,7 +52,7 @@ jobs:
         with:
           node-version: '16'
 
-      - name: Install dependencies - Blockahin
+      - name: Install dependencies - Blockchain
         working-directory: ./blockchain
         run: npm install
 

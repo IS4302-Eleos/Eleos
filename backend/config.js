@@ -10,5 +10,11 @@ export default {
     name: process.env.DB_NAME,
     user: process.env.DB_USER,
     pass: process.env.DB_PASS
+  },
+  bc: {
+    host: process.env.GANACHE_HOST,
+    port: process.env.GANACHE_PORT,
+    campaignFactoryPath: process.env.CAMPAIGN_FACTORY_CONTRACT_PATH,
+    campaignFactoryEvent: process.env.CAMPAIGN_FACTORY_CONTRACT_EVENT
   }
 }

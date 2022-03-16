@@ -1,55 +1,82 @@
 
-import addListener from '../src/addListener.js'
+import { subscribeToContractEvents, getCampaignDetails } from '../campaignListener/util.js'
 import chai from 'chai'
 import Web3 from 'web3'
 import * as fs from 'fs'
 import contract from '@truffle/contract'
+import { BADNAME } from 'dns'
 
 const assert = chai.assert
 
-describe('addListener', async () => {
-  let accounts, campaignFactory, eventName
+describe('Testing campaignListener utils',  () => {
 
-  beforeEach(async () => {
-    const provider = new Web3.providers.WebsocketProvider('ws://localhost:8545')
-    const web3 = new Web3(provider)
-    const campaignFactoryContract = contract(JSON.parse(fs.readFileSync('../blockchain/build/contracts/CampaignFactory.json')))
-    campaignFactoryContract.setProvider(provider)
+  let accounts, campaignFactory
+  let contractOwner, beneficiary, campaignOwner
+  let campaignName, organisationUrl, endTimestamp, beneficiaryAddress, campaignOwnerAddress, targetDonationAmount
 
-    eventName = 'CampaignStarted'
+  const provider = new Web3.providers.WebsocketProvider('ws://localhost:8545')
+  const web3 = new Web3(provider)
+  const campaignFactoryContract = contract(JSON.parse(fs.readFileSync('../blockchain/build/contracts/CampaignFactory.json')))
+  const campaignContract = contract(JSON.parse(fs.readFileSync('../blockchain/build/contracts/Campaign.json')))
+  campaignFactoryContract.setProvider(provider)
+  campaignContract.setProvider(provider)
+
+  before(async () => {
     accounts = await web3.eth.getAccounts()
     campaignFactory = await campaignFactoryContract.deployed()
-  })
+    contractOwner = accounts[0]
+    beneficiary = accounts[1]
+    campaignOwner = accounts[2]
 
-  it('should retrieve ownerAddress and campaignAddress from CampaignStarted event', async () => {
-    const contractOwner = accounts[0]
-    const beneficiary = accounts[1]
-    const campaignOwner = accounts[2]
+    campaignName = 'Charity 1'
+    organisationUrl = 'https://www.charity1.com'
+    endTimestamp = 1672502399 // 31/12/2022 23:59:59 GMT+8
+    beneficiaryAddress = beneficiary
+    campaignOwnerAddress = campaignOwner
+    targetDonationAmount = 10
+  });
 
-    const campaignName = 'Charity 1'
-    const organisationUrl = 'https://www.charity1.com'
-    const endTimestamp = 1672502399 // 31/12/2022 23:59:59 GMT+8
-    const beneficiaryAddress = beneficiary
-    const campaignOwnerAddress = campaignOwner
-    const targetDonationAmount = 10
 
-    let ownerAddress = 0; let campaignAddress = 0; let address = 0
+
+  it('subscribeToContractEvents should retrieve ownerAddress and campaignAddress from CampaignStarted event', async () => {
+
+    const eventName = 'CampaignStarted'
+    let address, testOwnerAddress, testCampaignAddress
 
     // Listen for new events
-    addListener(
+    subscribeToContractEvents(
       campaignFactory,
       eventName,
       (event) => {
-        const returnValues = event.returnValues
-        ownerAddress = returnValues.ownerAddress
-        campaignAddress = returnValues.campaignAddress
-
-        assert.equal(ownerAddress, campaignOwner)
-        assert.equal(campaignAddress, address)
+        const { ownerAddress, campaignAddress } = event.returnValues
+        testOwnerAddress = ownerAddress
+        testCampaignAddress = campaignAddress
       }
     )
 
-    address = await campaignFactory.startCampaign.call(
+    const tx = await campaignFactory.startCampaign(
+      campaignName,
+      organisationUrl,
+      endTimestamp,
+      beneficiaryAddress,
+      campaignOwnerAddress,
+      targetDonationAmount,
+      { from: contractOwner }
+    );
+
+    address = tx.logs[0].args.campaignAddress;
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    assert.equal(testOwnerAddress, campaignOwner)
+    assert.equal(testCampaignAddress, address)
+
+
+  })
+
+  it('getCampaignDetails should retrieve details of new campaign', async () => {
+
+    const tx = await campaignFactory.startCampaign(
       campaignName,
       organisationUrl,
       endTimestamp,
@@ -57,5 +84,17 @@ describe('addListener', async () => {
       campaignOwnerAddress,
       targetDonationAmount, { from: contractOwner }
     )
+
+    const address = tx.logs[0].args.campaignAddress;
+    const campaignInstance = await campaignContract.at(address)
+
+    const campaignInfo = await getCampaignDetails(campaignInstance);
+
+    assert.equal(address, campaignInfo.campaignAddress)
+    assert.equal(campaignName, campaignInfo.campaignName)
+    assert.equal(organisationUrl, campaignInfo.organisationUrl)
+    assert.equal(endTimestamp, campaignInfo.endTimestamp)
+    assert.equal(beneficiaryAddress, campaignInfo.beneficiaryAddress)
+    assert.equal(campaignOwnerAddress, campaignInfo.campaignOwnerAddress)
   })
 })
