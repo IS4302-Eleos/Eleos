@@ -291,7 +291,7 @@ export default {
       this.isLoading = true
       // Need the parameters from the fields, called by this.VALUE
       // Only field we don't need is the description in the campaign.sol
-      const payload = {
+      const campaignDetails = {
         campaignName: this.campaignName,
         beneficiaryUrl: this.beneficiaryURL,
         endDate: this.endDate,
@@ -301,7 +301,7 @@ export default {
       }
       const newCampaignAddress = await this.$store.dispatch(
         'callToCampaignFactory',
-        payload
+        campaignDetails
       )
       this.campaignPath = '/campaign/' + newCampaignAddress + '/info'
       const delay = ms => new Promise(res => setTimeout(res, ms), rej => console.error(rej))
