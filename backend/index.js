@@ -5,6 +5,7 @@ import { graphqlHTTP } from 'koa-graphql'
 import config from './config.js'
 import schema from './src/graphql/schema.js'
 import initdb from './src/database.js'
+import { NoSchemaIntrospectionCustomRule } from 'graphql';
 
 // Initialize the database and connect to mongodb
 initdb()
@@ -16,10 +17,11 @@ router.get('/', async (ctx) => {
   ctx.body = JSON.stringify({ api_version: '1.0.0' })
 })
 
-// mounting graohql endpoint to the router
+// mounting graphql endpoint to the router
 router.all('/graphql', graphqlHTTP({
   schema: schema,
-  graphiql: config.graphiql
+  graphiql: config.graphiql,
+  validationRules: [NoSchemaIntrospectionCustomRule] // prevents introspection queries
 }))
 
 app.use(koaBody()).use(router.routes()).use(router.allowedMethods())
