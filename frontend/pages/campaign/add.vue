@@ -187,7 +187,7 @@
           </h1>
         </div>
         <div class="has-text-centered my-6">
-          <b-button type="is-primary" tag="NuxtLink" to="/campaign/asdf/info">
+          <b-button type="is-primary" tag="NuxtLink" :to="campaignPath">
             Go to Campaign
           </b-button>
         </div>
@@ -232,7 +232,8 @@ export default {
       targetAmount: 0,
       endDate: null,
       isLoading: false,
-      isCompleted: false
+      isCompleted: false,
+      campaignPath: '/campaign/asd/info'
     }
   },
   computed: {
@@ -321,7 +322,7 @@ export default {
       campaignOwnerAddress,
       targetAmount
     ) {
-      // Owner address of CampaignFactory.sol
+      // Owner address of CampaignFactory.sol, should be global use
       const ourAccountAddress = '0x5351fA26F34C6cc71001f8C39d440E2447746D1D'
 
       console.log(campaignName)
@@ -365,6 +366,7 @@ export default {
       const newCampaignAddress = res.events.CampaignStarted.returnValues.campaignAddress
       console.log(newCampaignAddress)
       this.sanityCheck(newCampaignAddress)
+      this.campaignPath = '/campaign/' + newCampaignAddress + '/info'
     },
     async sanityCheck (newCampaignAddress) {
       // Get the created campaign's name.
