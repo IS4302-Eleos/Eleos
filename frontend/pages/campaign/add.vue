@@ -198,6 +198,7 @@
 
 <script>
 import factoryArtifacts from '../../../blockchain/build/contracts/CampaignFactory.json'
+import campaignArtifacts from '../../../blockchain/build/contracts/Campaign.json'
 
 export default {
   name: 'AddPage',
@@ -296,11 +297,94 @@ export default {
     async deploy () {
       this.isLoading = true
       // Replace this portion with actual deployment
+      // Need the parameters from the fields, called by this.VALUE
+      // Only field we don't need is the description in the campaign.sol
+      await this.callToCampaignFactory(
+        this.campaignName,
+        this.beneficiaryURL,
+        this.endDate,
+        this.beneficiaryAddress,
+        this.selectedWalletAddress, // Perhaps to be removed if we using the sender address
+        this.targetAmount
+      )
       const delay = ms => new Promise(res => setTimeout(res, ms), rej => console.error(rej))
       await delay(3000)
       this.isLoading = false
       this.activeStep = 3
       this.isCompleted = true
+    },
+    async callToCampaignFactory (
+      campaignName,
+      beneficiaryUrl,
+      endDate,
+      beneficiaryAddress,
+      campaignOwnerAddress,
+      targetAmount
+    ) {
+      // Owner address of CampaignFactory.sol
+      const ourAccountAddress = '0x5351fA26F34C6cc71001f8C39d440E2447746D1D'
+
+      console.log(campaignName)
+      console.log(beneficiaryUrl)
+      // Format date to timestamp
+      const timestamp = Date.parse(endDate) / 1000
+      console.log(timestamp)
+      console.log(beneficiaryAddress)
+      console.log(campaignOwnerAddress)
+      // 1 eth = 1000000000000000000 wei
+      const targetAmountInWei = targetAmount * 1000000000000000000
+      console.log(targetAmountInWei)
+
+      // Need to find a way to abstract this part out, since its common use
+      // Web3 instance connecting to ganache
+      const ganacheEndpoint = 'http://127.0.0.1:8545'
+      const web3 = new this.$Web3(new this.$Web3(ganacheEndpoint))
+      console.log(web3)
+      // Gets the network ID of the ganache
+      const networkId = await web3.eth.net.getId()
+      // End of web3 instance and network id
+
+      // Creates the CampaignFactory Instance
+      const contract = new web3.eth.Contract(
+        factoryArtifacts.abi,
+        factoryArtifacts.networks[networkId].address
+      )
+
+      // Calls the startCampaign() method
+      const res = await contract.methods.startCampaign(
+        campaignName,
+        beneficiaryUrl,
+        timestamp,
+        beneficiaryAddress,
+        campaignOwnerAddress,
+        String(targetAmountInWei)
+      ).send({
+        from: ourAccountAddress,
+        gas: 2500000
+      })
+      const newCampaignAddress = res.events.CampaignStarted.returnValues.campaignAddress
+      console.log(newCampaignAddress)
+      this.sanityCheck(newCampaignAddress)
+    },
+    async sanityCheck (newCampaignAddress) {
+      // Get the created campaign's name.
+
+      // Need to find a way to abstract this part out, since its common use
+      // Web3 instance connecting to ganache
+      const ganacheEndpoint = 'http://127.0.0.1:8545'
+      const web3 = new this.$Web3(new this.$Web3(ganacheEndpoint))
+      console.log(web3)
+
+      const contract = new web3.eth.Contract(
+        campaignArtifacts.abi,
+        newCampaignAddress
+      )
+      const res = await contract.methods.getCampaignName().call()
+      console.log(res)
+    },
+    callToBackend () {
+      // Call to backend side
+      console.log('Replace with backend communications')
     }
   }
 }
