@@ -1,5 +1,7 @@
 import { NotificationProgrammatic as Notification } from 'buefy'
 
+import factoryArtifacts from '../../blockchain/build/contracts/CampaignFactory.json'
+
 export const state = () => ({
   isConnected: false,
   hasPreviouslyConnected: (window.localStorage.getItem('hasPreviouslyConnected') === 'true') || false
@@ -72,5 +74,55 @@ export const actions = {
       this.commit('setPreviouslyConnected', false)
       return false
     }
+  },
+  async callToCampaignFactory (
+    context,
+    {
+      campaignName,
+      beneficiaryUrl,
+      endDate,
+      beneficiaryAddress,
+      campaignOwnerAddress,
+      targetAmount
+    }
+  ) {
+    // Format date to timestamp
+    let timestamp
+    if (endDate !== null) {
+      timestamp = Date.parse(endDate) / 1000
+    } else {
+      // Set an "impossible" end date - Tuesday, January 19, 2038 3:14:07 AM
+      timestamp = 2147483647
+    }
+
+    // 1 eth = 1000000000000000000 wei
+    const targetAmountInWei = targetAmount * 1000000000000000000
+    // Need to find a way to abstract this part out, since its common use
+    // Web3 instance connecting to ganache
+    const web3 = new this.$Web3(new this.$Web3(this.$config.ganache_url))
+    // Gets the network ID of the ganache
+    const networkId = await web3.eth.net.getId()
+    // End of web3 and necessary set ups
+
+    // Creates the CampaignFactory Instance
+    const contract = new web3.eth.Contract(
+      factoryArtifacts.abi,
+      factoryArtifacts.networks[networkId].address
+    )
+
+    // Calls the startCampaign() method
+    const res = await contract.methods.startCampaign(
+      campaignName,
+      beneficiaryUrl,
+      timestamp,
+      beneficiaryAddress,
+      campaignOwnerAddress,
+      String(targetAmountInWei)
+    ).send({
+      from: campaignOwnerAddress,
+      gas: 2500000
+    })
+    const newCampaignAddress = res.events.CampaignStarted.returnValues.campaignAddress
+    return (newCampaignAddress)
   }
 }
