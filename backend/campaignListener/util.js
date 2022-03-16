@@ -5,7 +5,6 @@ function subscribeToContractEvents (contractInstance, event, callback) {
 }
 
 async function getCampaignDetails (campaignInstance) {
-
   const res = await Promise.all([
     campaignInstance.getCampaignName.call(),
     campaignInstance.getorganisationUrl.call(),

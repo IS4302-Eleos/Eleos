@@ -4,15 +4,13 @@ import chai from 'chai'
 import Web3 from 'web3'
 import * as fs from 'fs'
 import contract from '@truffle/contract'
-import { BADNAME } from 'dns'
 
 const assert = chai.assert
 
-describe('Testing campaignListener utils',  () => {
-
+describe('Testing campaignListener utils', () => {
   let accounts, campaignFactory
   let contractOwner, beneficiary, campaignOwner
-  let campaignName, organisationUrl, endTimestamp, beneficiaryAddress, campaignOwnerAddress, targetDonationAmount
+  let campaignAddress, campaignName, organisationUrl, endTimestamp, beneficiaryAddress, campaignOwnerAddress, targetDonationAmount
 
   const provider = new Web3.providers.WebsocketProvider('ws://localhost:8545')
   const web3 = new Web3(provider)
@@ -34,14 +32,11 @@ describe('Testing campaignListener utils',  () => {
     beneficiaryAddress = beneficiary
     campaignOwnerAddress = campaignOwner
     targetDonationAmount = 10
-  });
-
-
+  })
 
   it('subscribeToContractEvents should retrieve ownerAddress and campaignAddress from CampaignStarted event', async () => {
-
     const eventName = 'CampaignStarted'
-    let address, testOwnerAddress, testCampaignAddress
+    let testOwnerAddress, testCampaignAddress
 
     // Listen for new events
     subscribeToContractEvents(
@@ -62,35 +57,22 @@ describe('Testing campaignListener utils',  () => {
       campaignOwnerAddress,
       targetDonationAmount,
       { from: contractOwner }
-    );
+    )
 
-    address = tx.logs[0].args.campaignAddress;
+    campaignAddress = tx.logs[0].args.campaignAddress
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 1000))
 
     assert.equal(testOwnerAddress, campaignOwner)
-    assert.equal(testCampaignAddress, address)
-
-
+    assert.equal(testCampaignAddress, campaignAddress)
   })
 
   it('getCampaignDetails should retrieve details of new campaign', async () => {
+    const campaignInstance = await campaignContract.at(campaignAddress)
 
-    const tx = await campaignFactory.startCampaign(
-      campaignName,
-      organisationUrl,
-      endTimestamp,
-      beneficiaryAddress,
-      campaignOwnerAddress,
-      targetDonationAmount, { from: contractOwner }
-    )
+    const campaignInfo = await getCampaignDetails(campaignInstance)
 
-    const address = tx.logs[0].args.campaignAddress;
-    const campaignInstance = await campaignContract.at(address)
-
-    const campaignInfo = await getCampaignDetails(campaignInstance);
-
-    assert.equal(address, campaignInfo.campaignAddress)
+    assert.equal(campaignAddress, campaignInfo.campaignAddress)
     assert.equal(campaignName, campaignInfo.campaignName)
     assert.equal(organisationUrl, campaignInfo.organisationUrl)
     assert.equal(endTimestamp, campaignInfo.endTimestamp)
