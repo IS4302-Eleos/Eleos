@@ -180,7 +180,7 @@
         <b-button :disabled="isLoading" @click="moveBack">
           Back
         </b-button>
-        <b-button type="is-success" :disabled="!isValidated || isLoading || !isValidChain" :loading="isLoading" @click="deploy">
+        <b-button type="is-success" :disabled="!isValidated || isLoading || !isCorrectChain" :loading="isLoading" @click="deploy">
           Deploy
         </b-button>
       </b-step-item>
