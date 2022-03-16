@@ -1,7 +1,7 @@
 import chai, { assert } from 'chai'
 import chaiHttp from 'chai-http'
 import chaiGraphql from 'chai-graphql'
-import app  from '../index.js'
+import app from '../index.js'
 import Campaign from '../src/models/campaign.js'
 import { jsonToGraphQLQuery } from 'json-to-graphql-query'
 import mongoose from 'mongoose'

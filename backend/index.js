@@ -25,7 +25,7 @@ router.all('/graphql', graphqlHTTP({
 }))
 
 app.use(koaBody()).use(router.routes()).use(router.allowedMethods())
-var server = app.listen(config.app.port)
+const server = app.listen(config.app.port)
 export default {
   server: app.callback(),
   instance: server
