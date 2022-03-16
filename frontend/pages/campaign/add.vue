@@ -13,7 +13,7 @@
       :has-navigation="false"
       mobile-mode="minimalist"
     >
-      <b-step-item step="0" label="Select Wallet" :clickable="!isLoading && !isCompleted">
+      <b-step-item step="0" label="Select Wallet" :clickable="false">
         <h1 class="title has-text-centered">
           Select Wallet
         </h1>
@@ -68,7 +68,7 @@
           </b-button>
         </div>
       </b-step-item>
-      <b-step-item step="1" label="Basic Info" :clickable="!isLoading && !isCompleted">
+      <b-step-item step="1" label="Basic Info" :clickable="false">
         <div>
           <h1 class="title has-text-centered">
             Basic Information
@@ -127,7 +127,7 @@
         </b-button>
       </b-step-item>
 
-      <b-step-item step="2" label="Review & Deploy" :clickable="!isLoading && !isCompleted">
+      <b-step-item step="2" label="Review & Deploy" :clickable="false">
         <div>
           <h1 class="title has-text-centered">
             Review & Deploy
@@ -177,7 +177,7 @@
         </b-button>
       </b-step-item>
 
-      <b-step-item step="3" label="Finish" :clickable="!isLoading">
+      <b-step-item step="3" label="Finish" :clickable="false">
         <div>
           <h1 class="title has-text-centered">
             Contract Deployed!
@@ -230,7 +230,7 @@ export default {
       endDate: null,
       isLoading: false,
       isCompleted: false,
-      campaignPath: '/campaign/asd/info'
+      campaignPath: ''
     }
   },
   computed: {
@@ -304,8 +304,6 @@ export default {
         campaignDetails
       )
       this.campaignPath = '/campaign/' + newCampaignAddress + '/info'
-      const delay = ms => new Promise(res => setTimeout(res, ms), rej => console.error(rej))
-      await delay(3000)
       this.isLoading = false
       this.activeStep = 3
       this.isCompleted = true
