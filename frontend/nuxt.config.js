@@ -51,15 +51,11 @@ export default {
   publicRuntimeConfig: {
     api_url: process.env.API_BASEURL || 'http://localhost:3000'
   },
+
   privateRuntimeConfig: {
   },
+
   router: {
-    extendRoutes (routes, resolve) {
-      routes.push({
-        name: 'redirect',
-        path: '*',
-        component: resolve(__dirname, 'pages/index')
-      })
-    }
+    middleware: ['route']
   }
 }
