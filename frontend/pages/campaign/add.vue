@@ -8,6 +8,14 @@
         Please key in some neccessary information on your campaign.
       </h4>
     </div>
+    <article v-if="!isCorrectChain" class="message is-danger">
+      <div class="message-header">
+        <p>Incorrect chain network detected!</p>
+      </div>
+      <div class="message-body">
+        Please ensure that the chain network you have selected in your provider matches the chain used for Eleos.
+      </div>
+    </article>
     <b-steps
       v-model="activeStep"
       :has-navigation="false"
@@ -172,7 +180,7 @@
         <b-button :disabled="isLoading" @click="moveBack">
           Back
         </b-button>
-        <b-button type="is-success" :disabled="!isValidated || isLoading" :loading="isLoading" @click="deploy">
+        <b-button type="is-success" :disabled="!isValidated || isLoading || !isValidChain" :loading="isLoading" @click="deploy">
           Deploy
         </b-button>
       </b-step-item>
@@ -197,6 +205,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   name: 'AddPage',
   beforeRouteLeave (to, from, next) {
@@ -218,6 +228,7 @@ export default {
   },
   data () {
     return {
+      isValidChain: true,
       walletAddresses: [],
       selectedWalletAddress: '',
       externalAddress: '',
@@ -234,6 +245,9 @@ export default {
     }
   },
   computed: {
+    ...mapState([
+      'isCorrectChain'
+    ]),
     isValidated () {
       if (this.beneficiaryAddress === null || this.beneficiaryAddress.length === 0) {
         return false
@@ -299,14 +313,22 @@ export default {
         campaignOwnerAddress: this.selectedWalletAddress, // Perhaps to be removed if we using the sender address
         targetAmount: this.targetAmount
       }
-      const newCampaignAddress = await this.$store.dispatch(
-        'callToCampaignFactory',
-        campaignDetails
-      )
-      this.campaignPath = '/campaign/' + newCampaignAddress + '/info'
-      this.isLoading = false
-      this.activeStep = 3
-      this.isCompleted = true
+
+      try {
+        // Check if the user is using the correct chain and prompt to switch.
+        // await this.$store.dispatch('_switchChains')
+        const newCampaignAddress = await this.$store.dispatch(
+          'callToCampaignFactory',
+          campaignDetails
+        )
+        this.campaignPath = '/campaign/' + newCampaignAddress + '/info'
+        this.isLoading = false
+        this.activeStep = 3
+        this.isCompleted = true
+      } catch (err) {
+        this.isLoading = false
+        console.error(err)
+      }
     }
   }
 }
