@@ -321,7 +321,13 @@ export default {
       const ourAccountAddress = '0x5351fA26F34C6cc71001f8C39d440E2447746D1D'
 
       // Format date to timestamp
-      const timestamp = Date.parse(endDate) / 1000
+      let timestamp
+      if (endDate !== null) {
+        timestamp = Date.parse(endDate) / 1000
+      } else {
+        // Set an "impossible" end date - Tuesday, January 19, 2038 3:14:07 AM
+        timestamp = 2147483647
+      }
       // 1 eth = 1000000000000000000 wei
       const targetAmountInWei = targetAmount * 1000000000000000000
 
