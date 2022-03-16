@@ -1,3 +1,5 @@
+import Campaign from '../src/models/campaign.js'
+
 function subscribeToContractEvents (contractInstance, event, callback) {
   const subscription = contractInstance[event]({})
   subscription.on('data', callback)
@@ -18,11 +20,17 @@ async function getCampaignDetails (campaignInstance) {
     campaignAddress: campaignInstance.address,
     campaignName: res[0],
     organisationUrl: res[1],
-    endTimestamp: res[2],
+    endTimestamp: res[2].toNumber(),
     beneficiaryAddress: res[3],
     campaignOwnerAddress: res[4],
     campaignDescription: res[5]
   }
 }
 
-export { subscribeToContractEvents, getCampaignDetails }
+async function storeCampaignDetails (campaignInstance) {
+  const details = await getCampaignDetails(campaignInstance)
+  const campaignDocument = new Campaign(details)
+  return await campaignDocument.save()
+}
+
+export { subscribeToContractEvents, getCampaignDetails, storeCampaignDetails }

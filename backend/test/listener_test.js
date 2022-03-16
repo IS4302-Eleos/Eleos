@@ -1,10 +1,12 @@
 
-import { subscribeToContractEvents, getCampaignDetails } from '../campaignListener/util.js'
+import { subscribeToContractEvents, getCampaignDetails, storeCampaignDetails } from '../campaignListener/util.js'
 import chai from 'chai'
 import Web3 from 'web3'
 import * as fs from 'fs'
 import contract from '@truffle/contract'
 import config from '../config.js'
+import Campaign from '../src/models/campaign.js'
+import initdb from '../src/database.js'
 
 const assert = chai.assert
 
@@ -82,5 +84,13 @@ describe('Testing campaignListener utils', () => {
     assert.equal(beneficiaryAddress, campaignInfo.beneficiaryAddress)
     assert.equal(campaignOwnerAddress, campaignInfo.campaignOwnerAddress)
     assert.equal(campaignDescription, campaignInfo.campaignDescription)
+  })
+
+  it('storeCampaignDetails should write details of new campaign into database', async () => {
+    initdb()
+    const campaignInstance = await campaignContract.at(campaignAddress)
+    const res = await storeCampaignDetails(campaignInstance)
+    assert.equal(res.campaignName, campaignName)
+    await Campaign.deleteMany({})
   })
 })
