@@ -4,6 +4,7 @@ import chai from 'chai'
 import Web3 from 'web3'
 import * as fs from 'fs'
 import contract from '@truffle/contract'
+import config from '../config.js'
 
 const assert = chai.assert
 
@@ -12,10 +13,10 @@ describe('Testing campaignListener utils', () => {
   let contractOwner, beneficiary, campaignOwner
   let campaignAddress, campaignName, organisationUrl, endTimestamp, beneficiaryAddress, campaignOwnerAddress, targetDonationAmount
 
-  const provider = new Web3.providers.WebsocketProvider('ws://localhost:8545')
+  const provider = new Web3.providers.WebsocketProvider(`ws://${config.bc.host}:${config.bc.port}`)
   const web3 = new Web3(provider)
-  const campaignFactoryContract = contract(JSON.parse(fs.readFileSync('../blockchain/build/contracts/CampaignFactory.json')))
-  const campaignContract = contract(JSON.parse(fs.readFileSync('../blockchain/build/contracts/Campaign.json')))
+  const campaignFactoryContract = contract(JSON.parse(fs.readFileSync(config.bc.campaignFactoryPath)))
+  const campaignContract = contract(JSON.parse(fs.readFileSync(config.bc.campaignPath)))
   campaignFactoryContract.setProvider(provider)
   campaignContract.setProvider(provider)
 

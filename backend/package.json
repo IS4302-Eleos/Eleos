@@ -23,7 +23,7 @@
     "koa": "^2.13.4",
     "koa-body": "^4.2.0",
     "koa-graphql": "^0.12.0",
-    "mongoose": "^6.2.5"
+    "mongoose": "^6.2.5",
     "web3": "^1.7.1"
   },
   "devDependencies": {
