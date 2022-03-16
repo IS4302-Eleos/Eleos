@@ -1,10 +1,12 @@
 import chai, { assert } from 'chai'
 import chaiHttp from 'chai-http'
 import chaiGraphql from 'chai-graphql'
-import server from '../index.js'
+import app  from '../index.js'
 import Campaign from '../src/models/campaign.js'
 import { jsonToGraphQLQuery } from 'json-to-graphql-query'
+import mongoose from 'mongoose'
 
+const server = app.server
 chai.should()
 chai.use(chaiGraphql)
 chai.use(chaiHttp)
@@ -49,6 +51,11 @@ describe('Campaigns test ', () => {
       campaignDescription: 'This is a test campaign 3'
     })
     await campaign3.save()
+  })
+
+  after(async () => {
+    mongoose.connection.close()
+    app.instance.close()
   })
 
   describe('Get all campaigns', () => {
