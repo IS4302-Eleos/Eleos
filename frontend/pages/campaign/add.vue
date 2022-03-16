@@ -317,9 +317,6 @@ export default {
       campaignOwnerAddress,
       targetAmount
     ) {
-      // Owner address of CampaignFactory.sol, should be global use
-      const ourAccountAddress = '0x5351fA26F34C6cc71001f8C39d440E2447746D1D'
-
       // Format date to timestamp
       let timestamp
       if (endDate !== null) {
@@ -333,11 +330,14 @@ export default {
 
       // Need to find a way to abstract this part out, since its common use
       // Web3 instance connecting to ganache
-      const ganacheEndpoint = 'http://127.0.0.1:8545'
-      const web3 = new this.$Web3(new this.$Web3(ganacheEndpoint))
+      const web3 = new this.$Web3(new this.$Web3(this.$config.ganache_url))
+      // Dynamically get the list of accounts from ganache
+      const ganacheAccounts = await web3.eth.personal.getAccounts()
+      // Owner/Deployer address of CampaignFactory.sol
+      const ourAccountAddress = ganacheAccounts[0]
       // Gets the network ID of the ganache
       const networkId = await web3.eth.net.getId()
-      // End of web3 instance and network id
+      // End of web3 and necessary set ups
 
       // Creates the CampaignFactory Instance
       const contract = new web3.eth.Contract(
@@ -366,8 +366,7 @@ export default {
 
       // Need to find a way to abstract this part out, since its common use
       // Web3 instance connecting to ganache
-      const ganacheEndpoint = 'http://127.0.0.1:8545'
-      const web3 = new this.$Web3(new this.$Web3(ganacheEndpoint))
+      const web3 = new this.$Web3(new this.$Web3(this.$config.ganache_url))
 
       const contract = new web3.eth.Contract(
         campaignArtifacts.abi,
@@ -375,9 +374,6 @@ export default {
       )
       const res = await contract.methods.getCampaignName().call()
       console.log(res)
-    },
-    callToBackend () {
-      // Call to backend side
     }
   }
 }
