@@ -263,11 +263,6 @@ export default {
   async mounted () {
     this.walletAddresses = await this.$store.dispatch('safelyRequestAccounts')
     this.selectedWalletAddress = this.walletAddresses[0]
-    const ganacheEndpoint = 'http://127.0.0.1:8545'
-    const web3 = new this.$Web3(new this.$Web3(ganacheEndpoint))
-    console.log(web3)
-    const networkId = await web3.eth.net.getId()
-    console.log(networkId)
   },
   methods: {
     isValidURL (val) {
