@@ -5,7 +5,7 @@ import { graphqlHTTP } from 'koa-graphql'
 import config from './config.js'
 import schema from './src/graphql/schema.js'
 import initdb from './src/database.js'
-import { NoSchemaIntrospectionCustomRule } from 'graphql';
+import { NoSchemaIntrospectionCustomRule } from 'graphql'
 
 // Initialize the database and connect to mongodb
 initdb()
@@ -26,3 +26,5 @@ router.all('/graphql', graphqlHTTP({
 
 app.use(koaBody()).use(router.routes()).use(router.allowedMethods())
 app.listen(config.app.port)
+
+export default app.callback()
