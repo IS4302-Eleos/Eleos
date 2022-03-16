@@ -28,7 +28,7 @@ campaignFactoryContract.deployed().then(campaignFactory => {
       const returnValues = event.returnValues
       const ownerAddress = returnValues.ownerAddress
       const campaignAddress = returnValues.campaignAddress
-      console.log(`Wallet ${ownerAddress} deploy to contract @ ${campaignAddress}`)
+      console.log(`Owner "${ownerAddress}" deployed contract @ "${campaignAddress}"`)
     }
   )
   console.log('Subscribed')

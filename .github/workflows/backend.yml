@@ -35,15 +35,15 @@ jobs:
         with:
           node-version: '16'
 
-      - name: Install dependencies
+      - name: Install dependencies - Blockahin
         working-directory: ./blockchain
         run: npm install
 
       - name: Truffle
         working-directory: ./blockchain
         run: |
-          npx truffle compile
-          npx truffle migrate
+          npm run build
+          npm run migrate
 
       - name: Install dependencies
         working-directory: ./backend

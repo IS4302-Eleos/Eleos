@@ -33,8 +33,9 @@ describe('addListener', async () => {
     const campaignOwnerAddress = campaignOwner
     const targetDonationAmount = 10
 
-    let ownerAddress, campaignAddress;
+    let ownerAddress = 0; let campaignAddress = 0; let address = 0
 
+    // Listen for new events
     addListener(
       campaignFactory,
       eventName,
@@ -42,11 +43,13 @@ describe('addListener', async () => {
         const returnValues = event.returnValues
         ownerAddress = returnValues.ownerAddress
         campaignAddress = returnValues.campaignAddress
-        
+
+        assert.equal(ownerAddress, campaignOwner)
+        assert.equal(campaignAddress, address)
       }
     )
 
-    const tx = await campaignFactory.startCampaign(
+    address = await campaignFactory.startCampaign.call(
       campaignName,
       organisationUrl,
       endTimestamp,
@@ -54,10 +57,5 @@ describe('addListener', async () => {
       campaignOwnerAddress,
       targetDonationAmount, { from: contractOwner }
     )
-
-    await new Promise(r => setTimeout(r, 2000));
-
-    assert.equal(ownerAddress, campaignOwner)
-    assert.equal(campaignAddress, tx.logs[0].args.campaignAddress)
   })
 })
