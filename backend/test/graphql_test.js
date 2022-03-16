@@ -54,7 +54,7 @@ describe('Campaigns test ', () => {
   describe('Get all campaigns', () => {
     it('API alive check', async () => {
       // API status check
-      const res = await chai.request(server).get('/graphql')
+      const res = await chai.request(server).get('/')
       res.should.have.status(200)
     })
 
