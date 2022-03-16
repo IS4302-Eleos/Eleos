@@ -10,7 +10,8 @@ async function getCampaignDetails (campaignInstance) {
     campaignInstance.getorganisationUrl.call(),
     campaignInstance.getEndTimeStamp.call(),
     campaignInstance.getBeneficiaryAddress.call(),
-    campaignInstance.getCampaignOwnerAddress.call()
+    campaignInstance.getCampaignOwnerAddress.call(),
+    campaignInstance.getCampaignDescription.call()
   ])
 
   return {
@@ -19,7 +20,8 @@ async function getCampaignDetails (campaignInstance) {
     organisationUrl: res[1],
     endTimestamp: res[2],
     beneficiaryAddress: res[3],
-    campaignOwnerAddress: res[4]
+    campaignOwnerAddress: res[4],
+    campaignDescription: res[5]
   }
 }
 

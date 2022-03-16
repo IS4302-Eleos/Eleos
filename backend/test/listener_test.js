@@ -11,7 +11,7 @@ const assert = chai.assert
 describe('Testing campaignListener utils', () => {
   let accounts, campaignFactory
   let contractOwner, beneficiary, campaignOwner
-  let campaignAddress, campaignName, organisationUrl, endTimestamp, beneficiaryAddress, campaignOwnerAddress, targetDonationAmount
+  let campaignAddress, campaignName, organisationUrl, endTimestamp, beneficiaryAddress, campaignOwnerAddress, targetDonationAmount, campaignDescription
 
   const provider = new Web3.providers.WebsocketProvider(`ws://${config.bc.host}:${config.bc.port}`)
   const web3 = new Web3(provider)
@@ -33,6 +33,7 @@ describe('Testing campaignListener utils', () => {
     beneficiaryAddress = beneficiary
     campaignOwnerAddress = campaignOwner
     targetDonationAmount = 10
+    campaignDescription = "It's a cool charity"
   })
 
   it('subscribeToContractEvents should retrieve ownerAddress and campaignAddress from CampaignStarted event', async () => {
@@ -57,6 +58,7 @@ describe('Testing campaignListener utils', () => {
       beneficiaryAddress,
       campaignOwnerAddress,
       targetDonationAmount,
+      campaignDescription,
       { from: contractOwner }
     )
 
@@ -79,5 +81,6 @@ describe('Testing campaignListener utils', () => {
     assert.equal(endTimestamp, campaignInfo.endTimestamp)
     assert.equal(beneficiaryAddress, campaignInfo.beneficiaryAddress)
     assert.equal(campaignOwnerAddress, campaignInfo.campaignOwnerAddress)
+    assert.equal(campaignDescription, campaignInfo.campaignDescription)
   })
 })
