@@ -15,8 +15,8 @@ export default {
   bc: {
     host: process.env.GANACHE_HOST || 'localhost',
     port: process.env.GANACHE_PORT || 8545,
-    campaignPath: process.env.CAMPAIGN_CONTRACT_PATH,
-    campaignFactoryPath: process.env.CAMPAIGN_FACTORY_CONTRACT_PATH,
-    campaignFactoryEvent: process.env.CAMPAIGN_FACTORY_CONTRACT_EVENT
+    campaignPath: process.env.CAMPAIGN_CONTRACT_PATH || '../blockchain/build/contracts/CampaignFactory.json',
+    campaignFactoryPath: process.env.CAMPAIGN_FACTORY_CONTRACT_PATH || '../blockchain/build/contracts/Campaign.json',
+    campaignFactoryEvent: process.env.CAMPAIGN_FACTORY_CONTRACT_EVENT || 'CampaignStarted'
   }
 }
