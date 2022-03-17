@@ -26,6 +26,7 @@ contract("CampaignFactory", (accounts) => {
     const beneficiaryAddress = beneficiary;
     const campaignOwnerAddress = campaignOwner;
     const targetDonationAmount = 10;
+    const campaignDescription = "It's a cool charity";
 
     const tx = await campaignFactoryInstance.startCampaign(
       campaignName,
@@ -33,7 +34,8 @@ contract("CampaignFactory", (accounts) => {
       endTimestamp,
       beneficiaryAddress,
       campaignOwnerAddress,
-      targetDonationAmount
+      targetDonationAmount,
+      campaignDescription
     );
 
     // Watch for CampaignStarted Event
@@ -43,6 +45,6 @@ contract("CampaignFactory", (accounts) => {
     const campaignAddress = tx.logs[0].args.campaignAddress;
     campaignInstance = await Campaign.at(campaignAddress);
 
-    console.log("Campaign has been deployed at " + campaignInstance);
+    console.log("Campaign has been deployed at " + campaignInstance.address);
   });
 });

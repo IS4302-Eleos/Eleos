@@ -27,6 +27,7 @@ contract("Campaign", (accounts) => {
     const beneficiaryAddress = beneficiary;
     const campaignOwnerAddress = campaignOwner;
     const targetDonationAmount = 10;
+    const campaignDescription = "It's a cool charity";
 
     // Start new campaign
     const tx = await campaignFactoryInstance.startCampaign(
@@ -35,7 +36,8 @@ contract("Campaign", (accounts) => {
       endTimestamp,
       beneficiaryAddress,
       campaignOwnerAddress,
-      targetDonationAmount
+      targetDonationAmount,
+      campaignDescription
     );
 
     // Update new campaign instance
