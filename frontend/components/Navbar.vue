@@ -20,7 +20,7 @@
       </b-navbar-item>
       <b-navbar-item tag="div">
         <div class="buttons">
-          <b-button v-if="isConnected" type="is-primary" icon-left="plus-circle">
+          <b-button v-if="isConnected" type="is-primary" icon-left="plus-circle" tag="NuxtLink" to="/campaign/add">
             Start a Campaign
           </b-button>
           <b-button type="is-success" :disabled="!hasProvider || isConnected || isLoading" :loading="isLoading" @click="login">

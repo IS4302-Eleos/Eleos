@@ -61,6 +61,8 @@ export default {
 
   publicRuntimeConfig: {
     api_url: process.env.API_BASEURL || 'http://localhost:3000',
+    ganache_url: process.env.GANACHE_BASEURL || 'http://localhost:8545',
+    chain_id: process.env.CHAIN_ID || '0x539' // Chain ID: 1337,
     graphql: {
       clients: {
         default: {
@@ -68,7 +70,6 @@ export default {
         }
       }
     }
-
   },
 
   privateRuntimeConfig: {
