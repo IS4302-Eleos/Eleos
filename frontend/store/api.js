@@ -1,11 +1,18 @@
 import { jsonToGraphQLQuery } from 'json-to-graphql-query'
 
 export const state = () => ({
-  campagins: []
+  campaigns: []
 })
 
 export const mutations = {
-
+  setCampaigns (state, campaigns) {
+    campaigns.forEach((campaign) => {
+      if (!campaign.donations) {
+        campaign.donations = 0
+      }
+    })
+    state.campaigns = campaigns
+  }
 }
 
 export const actions = {
@@ -23,7 +30,9 @@ export const actions = {
         }
       }
     }
-    return await this.$graphql.default.request(jsonToGraphQLQuery(query))
+    const res = await this.$graphql.default.request(jsonToGraphQLQuery(query))
+    commit('setCampaigns', res.campaigns)
+    return res.campaigns
   },
   async getCampaginsByDate ({ commit }, date) {
     const query = {
@@ -48,6 +57,8 @@ export const actions = {
         }
       }
     }
-    return await this.$graphql.default.request(jsonToGraphQLQuery(query))
+    const res = await this.$graphql.default.request(jsonToGraphQLQuery(query))
+    commit('setCampaigns', res.campaigns)
+    return res.campaigns
   }
 }

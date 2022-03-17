@@ -35,9 +35,6 @@
       >
         No other internal dependency
       </card>
-      <button @click="onClick">
-        Hello
-      </button>
     </div>
   </section>
 </template>
