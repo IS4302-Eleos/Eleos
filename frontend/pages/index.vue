@@ -49,16 +49,6 @@ export default {
   name: 'IndexPage',
   components: {
     Card
-  },
-  methods: {
-    async onClick () {
-      try {
-        const res = await this.$store.dispatch('api/getCampaginsByDate', new Date())
-        console.log(res)
-      } catch (e) {
-        console.error('Invalid date time format')
-      }
-    }
   }
 }
 </script>
