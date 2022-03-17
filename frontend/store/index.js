@@ -1,6 +1,8 @@
 import { NotificationProgrammatic as Notification } from 'buefy'
 import Web3 from 'web3'
 import factoryArtifacts from '../../blockchain/build/contracts/CampaignFactory.json'
+// Please replace with
+// import factoryArtifacts from 'static/CampaignFactory.json'
 
 export const state = () => ({
   web3: null,
