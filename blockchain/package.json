@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "truffle test",
-    "build": "rm build/contracts/Campaign*.json 2> /dev/null ; truffle compile",
+    "build": "rm build/contracts/*.json 2> /dev/null ; truffle compile",
     "migrate": "truffle migrate; cp build/contracts/CampaignFactory.json ../frontend/static/",
     "lint:js": "eslint --ext \".js\" .",
     "lint": "npm run lint:js && solhint contracts/**/*.sol",
