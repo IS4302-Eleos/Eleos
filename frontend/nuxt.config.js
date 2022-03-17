@@ -42,6 +42,7 @@ export default {
     'nuxt-buefy',
     '@nuxt/http',
     'nuxt-web3',
+    '@nuxtjs/dayjs'
     'nuxt-graphql-request'
   ],
   graphql: {
