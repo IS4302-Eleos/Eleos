@@ -152,7 +152,7 @@ export const actions = {
       timestamp = Date.parse(endDate) / 1000
     } else {
       // Set an "impossible" end date
-      timestamp = Math.pow(2, 63) - 1
+      timestamp = String(Math.pow(2, 63) - 1)
     }
 
     // 1 eth = 1000000000000000000 wei
