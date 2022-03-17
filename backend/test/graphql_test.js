@@ -44,7 +44,7 @@ describe('Campaigns test ', () => {
       campaignAddress: '0xdeadbeef2ad',
       campaignName: 'Test campaign 3',
       organisationUrl: 'Eleos',
-      endTimestamp: '2023-03-15T16:00:00Z',
+      endTimestamp: '2023-03-14T16:00:00Z',
       beneficiaryAddress: '0xdeadc0dedeadc0de',
       campaignOwnerAddress: '0xc0debeefdead',
       targetDonationAmount: 9999,
@@ -106,7 +106,7 @@ describe('Campaigns test ', () => {
           {
             campaignAddress: '0xdeadbeef2ad',
             campaignName: 'Test campaign 3',
-            endTimestamp: '2023-03-15T16:00:00.000Z',
+            endTimestamp: '2023-03-14T16:00:00.000Z',
             campaignOwnerAddress: '0xc0debeefdead'
           }
         ]
@@ -158,7 +158,7 @@ describe('Campaigns test ', () => {
           {
             campaignAddress: '0xdeadbeef2ad',
             campaignName: 'Test campaign 3',
-            endTimestamp: '2023-03-15T16:00:00.000Z',
+            endTimestamp: '2023-03-14T16:00:00.000Z',
             campaignOwnerAddress: '0xc0debeefdead'
           }
         ]
