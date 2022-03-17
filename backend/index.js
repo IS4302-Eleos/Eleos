@@ -13,7 +13,9 @@ initdb()
 const app = new Koa()
 const router = new Router()
 
+// Allow cross origin requests
 app.use(cors())
+
 // routes to be developed
 router.get('/', async (ctx) => {
   ctx.body = JSON.stringify({ api_version: '1.0.0' })

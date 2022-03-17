@@ -5,6 +5,7 @@ export const state = () => ({
 })
 
 export const mutations = {
+  // Setting campaigns to state variables
   setCampaigns (state, campaigns) {
     campaigns.forEach((campaign) => {
       if (!campaign.donations) {
@@ -16,7 +17,8 @@ export const mutations = {
 }
 
 export const actions = {
-  async getCampagins ({ commit }) {
+  // Getting all the campaigns from the database
+  async getCampaigns ({ commit }) {
     const query = {
       query: {
         campaigns: {
@@ -34,7 +36,9 @@ export const actions = {
     commit('setCampaigns', res.campaigns)
     return res.campaigns
   },
-  async getCampaginsByDate ({ commit }, date) {
+  // Getting the campaign from the database filtered by a date
+  // Note this function expects a nodejs date object
+  async getCampaignsByDate ({ commit }, date) {
     const query = {
       query: {
         campaigns: {
