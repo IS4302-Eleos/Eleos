@@ -13,14 +13,14 @@ jobs:
         ports:
           - 8545:8545
 
-    steps: 
+    steps:
       - name: Clone repo
         uses: actions/checkout@v2
-      
+
       - name: Merge to master
         if: ${{ !env.ACT }}
         run: git checkout --progress --force ${{ github.sha }}
-      
+
       - name: Setup node (If running in Github Actions)
         if: ${{ !env.ACT }}
         uses: actions/setup-node@v2
@@ -44,6 +44,7 @@ jobs:
         run: |
           npx truffle compile
           npx truffle migrate
+          cp build/contracts/CampaignFactory.json ../frontend/static/
 
       - name: Install dependencies
         working-directory: ./frontend
@@ -52,7 +53,7 @@ jobs:
       - name: Run linter
         working-directory: ./frontend
         run: npm run lint
-      
+
       - name: Run tests
         working-directory: ./frontend
         run: npm run test
