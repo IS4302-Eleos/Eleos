@@ -1,7 +1,15 @@
 name: Test Backend
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - 'backend/**'
+
 
 jobs:
+
   backend-ci:
 
     runs-on: ubuntu-latest
@@ -29,7 +37,15 @@ jobs:
         if: ${{ !env.ACT }}
         run: git checkout --progress --force ${{ github.sha }}
       
-      - name: Setup node (If running in Github Actions)
+      - name: Setup node for blockchain (If running in Github Actions)
+        if: ${{ !env.ACT }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: blockchain/package-lock.json
+
+      - name: Setup node for backend (If running in Github Actions)
         if: ${{ !env.ACT }}
         uses: actions/setup-node@v2
         with:
@@ -42,6 +58,16 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16'
+
+      - name: Install dependencies - Blockchain
+        working-directory: ./blockchain
+        run: npm install
+
+      - name: Truffle
+        working-directory: ./blockchain
+        run: |
+          npm run build
+          npm run migrate
 
       - name: Install dependencies
         working-directory: ./backend

@@ -1,10 +1,24 @@
 name: Test Frontend
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - 'frontend/**'    
+
 
 jobs:
   frontend-ci:
 
     runs-on: ubuntu-latest
+
+    services:
+
+      ganache:
+        image: trufflesuite/ganache-cli
+        ports:
+          - 8545:8545
 
     steps: 
       - name: Clone repo
@@ -27,6 +41,16 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16'
+
+      - name: Install dependencies
+        working-directory: ./blockchain
+        run: npm install
+
+      - name: Truffle
+        working-directory: ./blockchain
+        run: |
+          npx truffle compile
+          npx truffle migrate
 
       - name: Install dependencies
         working-directory: ./frontend

@@ -42,25 +42,39 @@ export default {
     'nuxt-buefy',
     '@nuxt/http',
     'nuxt-web3',
-    '@nuxtjs/dayjs'
+    '@nuxtjs/dayjs',
+    'nuxt-graphql-request'
   ],
+  graphql: {
+    clients: {
+      default: {
+        options: {
+          method: 'POST'
+        }
+      }
+    }
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
   },
 
   publicRuntimeConfig: {
-    api_url: process.env.API_BASEURL || 'http://localhost:3000'
+    api_url: process.env.API_BASEURL || 'http://localhost:3000',
+    graphql: {
+      clients: {
+        default: {
+          endpoint: (process.env.API_BASEURL || 'http://localhost:3000') + '/graphql'
+        }
+      }
+    }
+
   },
+
   privateRuntimeConfig: {
   },
+
   router: {
-    extendRoutes (routes, resolve) {
-      routes.push({
-        name: 'redirect',
-        path: '*',
-        component: resolve(__dirname, 'pages/index')
-      })
-    }
+    middleware: ['route']
   }
 }
