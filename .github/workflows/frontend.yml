@@ -2,11 +2,11 @@ name: Test Frontend
 on:
   push:
     branches:
-        - main
+      - main
   pull_request:
     paths:
-    - 'blockchain/**'
-    - 'frontend/**'    
+      - 'frontend/**'    
+
 
 jobs:
   frontend-ci:

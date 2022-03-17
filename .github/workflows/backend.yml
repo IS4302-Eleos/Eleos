@@ -3,11 +3,10 @@ on:
   push:
     branches:
       - main
-
   pull_request:
     paths:
-    - 'blockchain/**'
-    - 'backend/**'
+      - 'backend/**'
+
 
 jobs:
   backend-ci:
