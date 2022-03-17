@@ -41,15 +41,33 @@ export default {
     // https://go.nuxtjs.dev/buefy
     'nuxt-buefy',
     '@nuxt/http',
-    'nuxt-web3'
+    'nuxt-web3',
+    'nuxt-graphql-request'
   ],
+  graphql: {
+    clients: {
+      default: {
+        options: {
+          method: 'POST'
+        }
+      }
+    }
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
   },
 
   publicRuntimeConfig: {
-    api_url: process.env.API_BASEURL || 'http://localhost:3000'
+    api_url: process.env.API_BASEURL || 'http://localhost:3000',
+    graphql: {
+      clients: {
+        default: {
+          endpoint: (process.env.API_BASEURL || 'http://localhost:3000') + '/graphql'
+        }
+      }
+    }
+
   },
 
   privateRuntimeConfig: {
