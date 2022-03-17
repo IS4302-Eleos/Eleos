@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx truffle test",
-    "build": "npx truffle build",
-    "deploy": "npx truffle deploy && cp build/contracts/CampaignFactory.json ../frontend/static/",
+    "test": "truffle test",
+    "build": "rm build/contracts/Campaign*.json 2> /dev/null ; truffle compile",
+    "migrate": "truffle migrate; cp build/contracts/CampaignFactory.json ../frontend/static/",
     "lint:js": "eslint --ext \".js\" .",
     "lint": "npm run lint:js && solhint contracts/**/*.sol",
     "lintfix": "npm run lint:js --fix && solhint --fix contracts/**/*.sol"
