@@ -37,7 +37,8 @@ contract CampaignFactory {
         uint64 _endTimestamp,
         address payable _beneficiaryAddress,
         address _campaignOwnerAddress,
-        uint256 _targetDonationAmount
+        uint256 _targetDonationAmount,
+        string memory _campaignDescription
     )
         public
         isValidEndTimestamp(_endTimestamp)
@@ -51,7 +52,8 @@ contract CampaignFactory {
             _endTimestamp,
             _beneficiaryAddress,
             _campaignOwnerAddress,
-            _targetDonationAmount
+            _targetDonationAmount,
+            _campaignDescription
         );
 
         emit CampaignStarted(_campaignOwnerAddress, address(newCampaign));
