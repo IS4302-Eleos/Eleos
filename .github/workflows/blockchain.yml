@@ -1,5 +1,12 @@
 name: Test Smart Contracts
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+    - 'blockchain/**'
+
 
 jobs:
   blockchain-ci:
