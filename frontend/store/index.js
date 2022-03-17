@@ -151,19 +151,18 @@ export const actions = {
     if (endDate !== null) {
       timestamp = Date.parse(endDate) / 1000
     } else {
-      // Set an "impossible" end date - Tuesday, January 19, 2038 3:14:07 AM
-      timestamp = 2147483647
+      // Set an "impossible" end date
+      timestamp = Math.pow(2, 63) - 1
     }
 
     // 1 eth = 1000000000000000000 wei
     const targetAmountInWei = targetAmount * 1000000000000000000
-    // Need to find a way to abstract this part out, since its common use
+
     // Web3 instance connecting to ganache
-    // const web3 = new this.$Web3(new this.$Web3(this.$config.ganache_url))
     const web3 = context.state.web3
+
     // Gets the network ID of the ganache
     const networkId = await web3.eth.net.getId()
-    // End of web3 and necessary set ups
 
     // Creates the CampaignFactory Instance
     const contract = new web3.eth.Contract(
