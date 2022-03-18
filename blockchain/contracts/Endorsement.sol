@@ -8,14 +8,19 @@ contract Endorsement {
     mapping(address => AddressSet.Set) endorserSet; // Accounts that are endorsing this user
     mapping(address => AddressSet.Set) endorseeSet; // Accounts that this user are endorsing
 
+    modifier notSelf(address user) {
+        require(user != msg.sender, "Cannot endorse or retract yourself...");
+        _;
+    }
+
     // Endorse a user
-    function endorse(address endorsee) public {
+    function endorse(address endorsee) public notSelf(endorsee) {
         endorserSet[endorsee].insert(msg.sender);
         endorseeSet[msg.sender].insert(endorsee);
     }
 
     // Retract a user's endorsement
-    function retract(address endorsee) public {
+    function retract(address endorsee) public notSelf(endorsee) {
         endorserSet[endorsee].remove(msg.sender);
         endorseeSet[msg.sender].remove(endorsee);
     }
