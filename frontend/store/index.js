@@ -156,7 +156,7 @@ export const actions = {
     }
 
     // 1 eth = 1000000000000000000 wei
-    const targetAmountInWei = targetAmount * 1000000000000000000
+    const targetAmountInWei = String(targetAmount * 1000000000000000000)
 
     // Web3 instance connecting to ganache
     const web3 = context.state.web3
@@ -177,7 +177,7 @@ export const actions = {
       timestamp,
       beneficiaryAddress,
       campaignOwnerAddress,
-      String(targetAmountInWei)
+      targetAmountInWei
     ).send({
       from: campaignOwnerAddress,
       gas: 2500000
