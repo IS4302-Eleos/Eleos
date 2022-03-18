@@ -101,12 +101,4 @@ library AddressSet {
     function keyAtIndex(Set storage self, uint index) internal view returns(address) {
         return self.keyList[index];
     }
-
-    /**
-     * @notice returns keyList.
-     * @param self storage pointer to a Set.
-     */
-    function getKeyList(Set storage self) internal view returns(address[] memory) {
-        return self.keyList;
-    }
 }
