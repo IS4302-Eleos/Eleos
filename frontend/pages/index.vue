@@ -84,11 +84,11 @@ export default {
 
     // Filter active and past campaigns
     this.activeCampaigns = await campaigns.filter((campaign) => {
-      return new Date(campaign.endTimestamp) > this.dateNow
+      return campaign.endTimestamp > this.dateNow
     })
 
     this.pastCampaigns = await campaigns.filter((campaign) => {
-      return new Date(campaign.endTimestamp) < this.dateNow
+      return campaign.endTimestamp < this.dateNow
     })
   },
   methods: {
