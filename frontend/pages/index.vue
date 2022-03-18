@@ -21,11 +21,12 @@
         Active Campaigns
       </h3>
       <div class="columns is-multiline">
-        <campaign-card class="column is-one-third" />
+        <!-- <campaign-card class="column is-one-third" />
         <campaign-card id="a" class="column is-one-third" title="Help Ukraine Now" />
         <campaign-card class="column is-one-third" title="Red Cross For Ukraine" :current-amount="1" :target-amount="100" :end-date="new Date('2022/05/15')" />
         <campaign-card class="column is-one-third" title="SPCA" :current-amount="1" :target-amount="0" :end-date="new Date('2022/12/12')" />
-        <campaign-card class="column is-one-third" title="Lions Home for The Elders" :current-amount="10" :target-amount="5" :end-date="new Date('2022/04/01')" />
+        <campaign-card class="column is-one-third" title="Lions Home for The Elders" :current-amount="10" :target-amount="5" :end-date="new Date('2022/04/01')" /> -->
+        <campaign-card id="0x884d102d0fc1141EEda5CDdBDE597120004E61Fa" class="column is-one-third" title="WWF" :target-amount="5" :end-date="new Date('2022/04/01')" />
       </div>
     </section>
     <section class="section container">
@@ -33,8 +34,8 @@
         Past Campaigns
       </h3>
       <div class="columns is-multiline">
-        <campaign-card class="column is-one-third" />
-        <campaign-card class="column is-one-third" title="Lions Home for The Elders" :current-amount="2" :target-amount="5" :end-date="new Date('2022/01/01')" />
+        <!-- <campaign-card class="column is-one-third" />
+        <campaign-card class="column is-one-third" title="Lions Home for The Elders" :current-amount="2" :target-amount="5" :end-date="new Date('2022/01/01')" /> -->
       </div>
     </section>
     <eleos-footer />
@@ -42,6 +43,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 import EleosNavbar from '~/components/Navbar'
 import CampaignCard from '~/components/CampaignCard'
 import EleosFooter from '~/components/Footer'
@@ -54,10 +57,12 @@ export default {
     CampaignCard
   },
   layout: 'empty',
-  data () {
-    return {}
-  },
-  methods: {}
+  computed: {
+    ...mapState([
+      'isConnected',
+      'hasPreviouslyConnected'
+    ])
+  }
 }
 
 </script>
