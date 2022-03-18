@@ -7,7 +7,8 @@ export const actions = {
       endDate,
       beneficiaryAddress,
       campaignOwnerAddress,
-      targetAmount
+      targetAmount,
+      campaignDescription
     }
   ) {
     // Format date to timestamp
@@ -48,7 +49,8 @@ export const actions = {
       timestamp,
       beneficiaryAddress,
       campaignOwnerAddress,
-      targetAmountInWei
+      targetAmountInWei,
+      campaignDescription
     ).send({
       from: campaignOwnerAddress,
       gas: 2500000

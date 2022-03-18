@@ -1,5 +1,12 @@
 name: Test Frontend
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - 'frontend/**'    
+
 
 jobs:
   frontend-ci:

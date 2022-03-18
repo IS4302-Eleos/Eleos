@@ -42,8 +42,18 @@ export default {
     'nuxt-buefy',
     '@nuxt/http',
     'nuxt-web3',
-    '@nuxtjs/dayjs'
+    '@nuxtjs/dayjs',
+    'nuxt-graphql-request'
   ],
+  graphql: {
+    clients: {
+      default: {
+        options: {
+          method: 'POST'
+        }
+      }
+    }
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
@@ -52,17 +62,21 @@ export default {
   publicRuntimeConfig: {
     api_url: process.env.API_BASEURL || 'http://localhost:3000',
     ganache_url: process.env.GANACHE_BASEURL || 'http://localhost:8545',
-    chain_id: process.env.CHAIN_ID || '0x539' // Chain ID: 1337
+    chain_id: process.env.CHAIN_ID || '0x539' , // Chain ID: 1337
+    api_url: process.env.API_BASEURL || 'http://localhost:3000',
+    graphql: {
+      clients: {
+        default: {
+          endpoint: (process.env.API_BASEURL || 'http://localhost:3000') + '/graphql'
+        }
+      }
+    }
   },
+
   privateRuntimeConfig: {
   },
+
   router: {
-    extendRoutes (routes, resolve) {
-      routes.push({
-        name: 'redirect',
-        path: '*',
-        component: resolve(__dirname, 'pages/index')
-      })
-    }
+    middleware: ['route']
   }
 }

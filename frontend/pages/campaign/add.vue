@@ -311,7 +311,8 @@ export default {
         endDate: this.endDate,
         beneficiaryAddress: this.beneficiaryAddress,
         campaignOwnerAddress: this.selectedWalletAddress, // Perhaps to be removed if we using the sender address
-        targetAmount: this.targetAmount
+        targetAmount: this.targetAmount,
+        campaignDescription: this.campaignDescription
       }
 
       try {

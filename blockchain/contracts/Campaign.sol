@@ -8,6 +8,7 @@ contract Campaign {
     address payable beneficiaryAddress;
     address campaignOwnerAddress;
     uint256 targetDonationAmount;
+    string campaignDescription;
 
     // Default starting donated sum
     uint256 totalDonationAmount = 0;
@@ -28,7 +29,8 @@ contract Campaign {
         uint64 _endTimestamp,
         address payable _beneficiaryAddress,
         address _campaignOwnerAddress,
-        uint256 _targetDonationAmount
+        uint256 _targetDonationAmount,
+        string memory _campaignDescription
     ) {
         campaignName = _campaignName;
         organisationUrl = _organisationUrl;
@@ -36,6 +38,7 @@ contract Campaign {
         beneficiaryAddress = _beneficiaryAddress;
         campaignOwnerAddress = _campaignOwnerAddress;
         targetDonationAmount = _targetDonationAmount;
+        campaignDescription = _campaignDescription;
     }
 
     // Checks if the donation value is not zero.
@@ -116,6 +119,10 @@ contract Campaign {
 
     function getOwnDonationAmount() public view returns (uint256) {
         return donations[msg.sender];
+    }
+
+    function getCampaignDescription() public view returns (string memory) {
+        return campaignDescription;
     }
 
     function getDonationAmountByAddress(address donorAddress)
