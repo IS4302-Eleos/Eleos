@@ -21,12 +21,15 @@
         Active Campaigns
       </h3>
       <div class="columns is-multiline">
-        <!-- <campaign-card class="column is-one-third" />
-        <campaign-card id="a" class="column is-one-third" title="Help Ukraine Now" />
-        <campaign-card class="column is-one-third" title="Red Cross For Ukraine" :current-amount="1" :target-amount="100" :end-date="new Date('2022/05/15')" />
-        <campaign-card class="column is-one-third" title="SPCA" :current-amount="1" :target-amount="0" :end-date="new Date('2022/12/12')" />
-        <campaign-card class="column is-one-third" title="Lions Home for The Elders" :current-amount="10" :target-amount="5" :end-date="new Date('2022/04/01')" /> -->
-        <campaign-card id="0x884d102d0fc1141EEda5CDdBDE597120004E61Fa" class="column is-one-third" title="WWF" :target-amount="5" :end-date="new Date('2022/04/01')" />
+        <campaign-card
+          v-for="campaign in activeCampaigns"
+          :key="campaign.campaignAddress"
+          class="column is-one-third"
+          :address="campaign.campaignAddress"
+          :title="campaign.campaignName"
+          :target-amount="campaign.targetDonationAmount"
+          :end-date="campaign.endTimestamp"
+        />
       </div>
     </section>
     <section class="section container">
@@ -34,8 +37,15 @@
         Past Campaigns
       </h3>
       <div class="columns is-multiline">
-        <!-- <campaign-card class="column is-one-third" />
-        <campaign-card class="column is-one-third" title="Lions Home for The Elders" :current-amount="2" :target-amount="5" :end-date="new Date('2022/01/01')" /> -->
+        <campaign-card
+          v-for="campaign in pastCampaigns"
+          :key="campaign.campaignAddress"
+          class="column is-one-third"
+          :address="campaign.campaignAddress"
+          :title="campaign.campaignName"
+          :target-amount="campaign.targetDonationAmount"
+          :end-date="campaign.endTimestamp"
+        />
       </div>
     </section>
     <eleos-footer />
@@ -43,7 +53,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapActions } from 'vuex'
 
 import EleosNavbar from '~/components/Navbar'
 import CampaignCard from '~/components/CampaignCard'
@@ -57,10 +67,33 @@ export default {
     CampaignCard
   },
   layout: 'empty',
+  data () {
+    return {
+      activeCampaigns: [],
+      pastCampaigns: []
+    }
+  },
   computed: {
-    ...mapState([
-      'isConnected',
-      'hasPreviouslyConnected'
+    dateNow () {
+      return new Date()
+    }
+  },
+  async mounted () {
+    // Get all campaigns
+    const campaigns = await this.getCampaigns()
+
+    // Filter active and past campaigns
+    this.activeCampaigns = await campaigns.filter((campaign) => {
+      return new Date(campaign.endTimestamp) > this.dateNow
+    })
+
+    this.pastCampaigns = await campaigns.filter((campaign) => {
+      return new Date(campaign.endTimestamp) < this.dateNow
+    })
+  },
+  methods: {
+    ...mapActions('api', [
+      'getCampaigns'
     ])
   }
 }

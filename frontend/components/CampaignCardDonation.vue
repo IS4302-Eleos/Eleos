@@ -13,7 +13,7 @@ import { mapState, mapActions } from 'vuex'
 export default {
   name: 'CampaignCardDonation',
   props: {
-    id: {
+    address: {
       type: String,
       default: null,
       required: true
@@ -56,7 +56,7 @@ export default {
   },
   async mounted () {
     if (this.isConnected) {
-      const campaignInstance = await this.getCampaignInstance(this.id)
+      const campaignInstance = await this.getCampaignInstance(this.address)
       const totalDonationAmount = await this.getCampaignTotalDonations(campaignInstance)
       this.currentAmount = totalDonationAmount
     }

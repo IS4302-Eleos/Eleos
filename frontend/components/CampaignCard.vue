@@ -1,5 +1,5 @@
 <template>
-  <nuxt-link :to="id ? { name: 'campaign-campaignAddress-info', params: { campaignAddress: id } } : '/'">
+  <nuxt-link :to="address ? { name: 'campaign-campaignAddress-info', params: { campaignAddress: address } } : '/'">
     <div class="box">
       <h4 class="title is-4 mb-2">
         <template v-if="title != null">
@@ -7,12 +7,12 @@
         </template>
         <b-skeleton :active="title == null" />
       </h4>
-      <campaign-card-donation v-if="isConnected" :id="id" :target-amount="targetAmount" />
+      <campaign-card-donation v-if="isConnected" :address="address" :target-amount="targetAmount" />
       <b-skeleton :active="!isConnected" />
       <b-skeleton :active="!isConnected" size="is-small" />
       <p>
         <template v-if="endDate != null">
-          Ending on: {{ endDatePretty }}
+          {{ endDate > dateNow ? 'Ending' : 'Ended' }} on: {{ endDatePretty }}
         </template>
         <b-skeleton :active="endDate == null" />
       </p>
@@ -31,7 +31,7 @@ export default {
     CampaignCardDonation
   },
   props: {
-    id: {
+    address: {
       type: String,
       default: null,
       required: true
@@ -54,6 +54,9 @@ export default {
     ...mapState([
       'isConnected'
     ]),
+    dateNow () {
+      return new Date()
+    },
     endDatePretty () {
       return this.$dayjs(this.endDate).format('YYYY/MM/DD')
     }

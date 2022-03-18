@@ -11,6 +11,9 @@ export const mutations = {
       if (!campaign.donations) {
         campaign.donations = 0
       }
+
+      // Convert date string to date object
+      campaign.endTimestamp = new Date(campaign.endTimestamp)
     })
     state.campaigns = campaigns
   }
