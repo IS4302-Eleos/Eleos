@@ -1,11 +1,19 @@
 import { NotificationProgrammatic as Notification } from 'buefy'
+import Web3 from 'web3'
 
 export const state = () => ({
   isConnected: false,
+  web3: null,
   hasPreviouslyConnected: (window.localStorage.getItem('hasPreviouslyConnected') === 'true') || false
 })
 
 export const getters = {
+  getProvider (state, getters) {
+    return window.ethereum
+  },
+  hasProvider (state, getters) {
+    return Boolean(getters.getProvider)
+  }
 }
 
 export const mutations = {
@@ -15,36 +23,21 @@ export const mutations = {
   setPreviouslyConnected (state, previouslyConnected) {
     state.hasPreviouslyConnected = previouslyConnected
     window.localStorage.setItem('hasPreviouslyConnected', previouslyConnected)
+  },
+  setWeb3 (state, web3) {
+    state.web3 = web3
   }
 }
 
 export const actions = {
-  // Check if the browser can access the ethereum network
-  async checkHasProvider (context) {
-    const ethereumProvider = window.ethereum
-    if (ethereumProvider) {
-      // Inject web3
-      window.web3 = new this.$Web3(window.ethereum)
-
-      // Log the user back in if they already have logged in previously.
-      if (!context.state.isConnected && context.state.hasPreviouslyConnected) {
-        await this.dispatch('_requestAccounts')
-      }
-
-      return true
-    } else {
-      return false
-    }
-  },
   // Request account access from user
   async safelyRequestAccounts (context) {
-    if (await !this.dispatch('checkHasProvider')) {
+    if (!context.rootGetters.hasProvider) {
       return false
     }
-    return await this.dispatch('_requestAccounts')
-  },
-  async _requestAccounts (context) {
-  // Request account access
+
+    context.commit('setWeb3', Object.freeze(new Web3(context.rootGetters.getProvider)))
+    // Request account access
     try {
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
 

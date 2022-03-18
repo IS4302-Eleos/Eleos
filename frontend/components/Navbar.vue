@@ -20,7 +20,7 @@
       </b-navbar-item>
       <b-navbar-item tag="div">
         <div class="buttons">
-          <b-button v-if="isConnected" type="is-primary" icon-left="plus-circle">
+          <b-button v-if="hasProvider && isConnected && isAuthenticated" type="is-primary" icon-left="plus-circle">
             Start a Campaign
           </b-button>
           <b-button type="is-success" :disabled="!hasProvider || isConnected || isLoading" :loading="isLoading" @click="login">
@@ -33,34 +33,46 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'EleosNavbar',
   data () {
     return {
-      hasProvider: false,
       isLoading: true
     }
   },
   computed: {
     ...mapState([
       'isConnected'
-    ])
+    ]),
+    ...mapGetters({
+      hasProvider: 'hasProvider',
+      isAuthenticated: 'auth/isAuthenticated'
+    })
   },
-  async mounted () {
-    const results = await this.checkHasProvider()
-    this.hasProvider = !!results
-    this.isLoading = false
+  mounted () {
+    this['auth/init']().then(() => {
+      this.isLoading = false
+    }).catch((err) => {
+      console.error(err)
+      this.loading = false
+    })
+    this['auth/checkAPIEndpoint']().then(() => {
+      // console.log('asdf')
+    }).catch((err) => {
+      console.error(err)
+    })
   },
   methods: {
     ...mapActions([
-      'checkHasProvider',
-      'safelyRequestAccounts'
+      'auth/checkAPIEndpoint',
+      'auth/handleLogin',
+      'auth/init'
     ]),
     async login () {
       this.isLoading = true
-      await this.safelyRequestAccounts()
+      await this['auth/handleLogin']()
       this.isLoading = false
     }
   }
