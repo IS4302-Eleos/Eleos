@@ -318,7 +318,7 @@ export default {
         // Check if the user is using the correct chain and prompt to switch.
         // await this.$store.dispatch('_switchChains')
         const newCampaignAddress = await this.$store.dispatch(
-          'callToCampaignFactory',
+          'contract/campaignFactory/callToCampaignFactory',
           campaignDetails
         )
         this.campaignPath = '/campaign/' + newCampaignAddress + '/info'
