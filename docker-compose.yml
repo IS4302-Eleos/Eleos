@@ -31,7 +31,7 @@ services:
     command:
     - |
       cd $PWD/blockchain && su $USER -c 'npm install && npm run build && npm run migrate' 
-      cd $PWD/backend && node campaignListener/listener.js
+      cd $PWD/backend && npm install && node campaignListener/listener.js
 
   run-some-commands-on-host-backend:
     image: ubuntu:latest
@@ -43,18 +43,19 @@ services:
     network_mode: host
     entrypoint: ["chroot", "/host", "/bin/bash","-c"]
     command:
-    - cd $PWD/backend && node index.js
+    - cd $PWD/backend && npm install && node index.js
 
   run-some-commands-on-host-frontend:
     image: ubuntu:latest
     depends_on:
       - run-some-commands-on-host-backend
     network_mode: host
+    user: root
     volumes:
       - /:/host
     entrypoint: ["chroot", "/host", "/bin/bash","-c"]
     command:
     - |
-      su $USER -c 'cd $PWD/frontend && npm install && npm run build && npm start'
+      cd $PWD/frontend && npm install && npm run build && npm start
 
 
