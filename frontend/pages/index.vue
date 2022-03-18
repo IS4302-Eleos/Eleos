@@ -1,51 +1,63 @@
 <template>
-  <section class="section">
-    <div class="columns is-mobile">
-      <card
-        title="Free"
-        icon="github"
-      >
-        Open source on <a href="https://github.com/buefy/buefy">
-          GitHub
-        </a>
-      </card>
+  <div>
+    <section class="hero is-success is-large">
+      <div class="hero-head">
+        <eleos-navbar />
+      </div>
 
-      <card
-        title="Responsive"
-        icon="cellphone-link"
-      >
-        <b class="has-text-grey">
-          Every
-        </b> component is responsive
-      </card>
-      <card
-        title="Modern"
-        icon="alert-decagram"
-      >
-        Built with <a href="https://vuejs.org/">
-          Vue.js
-        </a> and <a href="http://bulma.io/">
-          Bulma
-        </a>
-      </card>
-
-      <card
-        title="Lightweight"
-        icon="arrange-bring-to-front"
-      >
-        No other internal dependency
-      </card>
-    </div>
-  </section>
+      <div class="hero-body">
+        <div class="has-text-centered">
+          <p class="title">
+            Welcome to Eleos
+          </p>
+          <p class="subtitle">
+            The decentralized charity fundraiser platform
+          </p>
+        </div>
+      </div>
+    </section>
+    <section class="section container">
+      <h3 class="title is-3">
+        Active Campaigns
+      </h3>
+      <div class="columns is-multiline">
+        <campaign-card class="column is-one-third" />
+        <campaign-card id="a" class="column is-one-third" title="Help Ukraine Now" />
+        <campaign-card class="column is-one-third" title="Red Cross For Ukraine" :current-amount="1" :target-amount="100" :end-date="new Date('2022/05/15')" />
+        <campaign-card class="column is-one-third" title="SPCA" :current-amount="1" :target-amount="0" :end-date="new Date('2022/12/12')" />
+        <campaign-card class="column is-one-third" title="Lions Home for The Elders" :current-amount="10" :target-amount="5" :end-date="new Date('2022/04/01')" />
+      </div>
+    </section>
+    <section class="section container">
+      <h3 class="title is-3">
+        Past Campaigns
+      </h3>
+      <div class="columns is-multiline">
+        <campaign-card class="column is-one-third" />
+        <campaign-card class="column is-one-third" title="Lions Home for The Elders" :current-amount="2" :target-amount="5" :end-date="new Date('2022/01/01')" />
+      </div>
+    </section>
+    <eleos-footer />
+  </div>
 </template>
 
 <script>
-import Card from '~/components/Card'
+import EleosNavbar from '~/components/Navbar'
+import CampaignCard from '~/components/CampaignCard'
+import EleosFooter from '~/components/Footer'
 
 export default {
   name: 'IndexPage',
   components: {
-    Card
-  }
+    EleosNavbar,
+    EleosFooter,
+    CampaignCard
+  },
+  layout: 'empty',
+  data () {
+    return {}
+  },
+  methods: {}
 }
+
 </script>
