@@ -1,6 +1,5 @@
 import { NotificationProgrammatic as Notification } from 'buefy'
 import Web3 from 'web3'
-import factoryArtifacts from 'static/CampaignFactory.json'
 
 export const state = () => ({
   web3: null,
@@ -164,6 +163,13 @@ export const actions = {
     // Gets the network ID of the ganache
     const networkId = await web3.eth.net.getId()
 
+    // Fetches the contract json file
+    let factoryArtifacts = ''
+    await fetch('/CampaignFactory.json')
+      .then(response => response.json())
+      .then((data) => {
+        factoryArtifacts = data
+      })
     // Creates the CampaignFactory Instance
     const contract = new web3.eth.Contract(
       factoryArtifacts.abi,
