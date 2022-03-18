@@ -311,14 +311,15 @@ export default {
         endDate: this.endDate,
         beneficiaryAddress: this.beneficiaryAddress,
         campaignOwnerAddress: this.selectedWalletAddress, // Perhaps to be removed if we using the sender address
-        targetAmount: this.targetAmount
+        targetAmount: this.targetAmount,
+        campaignDescription: this.campaignDescription
       }
 
       try {
         // Check if the user is using the correct chain and prompt to switch.
         // await this.$store.dispatch('_switchChains')
         const newCampaignAddress = await this.$store.dispatch(
-          'callToCampaignFactory',
+          'contract/campaignFactory/callToCampaignFactory',
           campaignDetails
         )
         this.campaignPath = '/campaign/' + newCampaignAddress + '/info'
