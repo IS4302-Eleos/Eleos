@@ -2,7 +2,6 @@ const truffleAssert = require("truffle-assertions");
 const assert = require("assert");
 
 const Campaign = artifacts.require("Campaign");
-const CampaignFactory = artifacts.require("CampaignFactory");
 
 contract("Campaign", (accounts) => {
   const deployingAccount = accounts[0];
@@ -13,14 +12,7 @@ contract("Campaign", (accounts) => {
   let campaignInstance;
 
   before(async () => {
-    // Deploy campaign factory
-    const deploymentAmount = web3.utils.toWei("0.01", "ether");
-    const campaignFactoryInstance = await CampaignFactory.new({
-      from: deployingAccount,
-      value: deploymentAmount
-    });
-
-    // New campaign details
+    // Campaign details
     const campaignName = "Charity 1";
     const organisationUrl = "https://www.charity1.com";
     const endTimestamp = 1672502399; // 31/12/2022 23:59:59 GMT+8
@@ -29,20 +21,18 @@ contract("Campaign", (accounts) => {
     const targetDonationAmount = 10;
     const campaignDescription = "It's a cool charity";
 
-    // Start new campaign
-    const tx = await campaignFactoryInstance.startCampaign(
+    // Deploy campaign
+    campaignInstance = await Campaign.new(
       campaignName,
       organisationUrl,
       endTimestamp,
       beneficiaryAddress,
       campaignOwnerAddress,
       targetDonationAmount,
-      campaignDescription
-    );
-
-    // Update new campaign instance
-    const campaignAddress = tx.logs[0].args.campaignAddress;
-    campaignInstance = await Campaign.at(campaignAddress);
+      campaignDescription,
+      {
+        from: deployingAccount
+      });
   });
 
   it("should fail donate 0 ether", async () => {
