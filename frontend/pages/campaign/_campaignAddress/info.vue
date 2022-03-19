@@ -14,7 +14,7 @@
                 {{ campaignName }}
               </p>
               <p class="subtitle is-6">
-                {{ $route.params.campaignAddress }} </br>
+                {{ campaignAddress }} </br>
                 <a :href=organisationUrl target="_blank">Organisation Site</a>
               </p>
               <p class="subtitle is-6">
@@ -32,7 +32,7 @@
                 {{ campaignDescription }}
               </p>
             </div>
-            <div class="media-content">
+            <div class="media-right">
               <b-field v-if=!isCampaignOwnerOrBeneficiary>
                 <b-input placeholder="Donate ETH..." type="search"></b-input>
                 <p class="control">
@@ -130,6 +130,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   name: 'InfoPage',
   data () {
@@ -149,51 +151,84 @@ export default {
       daysLeft: '',
       sampleDonationRecords: {},
       selectedAddress: '0xDEAD',
-      isCampaignOwnerOrBeneficiary: false
+      isCampaignOwnerOrBeneficiary: false,
+      weiPerEth: 1000000000000000000,
+      campaignAddress: ''
     }
   },
-  mounted () {
+  async mounted () {
+    this.campaignAddress = this.$route.params.campaignAddress
+    const campaignInstance = await this.getCampaignInstance(this.campaignAddress)
+    const donationRecords = await this.getCampaignDonationRecords(campaignInstance)
+    const totalDonationAmount = await this.getCampaignTotalDonations(campaignInstance)
+    const targetDonationAmount = await this.getCampaignTargetAmount(campaignInstance)
+    this.setTargetDonationAmount(targetDonationAmount)
     this.setDaysLeft()
-    this.setDonationRecords()
-    this.setNoOfDonors()
-    this.setTotalDonationAmount()
+    this.setDonationRecords(donationRecords)
+    this.setTotalDonationAmount(totalDonationAmount)
     this.setAvailableDonationAmount()
+    await this.setOtherCampaignDetails()
     this.isCampaignOwnerOrBeneficiary = this.selectedAddress === this.campaignOwnerAddress || this.selectedAddress === this.beneficiaryAddress
     this.donationProgress = (this.totalDonationAmount / this.targetDonationAmount) * 100
-    // Currently assuming all other parameters not set here are from backend db
   },
   methods: {
+    ...mapActions('api', [
+      'getCampaigns'
+    ]),
+    ...mapActions('temp', [
+      'getCampaignTargetAmount',
+      'getCampaignTotalDonations',
+      'getCampaignDonationRecords',
+      'getCampaignInstance'
+    ]),
     donate () {
       console.log('donate!')
     },
     withdraw () {
       console.log('withdraw!')
     },
+    convertToEth (value) {
+      return value / this.weiPerEth
+    },
     setDaysLeft () {
       const endDateInMs = (new Date(this.endTimestamp)).getTime() * 1000
       const diff = endDateInMs - Date.now()
       this.daysLeft = Math.round(diff / (1000 * 3600 * 24))
     },
-    setNoOfDonors () {
-      // Gets the list of donations
-      this.noOfDonors = Object.keys(this.sampleDonationRecords).length
-    },
-    setDonationRecords () {
-      // Replace with logic to get donation records from Blockchain
-      this.sampleDonationRecords = {
-        '0xabdc': 2,
-        '0xdead': 1,
-        '0x5050': 3
+    setDonationRecords (donationRecords) {
+      const donors = donationRecords[0]
+      const donationAmounts = donationRecords[1]
+      for (let i = 0; i < donors.length; i++) {
+        this.sampleDonationRecords[donors[i]] = this.convertToEth(donationAmounts[i])
       }
+      this.noOfDonors = donors.length
     },
-    setTotalDonationAmount () {
-      // Replace with logic to get total donation amount from blockchain
-      this.totalDonationAmount = 6
+    setTargetDonationAmount (targetDonationAmount) {
+      this.targetDonationAmount = this.convertToEth(targetDonationAmount)
+    },
+    setTotalDonationAmount (totalDonationAmount) {
+      this.totalDonationAmount = this.convertToEth(totalDonationAmount)
     },
     setAvailableDonationAmount () {
       // Replace with logic to get available donation amount
       // I realise we also need the withdraw records... Need to modify campaign.sol next.
       this.availableDonationAmount = 3
+    },
+    async setOtherCampaignDetails () {
+      let campaignDetails
+      // To be replaced with graphql api call to get single campaign if possible
+      const campaigns = await this.getCampaigns()
+      await campaigns.forEach((campaign) => {
+        if (campaign.campaignAddress === this.campaignAddress) {
+          campaignDetails = campaign
+        }
+      })
+      this.campaignDescription = campaignDetails.campaignDescription
+      this.beneficiaryAddress = campaignDetails.beneficiaryAddress
+      this.campaignOwnerAddress = campaignDetails.campaignOwnerAddress
+      // Url doesn't seem to be in the graphql response
+      // this.organisationUrl = campaignDetails.organisationUrl
+      console.log(campaignDetails)
     }
   }
 }
