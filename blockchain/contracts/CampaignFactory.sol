@@ -18,6 +18,10 @@ contract CampaignFactory {
             endTimestamp > block.timestamp,
             "Campaign end date must be in the future"
         );
+        require(
+            endTimestamp <= 8640000000000000,
+            "Campaign end date must not be after the max date in Javascript"
+        );
         _;
     }
 
