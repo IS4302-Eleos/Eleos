@@ -135,10 +135,10 @@
         </b-button>
       </b-step-item>
 
-      <b-step-item step="2" label="Review & Deploy" :clickable="false">
+      <b-step-item step="2" label="Review &amp; Deploy" :clickable="false">
         <div>
           <h1 class="title has-text-centered">
-            Review & Deploy
+            Review &amp; Deploy
           </h1>
           <h1 class="subtitle is-6 has-text-centered">
             Check your new campaign details carefully.
