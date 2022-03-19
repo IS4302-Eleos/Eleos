@@ -64,31 +64,31 @@ describe('Testing campaignListener utils', () => {
       { from: contractOwner }
     )
 
-    campaignAddress = tx.logs[0].args.campaignAddress
+    campaignAddress = tx.logs[0].args.campaignAddress.toLowerCase()
 
     await new Promise(resolve => setTimeout(resolve, 1000))
 
-    assert.equal(testOwnerAddress, campaignOwner)
-    assert.equal(testCampaignAddress, campaignAddress)
+    assert.equal(testOwnerAddress.toLowerCase(), campaignOwner.toLowerCase())
+    assert.equal(testCampaignAddress.toLowerCase(), campaignAddress.toLowerCase())
   })
 
   it('getCampaignDetails should retrieve details of new campaign', async () => {
-    const campaignInstance = await campaignContract.at(campaignAddress)
+    const campaignInstance = await campaignContract.at(campaignAddress.toLowerCase())
 
     const campaignInfo = await getCampaignDetails(campaignInstance)
 
-    assert.equal(campaignAddress, campaignInfo.campaignAddress)
+    assert.equal(campaignAddress.toLowerCase(), campaignInfo.campaignAddress.toLowerCase())
     assert.equal(campaignName, campaignInfo.campaignName)
     assert.equal(organisationUrl, campaignInfo.organisationUrl)
     assert.equal(endTimestamp, campaignInfo.endTimestamp)
-    assert.equal(beneficiaryAddress, campaignInfo.beneficiaryAddress)
-    assert.equal(campaignOwnerAddress, campaignInfo.campaignOwnerAddress)
+    assert.equal(beneficiaryAddress.toLowerCase(), campaignInfo.beneficiaryAddress.toLowerCase())
+    assert.equal(campaignOwnerAddress.toLowerCase(), campaignInfo.campaignOwnerAddress.toLowerCase())
     assert.equal(campaignDescription, campaignInfo.campaignDescription)
   })
 
   it('storeCampaignDetails should write details of new campaign into database', async () => {
     initdb()
-    const campaignInstance = await campaignContract.at(campaignAddress)
+    const campaignInstance = await campaignContract.at(campaignAddress.toLowerCase())
     const res = await storeCampaignDetails(campaignInstance)
     assert.equal(res.campaignName, campaignName)
     await Campaign.deleteMany({})
