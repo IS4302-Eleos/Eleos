@@ -1,3 +1,5 @@
+import campaignFactoryArtifacts from 'static/CampaignFactory.json'
+
 export const actions = {
   async callToCampaignFactory (
     context,
@@ -26,10 +28,6 @@ export const actions = {
 
     // Gets the network ID of the ganache
     const networkId = await web3.eth.net.getId()
-
-    // Fetches the contract json file
-    const campaignFactoryResponse = await fetch('/CampaignFactory.json')
-    const campaignFactoryArtifacts = await campaignFactoryResponse.json()
 
     // Creates the CampaignFactory Instance
     const contract = new web3.eth.Contract(
