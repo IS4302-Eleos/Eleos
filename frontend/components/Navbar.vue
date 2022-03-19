@@ -23,7 +23,7 @@
           <b-button v-if="hasProvider && isConnected && isAuthenticated" type="is-primary" icon-left="plus-circle">
             Start a Campaign
           </b-button>
-          <b-button type="is-success" :disabled="!hasProvider || isConnected || isLoading" :loading="isLoading" @click="login">
+          <b-button type="is-success" :disabled="!hasProvider || isConnected || !isCorrectChain" :loading="isConnecting" @click="login">
             {{ hasProvider ? (isConnected ? 'Connected' : 'Connect') : 'No Provider' }}
           </b-button>
         </div>
@@ -37,14 +37,11 @@ import { mapState, mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'EleosNavbar',
-  data () {
-    return {
-      isLoading: true
-    }
-  },
   computed: {
     ...mapState([
-      'isConnected'
+      'isConnected',
+      'isConnecting',
+      'isCorrectChain'
     ]),
     ...mapGetters({
       hasProvider: 'hasProvider',
@@ -53,14 +50,12 @@ export default {
   },
   mounted () {
     this['auth/init']().then(() => {
-      this.isLoading = false
+      this.$store.commit('setConnecting', false)
     }).catch((err) => {
       console.error(err)
-      this.loading = false
+      this.$store.commit('setConnecting', false)
     })
-    this['auth/checkAPIEndpoint']().then(() => {
-      // console.log('asdf')
-    }).catch((err) => {
+    this['auth/checkAPIEndpoint']().catch((err) => {
       console.error(err)
     })
   },
@@ -71,9 +66,9 @@ export default {
       'auth/init'
     ]),
     async login () {
-      this.isLoading = true
+      this.$store.commit('setConnecting', true)
       await this['auth/handleLogin']()
-      this.isLoading = false
+      this.$store.commit('setConnecting', false)
     }
   }
 }

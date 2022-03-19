@@ -18,6 +18,7 @@
     "core-js": "^3.19.3",
     "graphql": "^16.3.0",
     "json-to-graphql-query": "^2.2.3",
+    "jwt-decode": "^3.1.2",
     "nuxt": "^2.15.8",
     "nuxt-buefy": "^0.4.13",
     "nuxt-graphql-request": "^5.0.0",

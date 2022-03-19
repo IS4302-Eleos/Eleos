@@ -1,3 +1,5 @@
+import jwtDecode from 'jwt-decode'
+
 export const state = () => ({
   isAPIEndpointActive: false,
   jwt: window.localStorage.getItem('jwt') || null
@@ -54,13 +56,17 @@ export const actions = {
       return false
     }
 
-    if (context.state.jwt) {
-      // Add validity check for JWT here
-      return true
-    }
+    const account = context.rootState.account
 
-    // Currently Metamask only supports 1 account, so just take the first account
-    const account = accounts[0]
+    if (context.state.jwt) {
+      // Check if JWT has expired and is using the account of the current user.
+      const JWTdecoded = jwtDecode(context.state.jwt)
+      if (JWTdecoded.exp && JWTdecoded.exp > (Date.now() / 1000) && JWTdecoded.publickey && JWTdecoded.publickey.toLowerCase() === account.toLowerCase()) {
+        return true
+      }
+
+      context.commit('setJWT', null)
+    }
 
     try {
       // Get the challenge nonce from the server to sign
