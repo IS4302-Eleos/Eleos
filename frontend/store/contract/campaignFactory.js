@@ -1,3 +1,5 @@
+import campaignFactoryArtifacts from 'static/CampaignFactory.json'
+
 export const actions = {
   async callToCampaignFactory (
     context,
@@ -19,29 +21,19 @@ export const actions = {
       // Set an "impossible" end date
       timestamp = String(Math.pow(2, 63) - 1)
     }
-
-    // 1 eth = 1000000000000000000 wei
-    const targetAmountInWei = String(targetAmount * 1000000000000000000)
-
     // Web3 instance connecting to ganache
     const web3 = context.rootState.web3
+
+    const targetAmountInWei = web3.utils.toWei(String(targetAmount))
 
     // Gets the network ID of the ganache
     const networkId = await web3.eth.net.getId()
 
-    // Fetches the contract json file
-    let factoryArtifacts = ''
-    await fetch('/CampaignFactory.json')
-      .then(response => response.json())
-      .then((data) => {
-        factoryArtifacts = data
-      })
     // Creates the CampaignFactory Instance
     const contract = new web3.eth.Contract(
-      factoryArtifacts.abi,
-      factoryArtifacts.networks[networkId].address
+      campaignFactoryArtifacts.abi,
+      campaignFactoryArtifacts.networks[networkId].address
     )
-
     // Calls the startCampaign() method
     const res = await contract.methods.startCampaign(
       campaignName,

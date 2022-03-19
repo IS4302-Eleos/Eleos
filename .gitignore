@@ -3,6 +3,7 @@ blockchain/build/
 
 # Copied built contracts .json
 frontend/static/CampaignFactory.json
+frontend/static/Campaign.json
 
 # Node
 backend/node_modules/

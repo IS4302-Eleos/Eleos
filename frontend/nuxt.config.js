@@ -4,7 +4,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'frontend',
+    title: 'Eleos',
     htmlAttrs: {
       lang: 'en'
     },
@@ -66,7 +66,7 @@ export default {
     graphql: {
       clients: {
         default: {
-          endpoint: (process.env.API_BASEURL || 'http://localhost:3000') + '/graphql'
+          endpoint: (process.env.API_BASEURL || 'http://localhost:3001') + '/graphql'
         }
       }
     }

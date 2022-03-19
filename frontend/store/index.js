@@ -4,13 +4,20 @@ import Web3 from 'web3'
 export const state = () => ({
   web3: null,
   isConnected: false,
+  isConnecting: true,
   isCorrectChain: true,
   hasRegisteredEvents: false,
-  hasPreviouslyConnected: (window.localStorage.getItem('hasPreviouslyConnected') === 'true') || false
+  hasPreviouslyConnected: (window.localStorage.getItem('hasPreviouslyConnected') === 'true') || false,
+  account: null
 })
 
 export const getters = {
-
+  getProvider (state, getters) {
+    return window.ethereum
+  },
+  hasProvider (state, getters) {
+    return Boolean(getters.getProvider)
+  }
 }
 
 export const mutations = {
@@ -24,88 +31,102 @@ export const mutations = {
     state.hasPreviouslyConnected = previouslyConnected
     window.localStorage.setItem('hasPreviouslyConnected', previouslyConnected)
   },
+  setAccount (state, account) {
+    state.account = account
+  },
   setIsCorrectChain (state, isCorrectChain) {
     state.isCorrectChain = isCorrectChain
   },
   setRegisteredEvents (state, hasRegisteredEvents) {
     state.hasRegisteredEvents = hasRegisteredEvents
+  },
+  setConnecting (state, isConnecting) {
+    state.isConnecting = isConnecting
   }
 }
 
 export const actions = {
-  // Check if the browser can access the ethereum network
-  async checkHasProvider (context) {
-    const ethereumProvider = window.ethereum
-    if (ethereumProvider) {
-      // Log the user back in if they already have logged in previously.
-      if (!context.state.isConnected && context.state.hasPreviouslyConnected) {
-        this.dispatch('_requestAccounts')
-      }
-      // Inject web3
-      this.commit('setWeb3', Object.freeze(new Web3(window.ethereum)))
-      const currentChainId = await context.state.web3.eth.getChainId()
-      if (Number(currentChainId) !== Number(this.$config.chain_id)) {
-        Notification.open({
-          type: 'is-warning',
-          message: 'Please change your chain network in your provider.'
-        })
-        this.commit('setIsCorrectChain', false)
-      } else {
-        this.commit('setIsCorrectChain', true)
-      }
+  async verifyCurrentChain (context, chainId) {
+    if (!chainId) {
+      chainId = await context.state.web3.eth.getChainId()
+    }
 
-      // Register events to listen for chain change or disconnects
-      if (!context.state.hasRegisteredEvents) {
-        window.ethereum.on('chainChanged', (chainId) => {
-          if (Number(chainId) !== Number(this.$config.chain_id)) {
-            this.commit('setIsCorrectChain', false)
-          } else {
-            this.commit('setIsCorrectChain', true)
-          }
-        })
-        this.commit('setRegisteredEvents', true)
-      }
-      return true
-    } else {
-      this.commit('setWeb3', null)
+    if (Number(chainId) !== Number(this.$config.chain_id)) {
+      Notification.open({
+        type: 'is-danger',
+        hasIcon: true,
+        duration: 5000,
+        progressBar: true,
+        size: 'is-small',
+        position: 'is-bottom-right',
+        message: 'Please change to the chain supported by Eleos!'
+      })
+      this.commit('setIsCorrectChain', false)
       return false
+    } else {
+      this.commit('setIsCorrectChain', true)
+      return true
     }
   },
   // Request account access from user
   async safelyRequestAccounts (context) {
-    if (await !this.dispatch('checkHasProvider')) {
+    if (!context.rootGetters.hasProvider) {
       return false
     }
-    return await this.dispatch('_requestAccounts')
-  },
-  async _switchChains (context) {
-    const ethereum = window.ethereum
-    try {
-      await ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: this.$config.chain_id }]
+
+    context.commit('setWeb3', Object.freeze(new Web3(context.rootGetters.getProvider)))
+
+    if (!context.state.hasRegisteredEvents) {
+      context.getters.getProvider.on('chainChanged', async (chainId) => {
+        if (!(await this.dispatch('verifyCurrentChain', chainId))) {
+          this.dispatch('auth/handleLogin')
+        }
       })
-    } catch (switchError) {
-      // This error code indicates that the chain has not been added to MetaMask.
-      if (switchError.code === 4902) {
-        await ethereum.request({
-          method: 'wallet_addEthereumChain',
-          params: [
-            {
-              chainId: this.$config.chain_id,
-              chainName: 'Eleos Chain',
-              rpcUrls: [this.$config.ganache_url]
-            }
-          ]
+      context.getters.getProvider.on('accountsChanged', (accounts) => {
+        // Check if the user completely disconnect from the provider.
+        // If they are disconnected, unset everything.
+        if (accounts.length < 1) {
+          this.commit('setConnected', false)
+          this.commit('setPreviouslyConnected', false)
+          return
+        }
+
+        // Do not call anything if validation of accounts are already occurring.
+        if (this.state.isConnecting) {
+          return
+        }
+
+        // Set the status to be reconnecting to network
+        this.commit('setConnected', false)
+        this.commit('setConnecting', true)
+        this.commit('setPreviouslyConnected', false)
+
+        Notification.open({
+          type: 'is-warning',
+          hasIcon: true,
+          duration: 5000,
+          progressBar: true,
+          size: 'is-small',
+          position: 'is-bottom-right',
+          message: 'Please re-authenticate with your new account.'
         })
-      } else {
-        throw switchError
-      }
+        this.dispatch('auth/handleLogin').then(() => {
+          this.commit('setConnecting', false)
+        }).catch(() => {
+          this.commit('setConnecting', false)
+        })
+      })
+      this.commit('setRegisteredEvents', true)
     }
-    return true
-  },
-  async _requestAccounts (context) {
-  // Request account access
+
+    // Check if the chain is correct
+    if (!await context.dispatch('verifyCurrentChain')) {
+      this.commit('setConnected', false)
+      this.commit('setPreviouslyConnected', false)
+      return false
+    }
+
+    // Request account access
     try {
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
 
@@ -113,10 +134,17 @@ export const actions = {
       if (accounts.length > 0) {
         this.commit('setConnected', true)
         this.commit('setPreviouslyConnected', true)
+        // Currently Metamask only supports 1 account, so just take the first account
+        this.commit('setAccount', accounts[0])
         return accounts
       } else {
         Notification.open({
           type: 'is-warning',
+          hasIcon: true,
+          duration: 5000,
+          progressBar: true,
+          size: 'is-small',
+          position: 'is-bottom-right',
           message: 'No accounts found within your wallet!'
         })
         this.commit('setConnected', false)
@@ -127,6 +155,11 @@ export const actions = {
       console.error(error)
       Notification.open({
         type: 'is-danger',
+        hasIcon: true,
+        duration: 5000,
+        progressBar: true,
+        size: 'is-small',
+        position: 'is-bottom-right',
         message: 'Failed to connect to your wallet!'
       })
       this.commit('setConnected', false)
