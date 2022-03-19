@@ -16,7 +16,7 @@ router.post('/login', bodySchema({
 }), async ctx => {
   try {
     ctx.validate()
-    const publickey = ctx.request.body.pubkey
+    const publickey = ctx.request.body.pubkey.toLowerCase()
     if (!utils.isAddress(publickey)) {
       ctx.throw(400, 'Invalid public key')
     }
@@ -37,7 +37,7 @@ router.post('/authenticate', bodySchema({
   try {
     ctx.validate()
 
-    const publickey = ctx.request.body.pubkey
+    const publickey = ctx.request.body.pubkey.toLowerCase()
     const sig = ctx.request.body.signature
     const resetNonce = randomBytes(32).toString('hex')
     const user = await User.findOne({ publickey })
@@ -46,9 +46,11 @@ router.post('/authenticate', bodySchema({
     }
     const hashed = utils.soliditySha3(user.nonce)
     const checkKey = web3.eth.accounts.recover(hashed, sig)
-    if (checkKey.toLowerCase() === publickey.toLowerCase()) {
-      // await User.updateOne({publickey}, {nonce: resetNonce})
-      const token = jwt.sign({ publickey }, config.jwtSecret)
+    if (checkKey.toLowerCase() === publickey) {
+      await User.updateOne({publickey}, {nonce: resetNonce})
+      const token = jwt.sign({ publickey }, config.jwtSecret, {
+        expiresIn: '1h'
+      })
       ctx.body = JSON.stringify({ token: token })
     } else {
       ctx.throw(400, 'Invalid Signature')
@@ -57,12 +59,6 @@ router.post('/authenticate', bodySchema({
     ctx.status = 400
     ctx.body = JSON.stringify({ error: e.message })
   }
-})
-
-router.post('/signer', async ctx => {
-  const privkey = ctx.request.body.privkey
-  const message = ctx.request.body.message
-  ctx.body = JSON.stringify(web3.eth.accounts.sign(message, privkey))
 })
 
 export default router

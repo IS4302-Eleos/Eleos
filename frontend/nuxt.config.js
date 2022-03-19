@@ -60,11 +60,11 @@ export default {
   },
 
   publicRuntimeConfig: {
-    api_url: process.env.API_BASEURL || 'http://localhost:3000',
+    api_url: process.env.API_BASEURL || 'http://localhost:3001',
     graphql: {
       clients: {
         default: {
-          endpoint: (process.env.API_BASEURL || 'http://localhost:3000') + '/graphql'
+          endpoint: (process.env.API_BASEURL || 'http://localhost:3001') + '/graphql'
         }
       }
     }
