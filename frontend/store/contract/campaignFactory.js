@@ -28,18 +28,14 @@ export const actions = {
     const networkId = await web3.eth.net.getId()
 
     // Fetches the contract json file
-    let factoryArtifacts = ''
-    await fetch('/CampaignFactory.json')
-      .then(response => response.json())
-      .then((data) => {
-        factoryArtifacts = data
-      })
+    const campaignFactoryResponse = await fetch('/CampaignFactory.json')
+    const campaignFactoryArtifacts = await campaignFactoryResponse.json()
+
     // Creates the CampaignFactory Instance
     const contract = new web3.eth.Contract(
-      factoryArtifacts.abi,
-      factoryArtifacts.networks[networkId].address
+      campaignFactoryArtifacts.abi,
+      campaignFactoryArtifacts.networks[networkId].address
     )
-
     // Calls the startCampaign() method
     const res = await contract.methods.startCampaign(
       campaignName,
