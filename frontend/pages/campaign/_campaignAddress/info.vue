@@ -142,7 +142,7 @@ export default {
       endTimestamp: 1648606037,
       beneficiaryAddress: '0x607A4494dEA3F221328F44e03843BEb1493F4180',
       campaignOwnerAddress: '0xC4AbB558ca7Da88D115d27548fBAaCB566173aeB',
-      targetDonationAmount: 10,
+      targetDonationAmount: 0,
       campaignDescription: 'This is a sample campaign description. Lorem ipsum dolor sit amet, consectetur adipiscing elit Phasellus nec iaculis mauris.',
       noOfDonors: 0,
       totalDonationAmount: 0,
@@ -150,7 +150,7 @@ export default {
       donationProgress: 0,
       daysLeft: '',
       sampleDonationRecords: {},
-      selectedAddress: '0xDEAD',
+      selectedAddress: '0xDEAD', // 0xDEAD to test for normal users
       isCampaignOwnerOrBeneficiary: false,
       weiPerEth: 1000000000000000000,
       campaignAddress: ''
