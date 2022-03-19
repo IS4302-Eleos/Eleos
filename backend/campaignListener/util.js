@@ -14,7 +14,7 @@ async function getCampaignDetails (campaignInstance) {
     campaignInstance.getBeneficiaryAddress.call(),
     campaignInstance.getCampaignOwnerAddress.call(),
     campaignInstance.getTargetDonationAmount.call(),
-    campaignInstance.getCampaignDescription.call(),
+    campaignInstance.getCampaignDescription.call()
   ])
 
   return {
