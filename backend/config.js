@@ -18,5 +18,6 @@ export default {
     campaignPath: process.env.CAMPAIGN_CONTRACT_PATH || '../blockchain/build/contracts/Campaign.json',
     campaignFactoryPath: process.env.CAMPAIGN_FACTORY_CONTRACT_PATH || '../blockchain/build/contracts/CampaignFactory.json',
     campaignFactoryEvent: process.env.CAMPAIGN_FACTORY_CONTRACT_EVENT || 'CampaignStarted'
-  }
+  },
+  jwtSecret: process.env.JWT_SECRET || 'Hehedonttellyou'
 }
