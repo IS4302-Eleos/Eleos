@@ -221,8 +221,8 @@ export default {
       next(false)
     }
   },
-  async middleware ({ store, redirect }) {
-    if (!await store.dispatch('checkHasProvider') || !store.state.isConnected) {
+  middleware ({ store, redirect }) {
+    if (!store.getters['auth/isAuthenticated'] || !store.state.isConnected) {
       redirect('/')
     }
   },
