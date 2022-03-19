@@ -19,7 +19,7 @@ export const actions = {
       timestamp = Date.parse(endDate)
     } else {
       // Set an "impossible" end date
-      timestamp = String(Math.pow(2, 63) - 1)
+      timestamp = new Date(8640000000000000)
     }
     // Web3 instance connecting to ganache
     const web3 = context.rootState.web3
