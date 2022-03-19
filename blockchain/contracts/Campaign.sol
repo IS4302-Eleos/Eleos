@@ -15,6 +15,7 @@ contract Campaign {
 
     // Mappings of address to donation amount
     mapping(address => uint256) public donations;
+    address[] donorAddresses;
 
     event Donate(address donorAddress, uint256 amount);
     event Withdraw(
@@ -73,6 +74,9 @@ contract Campaign {
 
     // Donates eth to the campaign. The ether is held in this contract.
     function donate() public payable notZeroDonationValue(msg.value) {
+        if (donations[msg.sender] == 0) {
+            donorAddresses.push(msg.sender);
+        }
         totalDonationAmount += msg.value;
         donations[msg.sender] += msg.value;
         emit Donate(msg.sender, msg.value);
@@ -109,6 +113,10 @@ contract Campaign {
         return campaignOwnerAddress;
     }
 
+    function getTargetDonationAmount() public view returns (uint256) {
+        return targetDonationAmount;
+    }
+
     function getTotalDonationAmount() public view returns (uint256) {
         return totalDonationAmount;
     }
@@ -119,6 +127,23 @@ contract Campaign {
 
     function getCampaignDescription() public view returns (string memory) {
         return campaignDescription;
+    }
+
+    function getDonationRecords()
+        public
+        view
+        returns (
+            address[] memory,
+            uint256[] memory
+        )
+    {
+        uint256 noOfUniqueDonors = donorAddresses.length;
+        uint256[] memory donationAmounts = new uint256[](noOfUniqueDonors);
+        for (uint256 i = 0; i < noOfUniqueDonors; i++) {
+            address currAddressPtr = donorAddresses[i];
+            donationAmounts[i] = donations[currAddressPtr];
+        }
+        return (donorAddresses, donationAmounts);
     }
 
     function getDonationAmountByAddress(address donorAddress)
