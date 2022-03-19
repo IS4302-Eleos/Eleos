@@ -16,7 +16,7 @@ export const actions = {
     // Format date to timestamp
     let timestamp
     if (endDate !== null) {
-      timestamp = Date.parse(endDate) / 1000
+      timestamp = Date.parse(endDate)
     } else {
       // Set an "impossible" end date
       timestamp = String(Math.pow(2, 63) - 1)
