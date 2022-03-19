@@ -83,6 +83,7 @@ describe('Testing campaignListener utils', () => {
     assert.equal(endTimestamp, campaignInfo.endTimestamp)
     assert.equal(beneficiaryAddress.toLowerCase(), campaignInfo.beneficiaryAddress.toLowerCase())
     assert.equal(campaignOwnerAddress.toLowerCase(), campaignInfo.campaignOwnerAddress.toLowerCase())
+    assert.equal(targetDonationAmount, campaignInfo.targetDonationAmount)
     assert.equal(campaignDescription, campaignInfo.campaignDescription)
   })
 
