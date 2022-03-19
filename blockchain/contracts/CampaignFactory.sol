@@ -21,11 +21,11 @@ contract CampaignFactory {
         _;
     }
 
-    // Checks if campaign target donation amount is above zero
+    // Checks if campaign target donation amount is above or equals zero
     modifier isValidTargetDonation(uint256 targetDonationAmount) {
         require(
-            targetDonationAmount > 0,
-            "Target donation amount must be greater than 0 ETH"
+            targetDonationAmount >= 0,
+            "Target donation amount must be >= 0 ETH"
         );
         _;
     }

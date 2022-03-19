@@ -2,11 +2,11 @@ import { NotificationProgrammatic as Notification } from 'buefy'
 import Web3 from 'web3'
 
 export const state = () => ({
+  web3: null,
   isConnected: false,
   isConnecting: true,
   isCorrectChain: true,
   hasRegisteredEvents: false,
-  web3: null,
   hasPreviouslyConnected: (window.localStorage.getItem('hasPreviouslyConnected') === 'true') || false,
   account: null
 })
@@ -21,15 +21,15 @@ export const getters = {
 }
 
 export const mutations = {
+  setWeb3 (state, web3) {
+    state.web3 = web3
+  },
   setConnected (state, isConnected) {
     state.isConnected = isConnected
   },
   setPreviouslyConnected (state, previouslyConnected) {
     state.hasPreviouslyConnected = previouslyConnected
     window.localStorage.setItem('hasPreviouslyConnected', previouslyConnected)
-  },
-  setWeb3 (state, web3) {
-    state.web3 = web3
   },
   setAccount (state, account) {
     state.account = account
