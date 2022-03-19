@@ -19,12 +19,10 @@ export const actions = {
       // Set an "impossible" end date
       timestamp = String(Math.pow(2, 63) - 1)
     }
-
-    // 1 eth = 1000000000000000000 wei
-    const targetAmountInWei = String(targetAmount * 1000000000000000000)
-
     // Web3 instance connecting to ganache
     const web3 = context.rootState.web3
+
+    const targetAmountInWei = web3.utils.toWei(String(targetAmount))
 
     // Gets the network ID of the ganache
     const networkId = await web3.eth.net.getId()
