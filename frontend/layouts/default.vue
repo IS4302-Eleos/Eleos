@@ -2,7 +2,7 @@
   <div>
     <eleos-navbar />
     <section class="main-content columns">
-      <div class="column is-10">
+      <div class="column is-12">
         <Nuxt />
       </div>
     </section>

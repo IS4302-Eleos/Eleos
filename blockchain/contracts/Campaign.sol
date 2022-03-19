@@ -109,6 +109,10 @@ contract Campaign {
         return campaignOwnerAddress;
     }
 
+    function getTargetDonationAmount() public view returns (uint256) {
+        return targetDonationAmount;
+    }
+
     function getTotalDonationAmount() public view returns (uint256) {
         return totalDonationAmount;
     }

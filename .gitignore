@@ -1,8 +1,12 @@
 # Compiled smart contracts
 blockchain/build/
 
+# Copied built contracts .json
+frontend/static/CampaignFactory.json
+frontend/static/Campaign.json
+frontend/static/Endorsement.json
 
-# Node 
+# Node
 backend/node_modules/
 frontend/node_modules/
 blockchain/node_modules/

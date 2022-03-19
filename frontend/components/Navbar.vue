@@ -20,10 +20,10 @@
       </b-navbar-item>
       <b-navbar-item tag="div">
         <div class="buttons">
-          <b-button v-if="isConnected" type="is-primary" icon-left="plus-circle">
+          <b-button v-if="isConnected && isAuthenticated" type="is-primary" icon-left="plus-circle" tag="NuxtLink" to="/campaign/add">
             Start a Campaign
           </b-button>
-          <b-button type="is-success" :disabled="!hasProvider || isConnected || isLoading" :loading="isLoading" @click="login">
+          <b-button type="is-success" :disabled="!hasProvider || isConnected || !isCorrectChain" :loading="isConnecting" @click="login">
             {{ hasProvider ? (isConnected ? 'Connected' : 'Connect') : 'No Provider' }}
           </b-button>
         </div>
@@ -33,35 +33,42 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'EleosNavbar',
-  data () {
-    return {
-      hasProvider: false,
-      isLoading: true
-    }
-  },
   computed: {
     ...mapState([
-      'isConnected'
-    ])
+      'isConnected',
+      'isConnecting',
+      'isCorrectChain'
+    ]),
+    ...mapGetters({
+      hasProvider: 'hasProvider',
+      isAuthenticated: 'auth/isAuthenticated'
+    })
   },
-  async mounted () {
-    const results = await this.checkHasProvider()
-    this.hasProvider = !!results
-    this.isLoading = false
+  mounted () {
+    this['auth/init']().then(() => {
+      this.$store.commit('setConnecting', false)
+    }).catch((err) => {
+      console.error(err)
+      this.$store.commit('setConnecting', false)
+    })
+    this['auth/checkAPIEndpoint']().catch((err) => {
+      console.error(err)
+    })
   },
   methods: {
     ...mapActions([
-      'checkHasProvider',
-      'safelyRequestAccounts'
+      'auth/checkAPIEndpoint',
+      'auth/handleLogin',
+      'auth/init'
     ]),
     async login () {
-      this.isLoading = true
-      await this.safelyRequestAccounts()
-      this.isLoading = false
+      this.$store.commit('setConnecting', true)
+      await this['auth/handleLogin']()
+      this.$store.commit('setConnecting', false)
     }
   }
 }
