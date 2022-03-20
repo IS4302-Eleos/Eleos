@@ -3,13 +3,17 @@ pragma solidity >=0.5.0;
 import "./Campaign.sol";
 
 contract CampaignFactory {
+    address public endorsementAddress;
+
     event CampaignStarted(address ownerAddress, address campaignAddress);
 
-    constructor() payable {
+    constructor(address _endorsementAddress) payable {
         require(
             msg.value >= 0.01 ether,
             "CampaignFactory must be deployed with 0.01 ETH"
         );
+
+        endorsementAddress = _endorsementAddress;
     }
 
     // Checks if campaign end timestamp is in the future
@@ -58,5 +62,9 @@ contract CampaignFactory {
 
         emit CampaignStarted(_campaignOwnerAddress, address(newCampaign));
         return address(newCampaign);
+    }
+
+    function getEndorsementAddress() public view returns (address) {
+        return endorsementAddress;
     }
 }
