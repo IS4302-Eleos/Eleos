@@ -9,11 +9,12 @@ contract("CampaignFactory", (accounts) => {
   const campaignOwner = accounts[2];
 
   let campaignFactoryInstance;
-  let campaignInstance;
+  let campaignImplementation;
 
   before(async () => {
+    campaignImplementation = await Campaign.new();
     const deploymentAmount = web3.utils.toWei("0.01", "ether");
-    campaignFactoryInstance = await CampaignFactory.new({
+    campaignFactoryInstance = await CampaignFactory.new(campaignImplementation.address, {
       from: deployingAccount,
       value: deploymentAmount
     });
@@ -43,8 +44,7 @@ contract("CampaignFactory", (accounts) => {
 
     // Update new campaign instance
     const campaignAddress = tx.logs[0].args.campaignAddress;
-    campaignInstance = await Campaign.at(campaignAddress);
-
+    const campaignInstance = await Campaign.at(campaignAddress);
     console.log("Campaign has been deployed at " + campaignInstance.address);
   });
 });

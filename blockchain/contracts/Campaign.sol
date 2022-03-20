@@ -16,6 +16,9 @@ contract Campaign {
     // Mappings of address to donation amount
     mapping(address => uint256) public donations;
 
+    // Used to check if variables already initialized
+    bool initialized;
+    
     event Donate(address donorAddress, uint256 amount);
     event Withdraw(
         address withdrawerAddress,
@@ -23,7 +26,10 @@ contract Campaign {
         address toAddress
     );
 
-    constructor (
+    constructor() {
+    }
+
+    function init(
         string memory _campaignName,
         string memory _organisationUrl,
         uint64 _endTimestamp,
@@ -31,7 +37,9 @@ contract Campaign {
         address _campaignOwnerAddress,
         uint256 _targetDonationAmount,
         string memory _campaignDescription
-    ) {
+    ) public isValidEndTimestamp(_endTimestamp) isValidTargetDonation(_targetDonationAmount) {
+        require(!initialized, "Campaign is already initialized");
+
         campaignName = _campaignName;
         organisationUrl = _organisationUrl;
         endTimestamp = _endTimestamp;
@@ -39,6 +47,13 @@ contract Campaign {
         campaignOwnerAddress = _campaignOwnerAddress;
         targetDonationAmount = _targetDonationAmount;
         campaignDescription = _campaignDescription;
+        initialized = true;
+    }
+
+    // Checks if the contract is initialized with values
+    modifier Initialized {
+        require(initialized, "Campaign is not initialized yet");
+        _;
     }
 
     // Checks if the donation value is not zero.
@@ -71,8 +86,30 @@ contract Campaign {
         _;
     }
 
+    // Checks if campaign end timestamp is in the future
+    modifier isValidEndTimestamp(uint64 _endTimestamp) {
+        require(
+            _endTimestamp > block.timestamp,
+            "Campaign end date must be in the future"
+        );
+        require(
+            _endTimestamp <= 8640000000000000,
+            "Campaign end date must not be after the max date in Javascript"
+        );
+        _;
+    }
+
+    // Checks if campaign target donation amount is above or equals zero
+    modifier isValidTargetDonation(uint256 _targetDonationAmount) {
+        require(
+            _targetDonationAmount >= 0,
+            "Target donation amount must be >= 0 ETH"
+        );
+        _;
+    }
+
     // Donates eth to the campaign. The ether is held in this contract.
-    function donate() public payable notZeroDonationValue(msg.value) {
+    function donate() public payable notZeroDonationValue(msg.value) Initialized {
         totalDonationAmount += msg.value;
         donations[msg.sender] += msg.value;
         emit Donate(msg.sender, msg.value);
@@ -84,6 +121,7 @@ contract Campaign {
         payable
         equalsCampaignOwnerOrBeneficary(msg.sender)
         hasAvailableDonationBalance(amount)
+        Initialized
     {
         beneficiaryAddress.transfer(amount);
         emit Withdraw(msg.sender, amount, beneficiaryAddress);
@@ -135,5 +173,9 @@ contract Campaign {
 
     function getAvailableDonationBalance() public view returns (uint256) {
         return address(this).balance;
+    }
+
+    function isInitialized() public view returns (bool) {
+        return initialized;
     }
 }
