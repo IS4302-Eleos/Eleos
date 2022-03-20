@@ -9,7 +9,8 @@ export const actions = {
     return campaignInstance
   },
   async getCampaignTotalDonations (context, campaignInstance) {
-    const totalDonations = await campaignInstance.methods.getTotalDonationAmount().call()
-    return totalDonations
+    const totalDonationsWei = await campaignInstance.methods.getTotalDonationAmount().call()
+    const totalDonationsEth = context.rootState.web3.utils.fromWei(totalDonationsWei, 'ether')
+    return Number(totalDonationsEth)
   }
 }
