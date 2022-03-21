@@ -1,4 +1,5 @@
 import campaignArtifact from 'static/Campaign.json'
+import Web3 from 'web3'
 
 export const actions = {
   getCampaignInstance (context, address) {
@@ -10,7 +11,7 @@ export const actions = {
   },
   async getCampaignTotalDonations (context, campaignInstance) {
     const totalDonationsWei = await campaignInstance.methods.getTotalDonationAmount().call()
-    const totalDonationsEth = context.rootState.web3.utils.fromWei(totalDonationsWei, 'ether')
+    const totalDonationsEth = Web3.utils.fromWei(totalDonationsWei, 'ether')
     return Number(totalDonationsEth)
   }
 }

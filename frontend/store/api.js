@@ -1,4 +1,5 @@
 import { jsonToGraphQLQuery } from 'json-to-graphql-query'
+import Web3 from 'web3'
 
 export const state = () => ({
   campaigns: []
@@ -7,7 +8,6 @@ export const state = () => ({
 export const mutations = {
   // Setting campaigns to state variables
   setCampaigns (state, payload) {
-    const rootState = payload.rootState
     const campaigns = payload.campaigns
 
     campaigns.forEach((campaign) => {
@@ -21,7 +21,7 @@ export const mutations = {
 
       // Convert target donation amount to eth
       campaign.targetDonationAmount = Number(
-        rootState.web3.utils.fromWei(
+        Web3.utils.fromWei(
           campaign.targetDonationAmount.toString(),
           'ether'
         ))
