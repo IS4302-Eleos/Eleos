@@ -2,6 +2,12 @@ services:
 
   blockchain:
     image: trufflesuite/ganache-cli:latest
+    command: -d
+        --db /app
+        -i eleos
+        --accounts 20
+        --deterministic
+        --mnemonic="grit portion captain traffic same bacon donate captain brown success impulse security"
     ports:
       - 8545:8545
     logging:
