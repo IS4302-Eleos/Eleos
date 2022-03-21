@@ -51,7 +51,7 @@ jobs:
         run: |
           npx truffle compile
           npx truffle migrate
-          cp build/contracts/CampaignFactory.json ../frontend/static/
+          find ./build/contracts -type f ! -name Migrations.json -exec cp -t ../frontend/static {} +
 
       - name: Install dependencies
         working-directory: ./frontend
