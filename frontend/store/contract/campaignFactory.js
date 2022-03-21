@@ -21,7 +21,6 @@ export const actions = {
       // Set an "impossible" end date
       timestamp = 8640000000000000
     }
-    console.log(timestamp)
     // Web3 instance connecting to ganache
     const web3 = context.rootState.web3
 
@@ -35,7 +34,6 @@ export const actions = {
       campaignFactoryArtifacts.abi,
       campaignFactoryArtifacts.networks[networkId].address
     )
-    console.log('test')
     // Calls the startCampaign() method
     const res = await contract.methods.startCampaign(
       campaignName,

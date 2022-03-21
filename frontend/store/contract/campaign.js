@@ -13,5 +13,14 @@ export const actions = {
     const totalDonationsWei = await campaignInstance.methods.getTotalDonationAmount().call()
     const totalDonationsEth = Web3.utils.fromWei(totalDonationsWei, 'ether')
     return Number(totalDonationsEth)
+  },
+  async getCampaignDonationRecords (context, campaignInstance) {
+    const test = await campaignInstance.methods.getDonationRecords().call()
+    return test
+  },
+  // Temporarily get target amount from blockchain...
+  async getCampaignTargetAmount (context, campaignInstance) {
+    const targetAmount = await campaignInstance.methods.getTargetDonationAmount().call()
+    return targetAmount
   }
 }

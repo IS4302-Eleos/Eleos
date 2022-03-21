@@ -175,7 +175,7 @@ export default {
     ...mapActions('api', [
       'getCampaigns'
     ]),
-    ...mapActions('temp', [
+    ...mapActions('contract/campaign', [
       'getCampaignTargetAmount',
       'getCampaignTotalDonations',
       'getCampaignDonationRecords',
