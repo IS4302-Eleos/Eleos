@@ -219,7 +219,7 @@ export default {
       // To be replaced with graphql api call to get single campaign if possible
       const campaigns = await this.getCampaigns()
       await campaigns.forEach((campaign) => {
-        if (campaign.campaignAddress === this.campaignAddress) {
+        if (campaign.campaignAddress === this.campaignAddress.toLowerCase()) {
           campaignDetails = campaign
         }
       })
