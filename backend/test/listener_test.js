@@ -18,6 +18,8 @@ describe('Testing campaignListener utils', () => {
   let campaignFactoryInstance, campaignInstance
 
   before(async () => {
+    initdb()
+
     provider = new Web3.providers.WebsocketProvider(`ws://${config.bc.host}:${config.bc.port}`)
     web3 = new Web3(provider)
     campaignFactoryContract = contract(JSON.parse(fs.readFileSync(config.bc.campaignFactoryPath)))
@@ -90,7 +92,6 @@ describe('Testing campaignListener utils', () => {
   })
 
   it('storeCampaignInfo should write details of new campaign information into database', async () => {
-    initdb()
     const res = await storeCampaignInfo(campaignInfo)
     assert.equal(res.campaignName, campaignName)
     await Campaign.deleteMany({})
