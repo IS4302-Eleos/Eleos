@@ -1,7 +1,7 @@
 import Web3 from 'web3'
 import * as fs from 'fs'
 import contract from '@truffle/contract'
-import { subscribeToContractEvents, storeCampaignDetails } from './util.js'
+import { subscribeToContractEvents, getCampaignInfo, storeCampaignInfo } from './util.js'
 import config from '../config.js'
 import initdb from '../src/database.js'
 
@@ -28,8 +28,8 @@ campaignFactoryContract.deployed().then(campaignFactory => {
       console.log(`Owner "${ownerAddress}" deployed contract @ "${campaignAddress}"`)
       campaignContract.at(campaignAddress).then(
         async (campaignInstance) => {
-          const asd = await storeCampaignDetails(campaignInstance)
-          console.log(asd)
+          const campaignInfo = await getCampaignInfo(campaignInstance)
+          await storeCampaignInfo(campaignInfo)
         }
       )
     }
