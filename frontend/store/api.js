@@ -7,9 +7,7 @@ export const state = () => ({
 
 export const mutations = {
   // Setting campaigns to state variables
-  setCampaigns (state, payload) {
-    const campaigns = payload.campaigns
-
+  setCampaigns (state, campaigns) {
     campaigns.forEach((campaign) => {
       // Set temp donation value
       if (!campaign.donations) {
@@ -32,7 +30,7 @@ export const mutations = {
 
 export const actions = {
   // Getting all the campaigns from the database
-  async getCampaigns (context) {
+  async getCampaigns ({ commit }) {
     const query = {
       query: {
         campaigns: {
@@ -47,14 +45,12 @@ export const actions = {
       }
     }
     const res = await this.$graphql.default.request(jsonToGraphQLQuery(query))
-    context.commit('setCampaigns', {
-      rootState: context.rootState, campaigns: res.campaigns
-    })
+    commit('setCampaigns', res.campaigns)
     return res.campaigns
   },
   // Getting the campaign from the database filtered by a date
   // Note this function expects a nodejs date object
-  async getCampaignsByDate (context, date) {
+  async getCampaignsByDate ({ commit }, date) {
     const query = {
       query: {
         campaigns: {
@@ -78,9 +74,7 @@ export const actions = {
       }
     }
     const res = await this.$graphql.default.request(jsonToGraphQLQuery(query))
-    context.commit('setCampaigns', {
-      rootState: context.rootState, campaigns: res.campaigns
-    })
+    commit('setCampaigns', res.campaigns)
     return res.campaigns
   }
 }
