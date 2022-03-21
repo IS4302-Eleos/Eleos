@@ -11,7 +11,7 @@ const CampaignSchema = new mongoose.Schema({
   endTimestamp: Date,
   beneficiaryAddress: Buffer,
   campaignOwnerAddress: Buffer,
-  targetDonationAmount: Number,
+  targetDonationAmount: String,
 
   campaignDescription: String
   // campaignImage: {

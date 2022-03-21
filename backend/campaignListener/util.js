@@ -6,7 +6,7 @@ function subscribeToContractEvents (contractInstance, event, callback) {
   return subscription
 }
 
-async function getCampaignDetails (campaignInstance) {
+async function getCampaignInfo (campaignInstance) {
   const res = await Promise.all([
     campaignInstance.getCampaignName.call(),
     campaignInstance.getorganisationUrl.call(),
@@ -24,15 +24,14 @@ async function getCampaignDetails (campaignInstance) {
     endTimestamp: res[2].toNumber(),
     beneficiaryAddress: res[3].toLowerCase(),
     campaignOwnerAddress: res[4].toLowerCase(),
-    targetDonationAmount: res[5],
+    targetDonationAmount: res[5].toString(),
     campaignDescription: res[6]
   }
 }
 
-async function storeCampaignDetails (campaignInstance) {
-  const details = await getCampaignDetails(campaignInstance)
-  const campaignDocument = new Campaign(details)
+async function storeCampaignInfo (campaignInfo) {
+  const campaignDocument = new Campaign(campaignInfo)
   return await campaignDocument.save()
 }
 
-export { subscribeToContractEvents, getCampaignDetails, storeCampaignDetails }
+export { subscribeToContractEvents, getCampaignInfo, storeCampaignInfo }
