@@ -83,15 +83,22 @@ __Note: Same steps can be taken for `backend` / `frontend` / `blockchain`__
     # If you have ganache UI installed, configure the RPC server to listen on 127.0.0.1:8545.
     # But if you do not have ganache GUI installed,
     docker run --detach \
-        --publish 8545:8545 
-        --name ganache trufflesuite/ganache-cli
+        --publish 8545:8545 \
+        --name ganache \
+        trufflesuite/ganache-cli \
+        -d \
+        --db /app \
+        -i eleos \
+        --accounts 20 \
+        --deterministic \
+        --mnemonic="grit portion captain traffic same bacon donate captain brown success impulse security"
     ```
 
     ```bash
     docker run --detach \
-        --publish 27017:27017 
-        -e MONGO_INITDB_ROOT_USERNAME=test 
-        -e MONGO_INITDB_ROOT_PASSWORD=test 
+        --publish 27017:27017 \
+        -e MONGO_INITDB_ROOT_USERNAME=test \
+        -e MONGO_INITDB_ROOT_PASSWORD=test \
         --name mongo mongo
     ```
 
