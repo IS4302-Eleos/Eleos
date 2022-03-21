@@ -2,6 +2,7 @@ const truffleAssert = require("truffle-assertions");
 
 const Campaign = artifacts.require("Campaign");
 const CampaignFactory = artifacts.require("CampaignFactory");
+const Endorsement = artifacts.require("Endorsement");
 
 contract("CampaignFactory", (accounts) => {
   const deployingAccount = accounts[0];
@@ -10,13 +11,23 @@ contract("CampaignFactory", (accounts) => {
 
   let campaignFactoryInstance;
   let campaignInstance;
+  let endorsementInstance;
 
   before(async () => {
     const deploymentAmount = web3.utils.toWei("0.01", "ether");
-    campaignFactoryInstance = await CampaignFactory.new({
-      from: deployingAccount,
-      value: deploymentAmount
+
+    // Deploy Endorsement contract
+    endorsementInstance = await Endorsement.new({
+      from: deployingAccount
     });
+
+    // Deploy CampaignFactory contract
+    campaignFactoryInstance = await CampaignFactory.new(
+      endorsementInstance.address,
+      {
+        from: deployingAccount,
+        value: deploymentAmount
+      });
   });
 
   it("should create new campaign", async () => {
