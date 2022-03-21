@@ -1,22 +1,18 @@
 <template>
-  <nuxt-link :to="id ? { name: 'campaign-campaignAddress-info', params: { campaignAddress: id } } : '/'">
+  <nuxt-link :to="address ? { name: 'campaign-campaignAddress-info', params: { campaignAddress: address } } : '/'">
     <div class="box">
-      <h4 class="title is-4">
+      <h4 class="title is-4 mb-2">
         <template v-if="title != null">
           {{ title }}
         </template>
         <b-skeleton :active="title == null" />
       </h4>
-      <h6 class="subtitle is-5">
-        <template v-if="hasDonationAmount">
-          <strong>{{ currentAmount }}</strong> ETH raised <span v-if="targetAmount > 0">of {{ targetAmount }} ETH</span>
-        </template>
-        <b-skeleton :active="!hasDonationAmount" />
-      </h6>
-      <b-progress class="mb-1" size="is-small" :type="progressBarColor" :value="donationPercentage" />
+      <campaign-card-donation v-if="isConnected" :address="address" :target-amount="targetAmount" />
+      <b-skeleton :active="!isConnected" />
+      <b-skeleton :active="!isConnected" size="is-small" />
       <p>
         <template v-if="endDate != null">
-          Ending on: {{ endDatePretty }}
+          {{ endDate > dateNow ? 'Ending' : 'Ended' }} on: {{ endDatePretty }}
         </template>
         <b-skeleton :active="endDate == null" />
       </p>
@@ -25,20 +21,25 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
+import CampaignCardDonation from '~/components/CampaignCardDonation'
+
 export default {
   name: 'CampaignCard',
+  components: {
+    CampaignCardDonation
+  },
   props: {
-    id: {
+    address: {
       type: String,
-      default: null
+      default: null,
+      required: true
     },
     title: {
       type: String,
-      default: null
-    },
-    currentAmount: {
-      type: Number,
-      default: -1
+      default: null,
+      required: true
     },
     targetAmount: {
       type: Number,
@@ -49,38 +50,16 @@ export default {
       default: null
     }
   },
-  data () {
-    return {}
-  },
   computed: {
-    hasDonationAmount () {
-      return this.currentAmount !== -1 && this.targetAmount !== -1
-    },
-    donationPercentage () {
-      if (!this.hasDonationAmount) {
-        return undefined
-      } else if (this.targetAmount === 0) {
-        return 100
-      } else {
-        return Math.min(100, (this.currentAmount / this.targetAmount) * 100)
-      }
+    ...mapState([
+      'isConnected'
+    ]),
+    dateNow () {
+      return new Date()
     },
     endDatePretty () {
       return this.$dayjs(this.endDate).format('YYYY/MM/DD')
-    },
-    progressBarColor () {
-      if (!this.hasDonationAmount) {
-        return 'is-light'
-      }
-      if (this.$dayjs().isAfter(this.$dayjs(this.endDate), 'day')) {
-        return 'is-warning'
-      }
-      return 'is-success'
     }
   }
 }
 </script>
-
-<style>
-
-</style>
