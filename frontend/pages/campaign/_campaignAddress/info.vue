@@ -163,7 +163,6 @@ export default {
     const totalDonationAmount = await this.getCampaignTotalDonations(campaignInstance)
     const targetDonationAmount = await this.getCampaignTargetAmount(campaignInstance)
     this.setTargetDonationAmount(targetDonationAmount)
-    this.setDaysLeft()
     this.setDonationRecords(donationRecords)
     this.setTotalDonationAmount(totalDonationAmount)
     this.setAvailableDonationAmount()
@@ -189,11 +188,6 @@ export default {
     },
     convertToEth (value) {
       return value / this.weiPerEth
-    },
-    setDaysLeft () {
-      const endDateInMs = (new Date(this.endTimestamp)).getTime() * 1000
-      const diff = endDateInMs - Date.now()
-      this.daysLeft = Math.round(diff / (1000 * 3600 * 24))
     },
     setDonationRecords (donationRecords) {
       const donors = donationRecords[0]
@@ -228,6 +222,9 @@ export default {
       this.campaignOwnerAddress = campaignDetails.campaignOwnerAddress
       // Url doesn't seem to be in the graphql response
       // this.organisationUrl = campaignDetails.organisationUrl
+      const endDateInMs = (new Date(campaignDetails.endTimestamp)).getTime() * 1000
+      const diff = endDateInMs - Date.now()
+      this.daysLeft = Math.round(diff / (1000 * 3600 * 24))
       console.log(campaignDetails)
     }
   }
