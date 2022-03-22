@@ -11,8 +11,9 @@
       <b-skeleton :active="!isConnected" />
       <b-skeleton :active="!isConnected" size="is-small" />
       <p>
-        <template v-if="endDate != null">
-          {{ endDate > dateNow ? 'Ending' : 'Ended' }} on: {{ endDatePretty }}
+        <template v-if="endDate != null ">
+          <span v-if="Date.parse(endDate) !== 8640000000000000">{{ endDate > dateNow ? 'Ending' : 'Ended' }} on: {{ endDatePretty }}</span>
+          <span v-else>Ongoing Campaign</span>
         </template>
         <b-skeleton :active="endDate == null" />
       </p>
