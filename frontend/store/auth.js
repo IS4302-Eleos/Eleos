@@ -29,7 +29,6 @@ export const mutations = {
 
 export const actions = {
   async checkAPIEndpoint (context) {
-    this.$http.setBaseURL(this.$config.api_url)
     try {
       await this.$http.$get('/')
       this.commit('auth/setAPIEndpointActive', true)
