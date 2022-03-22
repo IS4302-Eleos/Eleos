@@ -76,6 +76,6 @@ export default {
   },
 
   router: {
-    middleware: ['route']
+    // middleware: ['route']
   }
 }

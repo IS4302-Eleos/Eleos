@@ -17,6 +17,7 @@
 <script>
 export default {
   name: 'InfoPage',
+  middleware: 'validCampaign',
   data () {
     return {
       title: 'Testing folder name as dynamic route'

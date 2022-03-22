@@ -18,12 +18,12 @@ async function getCampaignInfo (campaignInstance) {
   ])
 
   return {
-    campaignAddress: campaignInstance.address.toLowerCase(),
+    campaignAddress: campaignInstance.address,
     campaignName: res[0],
     organisationUrl: res[1],
     endTimestamp: res[2].toNumber(),
-    beneficiaryAddress: res[3].toLowerCase(),
-    campaignOwnerAddress: res[4].toLowerCase(),
+    beneficiaryAddress: res[3],
+    campaignOwnerAddress: res[4],
     targetDonationAmount: res[5].toString(),
     campaignDescription: res[6]
   }
