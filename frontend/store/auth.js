@@ -2,7 +2,7 @@ import jwtDecode from 'jwt-decode'
 import Web3 from 'web3'
 
 export const state = () => ({
-  isAPIEndpointActive: false,
+  isAPIEndpointActive: true,
   jwt: window.localStorage.getItem('jwt') || null
 })
 
@@ -28,11 +28,12 @@ export const mutations = {
 
 export const actions = {
   async checkAPIEndpoint (context) {
-    const res = await fetch(this.$config.api_url)
-    if (!res.ok) {
-      this.commit('auth/setAPIEndpointActive', false)
-    } else {
+    this.$http.setBaseURL(this.$config.api_url)
+    try {
+      await this.$http.$get('/')
       this.commit('auth/setAPIEndpointActive', true)
+    } catch (err) {
+      this.commit('auth/setAPIEndpointActive', false)
     }
   },
   async init (context) {
@@ -57,6 +58,14 @@ export const actions = {
       return false
     }
 
+    await context.dispatch('checkAPIEndpoint')
+    if (!context.state.isAPIEndpointActive) {
+      context.commit('setJWT', null)
+      context.commit('setConnected', false, { root: true })
+      context.commit('setPreviouslyConnected', false, { root: true })
+      return false
+    }
+
     const account = context.rootState.account
 
     if (context.state.jwt) {
@@ -70,44 +79,23 @@ export const actions = {
     }
 
     try {
+      this.$http.setBaseURL(this.$config.api_url)
       // Get the challenge nonce from the server to sign
-      const nonceRes = await fetch(this.$config.api_url + '/auth/login', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          pubkey: account
-        })
+      const nonceRes = await this.$http.$post('/auth/login', {
+        pubkey: account
       })
-
-      if (!nonceRes.ok) {
-        return false
-      }
 
       // Sign the challenge and send it back
       const web3 = context.rootState.web3 // Change to state after addCampaign changed
-      const challenge = (await nonceRes.json()).challenge
+      const challenge = nonceRes.challenge
       const signature = await web3.eth.personal.sign(challenge, account) // Sign the challenge
 
-      const jwtRes = await fetch(this.$config.api_url + '/auth/authenticate', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          pubkey: account,
-          signature
-        })
+      const jwtRes = await this.$http.$post('/auth/authenticate', {
+        pubkey: account,
+        signature
       })
 
-      if (!jwtRes.ok) {
-        return false
-      }
-
-      const jwt = (await jwtRes.json()).token
+      const jwt = jwtRes.token
       context.commit('setJWT', jwt)
       return true
     } catch (err) {
