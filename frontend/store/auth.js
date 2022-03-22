@@ -15,6 +15,7 @@ export const getters = {
 export const mutations = {
   setJWT (state, jwt) {
     state.jwt = jwt
+    this.$http.setToken(state.jwt, 'Bearer')
     if (jwt === null) {
       window.localStorage.removeItem('jwt')
     } else {
@@ -43,6 +44,9 @@ export const actions = {
     return false
   },
   async handleLogin (context) {
+    // Force set JWT to nuxt/http
+    context.commit('setJWT', context.state.jwt)
+
     // Check if provider exist first
     if (!context.rootGetters.hasProvider) {
       context.commit('setJWT', null)
@@ -79,7 +83,6 @@ export const actions = {
     }
 
     try {
-      this.$http.setBaseURL(this.$config.api_url)
       // Get the challenge nonce from the server to sign
       const nonceRes = await this.$http.$post('/auth/login', {
         pubkey: account
