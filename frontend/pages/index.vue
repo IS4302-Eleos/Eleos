@@ -83,12 +83,12 @@ export default {
     const campaigns = await this.getCampaigns()
 
     // Filter active and past campaigns
-    this.activeCampaigns = campaigns.filter((campaign) => {
-      return campaign.endTimestamp > this.dateNow
-    })
-
-    this.pastCampaigns = campaigns.filter((campaign) => {
-      return campaign.endTimestamp < this.dateNow
+    campaigns.forEach((campaign) => {
+      if (campaign.endTimestamp > this.dateNow) {
+        this.activeCampaigns.push(campaign)
+      } else {
+        this.pastCampaigns.push(campaign)
+      }
     })
   },
   methods: {
