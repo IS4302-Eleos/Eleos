@@ -7,7 +7,13 @@
         </h2>
       </b-navbar-item>
     </template>
-    <template #start />
+    <template #start>
+      <b-navbar-item tag="div">
+        <b-message v-if="!isAPIEndpointActive" type="is-danger" has-icon size="is-small">
+          We are unable to connect to our backend API services. Please check if you are connected to the network.
+        </b-message>
+      </b-navbar-item>
+    </template>
 
     <template #end>
       <b-navbar-item tag="div">
@@ -38,11 +44,12 @@ import { mapState, mapActions, mapGetters } from 'vuex'
 export default {
   name: 'EleosNavbar',
   computed: {
-    ...mapState([
-      'isConnected',
-      'isConnecting',
-      'isCorrectChain'
-    ]),
+    ...mapState({
+      isConnected: 'isConnected',
+      isConnecting: 'isConnecting',
+      isCorrectChain: 'isCorrectChain',
+      isAPIEndpointActive: state => state.auth.isAPIEndpointActive
+    }),
     ...mapGetters({
       hasProvider: 'hasProvider',
       isAuthenticated: 'auth/isAuthenticated'
