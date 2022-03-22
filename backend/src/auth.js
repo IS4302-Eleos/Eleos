@@ -19,8 +19,8 @@ router.post('/login', bodySchema({
     ctx.validate()
 
     // convert publickey to lowercase and verify
-    const publickey = ctx.request.body.pubkey.toLowerCase()
-    if (!utils.isAddress(publickey)) {
+    const publickey = ctx.request.body.pubkey
+    if (!utils.isAddress(publickey) || !utils.checkAddressChecksum(publickey)) {
       ctx.throw(400, 'Invalid public key')
     }
 
@@ -47,7 +47,7 @@ router.post('/authenticate', bodySchema({
     ctx.validate()
 
     // convert publickey to lowercase and verify
-    const publickey = ctx.request.body.pubkey.toLowerCase()
+    const publickey = ctx.request.body.pubkey
     const sig = ctx.request.body.signature
     const resetNonce = randomBytes(32).toString('hex')
 
@@ -60,7 +60,7 @@ router.post('/authenticate', bodySchema({
     // hash their nonce to get the challenge and verify key
     const hashed = utils.soliditySha3(user.nonce)
     const checkKey = web3.eth.accounts.recover(hashed, sig)
-    if (checkKey.toLowerCase() === publickey) {
+    if (utils.toChecksumAddress(checkKey) === publickey) {
       // if verified, reset their nonce and return jwt token
       await User.updateOne({ publickey }, { nonce: resetNonce })
       const token = jwt.sign({ publickey }, config.jwtSecret, {

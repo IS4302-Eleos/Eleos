@@ -55,6 +55,10 @@ export default {
     }
   },
 
+  http: {
+    baseURL: process.env.API_BASEURL || 'http://localhost:3000'
+  },
+
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
   },
@@ -76,6 +80,6 @@ export default {
   },
 
   router: {
-    middleware: ['route']
+    // middleware: ['route']
   }
 }

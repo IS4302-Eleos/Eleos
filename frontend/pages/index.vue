@@ -20,7 +20,7 @@
       <h3 class="title is-3">
         Active Campaigns
       </h3>
-      <div class="columns is-multiline">
+      <div v-if="activeCampaigns.length" class="columns is-multiline">
         <campaign-card
           v-for="campaign in activeCampaigns"
           :key="campaign.campaignAddress"
@@ -31,12 +31,15 @@
           :end-date="campaign.endTimestamp"
         />
       </div>
+      <div v-else class="block has-text-grey">
+        No active campaigns found!
+      </div>
     </section>
     <section class="section container">
       <h3 class="title is-3">
         Past Campaigns
       </h3>
-      <div class="columns is-multiline">
+      <div v-if="pastCampaigns.length" class="columns is-multiline">
         <campaign-card
           v-for="campaign in pastCampaigns"
           :key="campaign.campaignAddress"
@@ -47,8 +50,11 @@
           :end-date="campaign.endTimestamp"
         />
       </div>
+      <div v-else class="block has-text-grey">
+        No past campaigns found!
+      </div>
     </section>
-    <eleos-footer />
+    <eleos-footer class="mt-6" />
   </div>
 </template>
 
@@ -80,16 +86,19 @@ export default {
   },
   async mounted () {
     // Get all campaigns
-    const campaigns = await this.getCampaigns()
+    try {
+      const campaigns = await this.getCampaigns()
+      // Filter active and past campaigns
+      campaigns.forEach((campaign) => {
+        if (campaign.endTimestamp > this.dateNow) {
+          this.activeCampaigns.push(campaign)
+        } else {
+          this.pastCampaigns.push(campaign)
+        }
+      })
+    } catch (err) {
 
-    // Filter active and past campaigns
-    this.activeCampaigns = campaigns.filter((campaign) => {
-      return campaign.endTimestamp > this.dateNow
-    })
-
-    this.pastCampaigns = campaigns.filter((campaign) => {
-      return campaign.endTimestamp < this.dateNow
-    })
+    }
   },
   methods: {
     ...mapActions('api', [

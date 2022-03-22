@@ -22,7 +22,7 @@ describe('Campaigns test ', () => {
       organisationUrl: 'Eleos',
       endTimestamp: '2022-03-15T16:00:00Z',
       beneficiaryAddress: '0xdeadc0de',
-      campaignOwnerAddress: '0x1aec06d4d8b8303b73bee7a754d454fe012057e9',
+      campaignOwnerAddress: '0x1aeC06D4d8B8303b73bEe7A754d454Fe012057e9',
       targetDonationAmount: 9999,
       campaignDescription: 'This is a test campaign'
     })
@@ -95,7 +95,7 @@ describe('Campaigns test ', () => {
             campaignAddress: '0xdeadbeef',
             campaignName: 'Test campaign 1',
             endTimestamp: '2022-03-15T16:00:00.000Z',
-            campaignOwnerAddress: '0x1aec06d4d8b8303b73bee7a754d454fe012057e9'
+            campaignOwnerAddress: '0x1aeC06D4d8B8303b73bEe7A754d454Fe012057e9'
           },
           {
             campaignAddress: '0xdeadbeef2a',

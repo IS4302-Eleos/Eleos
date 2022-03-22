@@ -134,6 +134,7 @@ import { mapActions } from 'vuex'
 
 export default {
   name: 'InfoPage',
+  middleware: 'validCampaign',
   data () {
     return {
       title: 'CampaignInfoPage',

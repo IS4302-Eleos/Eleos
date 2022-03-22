@@ -73,20 +73,20 @@ describe('Testing campaignListener utils', () => {
 
     await new Promise(resolve => setTimeout(resolve, 1000))
 
-    assert.equal(testOwnerAddress.toLowerCase(), campaignOwner.toLowerCase())
-    assert.equal(testCampaignAddress.toLowerCase(), campaignAddress.toLowerCase())
+    assert.equal(testOwnerAddress, campaignOwner)
+    assert.equal(testCampaignAddress, campaignAddress)
   })
 
   it('getCampaignInfo should retrieve information of the given campaign', async () => {
     campaignInstance = await campaignContract.at(campaignAddress)
     campaignInfo = await getCampaignInfo(campaignInstance)
 
-    assert.equal(campaignAddress.toLowerCase(), campaignInfo.campaignAddress.toLowerCase())
+    assert.equal(campaignAddress, campaignInfo.campaignAddress)
     assert.equal(campaignName, campaignInfo.campaignName)
     assert.equal(organisationUrl, campaignInfo.organisationUrl)
     assert.equal(endTimestamp, campaignInfo.endTimestamp)
-    assert.equal(beneficiaryAddress.toLowerCase(), campaignInfo.beneficiaryAddress.toLowerCase())
-    assert.equal(campaignOwnerAddress.toLowerCase(), campaignInfo.campaignOwnerAddress.toLowerCase())
+    assert.equal(beneficiaryAddress, campaignInfo.beneficiaryAddress)
+    assert.equal(campaignOwnerAddress, campaignInfo.campaignOwnerAddress)
     assert.equal(targetDonationAmount.toString(), campaignInfo.targetDonationAmount)
     assert.equal(campaignDescription, campaignInfo.campaignDescription)
   })
