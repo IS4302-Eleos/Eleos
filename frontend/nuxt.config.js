@@ -76,6 +76,12 @@ export default {
     }
   },
 
+  dayjs: {
+    plugins: [
+      'relativeTime'
+    ]
+  },
+
   privateRuntimeConfig: {
   },
 
