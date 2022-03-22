@@ -32,7 +32,7 @@ export const mutations = {
     window.localStorage.setItem('hasPreviouslyConnected', previouslyConnected)
   },
   setAccount (state, account) {
-    state.account = account
+    state.account = Web3.utils.toChecksumAddress(account)
   },
   setIsCorrectChain (state, isCorrectChain) {
     state.isCorrectChain = isCorrectChain

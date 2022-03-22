@@ -14,6 +14,7 @@
 <script>
 export default {
   name: 'EditPage',
+  middleware: 'validCampaign',
   data () {
     return {
       title: 'Sample Edit Page'

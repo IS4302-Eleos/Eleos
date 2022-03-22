@@ -1,4 +1,5 @@
 import jwtDecode from 'jwt-decode'
+import Web3 from 'web3'
 
 export const state = () => ({
   isAPIEndpointActive: false,
@@ -61,7 +62,7 @@ export const actions = {
     if (context.state.jwt) {
       // Check if JWT has expired and is using the account of the current user.
       const JWTdecoded = jwtDecode(context.state.jwt)
-      if (JWTdecoded.exp && JWTdecoded.exp > (Date.now() / 1000) && JWTdecoded.publickey && JWTdecoded.publickey.toLowerCase() === account.toLowerCase()) {
+      if (JWTdecoded.exp && JWTdecoded.exp > (Date.now() / 1000) && JWTdecoded.publickey && Web3.utils.toChecksumAddress(JWTdecoded.publickey) === account) {
         return true
       }
 
