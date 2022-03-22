@@ -56,6 +56,7 @@ export default {
   },
   async mounted () {
     if (this.isConnected) {
+      // Get current donation amount of campaign
       const campaignInstance = await this.getCampaignInstance(this.address)
       const totalDonationAmount = await this.getCampaignTotalDonations(campaignInstance)
       this.currentAmount = totalDonationAmount
