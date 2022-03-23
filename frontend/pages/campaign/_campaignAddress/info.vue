@@ -184,7 +184,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import Web3 from 'web3'
 
 export default {
@@ -192,23 +192,33 @@ export default {
   middleware: 'validCampaign',
   data () {
     return {
+      campaignInstance: null,
+      // Information from backend
+      campaignAddress: '',
       campaignName: null,
-      organisationUrl: null,
       endTimestamp: null,
+      organisationUrl: null,
       beneficiaryAddress: null,
       campaignOwnerAddress: null,
       targetDonationAmount: null,
       campaignDescription: null,
+      // Information from blockchain
       noOfDonors: 0,
       totalDonationAmount: 0,
       availableDonationAmount: 0,
       sampleDonationRecords: {},
       withdrawRecords: {},
-      selectedAddress: '0xDEAD', // 0xDEAD to test for normal users
-      campaignAddress: ''
+      // Information on page
+      newDonationAmount: 0
     }
   },
   computed: {
+    ...mapState([
+      'account'
+    ]),
+    ...mapState('api', [
+      'campaigns'
+    ]),
     timeLeft () {
       if (this.endTimestamp === 8640000000000000) {
         return 'Indefinite'
@@ -231,13 +241,22 @@ export default {
       return Web3.utils.fromWei(this.targetDonationAmount, 'ether')
     },
     isCampaignOwnerOrBeneficiary () {
-      return this.selectedAddress === this.campaignOwnerAddress || this.selectedAddress === this.beneficiaryAddress
+      return this.account === this.campaignOwnerAddress || this.account === this.beneficiaryAddress
     }
   },
-  mounted () {
+  async mounted () {
     this.campaignAddress = this.$route.params.campaignAddress
-    this.loadCampaignDetails()
-    this.setOtherCampaignDetails()
+    this.campaignInstance = await this.getCampaignInstance(this.campaignAddress)
+
+    // Retrieve campaigns if not already in api store's state
+    // To be replaced with graphql api call to get single campaign if possible
+    if (Object.entries(this.campaigns).length === 0 || !(this.campaignAddress in this.campaigns)) {
+      await this.getCampaigns()
+    }
+
+    // Update campaign info in state
+    this.setFixedCampaignDetails()
+    this.loadBlockchainCampaignDetails()
   },
   methods: {
     ...mapActions('api', [
@@ -271,14 +290,14 @@ export default {
         this.withdrawRecords[i] = [withdrawInstantiators[i], Web3.utils.fromWei(withdrawAmounts[i])]
       }
     },
-    async loadCampaignDetails () {
-      const campaignInstance = await this.getCampaignInstance(this.campaignAddress)
+    async loadBlockchainCampaignDetails () {
+      // Retrieve information from campaign on the blockchain
       const results = await Promise.all(
         [
-          this.getCampaignDonationRecords(campaignInstance),
-          this.getCampaignTotalDonations(campaignInstance),
-          this.getCampaignTargetAmount(campaignInstance),
-          this.getCampaignWithdrawRecords(campaignInstance)
+          this.getCampaignDonationRecords(this.campaignInstance),
+          this.getCampaignTotalDonations(this.campaignInstance),
+          this.getCampaignTargetAmount(this.campaignInstance),
+          this.getCampaignWithdrawRecords(this.campaignInstance)
         ]
       )
       this.setDonationRecords(results[0])
@@ -286,22 +305,16 @@ export default {
       this.targetDonationAmount = results[2]
       this.setWithdrawRecords(results[3])
     },
-    async setOtherCampaignDetails () {
-      let campaignDetails
-      // To be replaced with graphql api call to get single campaign if possible
-      const campaigns = await this.getCampaigns()
-      await campaigns.forEach((campaign) => {
-        if (campaign.campaignAddress === this.campaignAddress) {
-          campaignDetails = campaign
-        }
-      })
-      this.campaignName = campaignDetails.campaignName
-      this.campaignDescription = campaignDetails.campaignDescription
-      this.beneficiaryAddress = campaignDetails.beneficiaryAddress
-      this.campaignOwnerAddress = campaignDetails.campaignOwnerAddress
-      this.endTimestamp = campaignDetails.endTimestamp.getTime()
-      this.organisationUrl = campaignDetails.organisationUrl
-      console.log(campaignDetails)
+    setFixedCampaignDetails () {
+      // Update campaign info in state
+      const campaign = this.campaigns[this.campaignAddress]
+      this.campaignName = campaign.campaignName
+      this.endTimestamp = campaign.endTimestamp.getTime()
+      this.organisationUrl = campaign.organisationUrl
+      this.beneficiaryAddress = campaign.beneficiaryAddress
+      this.campaignOwnerAddress = campaign.campaignOwnerAddress
+      this.targetDonationAmount = campaign.targetDonationAmount
+      this.campaignDescription = campaign.campaignDescription
     }
   }
 }
