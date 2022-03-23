@@ -48,18 +48,18 @@
               </p>
             </div>
             <div class="media-right">
-              <b-field v-if="!isCampaignOwnerOrBeneficiary">
-                <b-input placeholder="Donate ETH..." type="search" />
+              <b-field v-if="!isCampaignOwnerOrBeneficiary" grouped>
+                <b-numberinput v-model="newDonationAmount" controls-position="compact" :min="0" :step="0.01" />
                 <p class="control">
-                  <b-button class="button is-success" @click="donate">
+                  <b-button class="button is-success" @click="submitDonation">
                     Donate
                   </b-button>
                 </p>
               </b-field>
-              <b-field v-else>
+              <b-field v-else grouped>
                 <b-input placeholder="Withdraw ETH..." type="search" />
                 <p class="control">
-                  <b-button class="button is-success" @click="withdraw">
+                  <b-button class="button is-success" @click="submitWithdrawal">
                     Withdraw
                   </b-button>
                 </p>
@@ -164,7 +164,10 @@
             <b-tab-item label="Donations">
               <div v-for="(donationAmount, donor) in sampleDonationRecords" :key="donor" class="media">
                 <div class="media-left">
-                  {{ donor }} donated {{ donationAmount }} ETH!
+                  <NuxtLink :to="`/user/${donor}`">
+                    {{ donor }}
+                  </NuxtLink>
+                  donated {{ donationAmount }} ETH!
                 </div>
               </div>
             </b-tab-item>
@@ -267,12 +270,44 @@ export default {
       'getCampaignTotalDonations',
       'getCampaignDonationRecords',
       'getCampaignWithdrawRecords',
-      'getCampaignInstance'
+      'getCampaignInstance',
+      'donate'
     ]),
-    donate () {
-      console.log('donate!')
+    async submitDonation () {
+      if (this.newDonationAmount === 0) {
+        this.$buefy.toast.open({
+          duration: 5000,
+          message: 'Please donate at least 0.01 ETH',
+          type: 'is-warning'
+        })
+        return
+      }
+
+      try {
+        // Submit donation
+        await this.donate({
+          campaignInstance: this.campaignInstance,
+          amountInEth: this.newDonationAmount
+        })
+
+        // Update donation records
+        this.loadBlockchainCampaignDetails()
+
+        this.$buefy.toast.open({
+          duration: 5000,
+          message: 'Donation successful!',
+          type: 'is-success'
+        })
+      } catch (err) {
+        console.log(err)
+        this.$buefy.toast.open({
+          duration: 5000,
+          message: 'Unable to donate. Please try again later.',
+          type: 'is-danger'
+        })
+      }
     },
-    withdraw () {
+    submitWithdrawal () {
       console.log('withdraw!')
     },
     setDonationRecords (donationRecords) {
@@ -296,14 +331,12 @@ export default {
         [
           this.getCampaignDonationRecords(this.campaignInstance),
           this.getCampaignTotalDonations(this.campaignInstance),
-          this.getCampaignTargetAmount(this.campaignInstance),
           this.getCampaignWithdrawRecords(this.campaignInstance)
         ]
       )
       this.setDonationRecords(results[0])
       this.totalDonationAmount = results[1]
-      this.targetDonationAmount = results[2]
-      this.setWithdrawRecords(results[3])
+      this.setWithdrawRecords(results[2])
     },
     setFixedCampaignDetails () {
       // Update campaign info in state

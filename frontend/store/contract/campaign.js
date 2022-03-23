@@ -29,5 +29,13 @@ export const actions = {
     const targetAmount = await campaignInstance.methods.getTargetDonationAmount().call()
     const targetAmountEth = Web3.utils.fromWei(targetAmount, 'ether')
     return targetAmountEth
+  },
+  // Donate to campaign
+  async donate (context, { campaignInstance, amountInEth }) {
+    const amountInWei = Web3.utils.toWei(amountInEth.toString(), 'ether')
+    await campaignInstance.methods.donate().send({
+      from: context.rootState.account,
+      value: amountInWei
+    })
   }
 }
