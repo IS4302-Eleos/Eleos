@@ -54,6 +54,7 @@ describe('Campaigns test ', () => {
   })
 
   after(async () => {
+    await Campaign.collection.drop()
     mongoose.connection.close()
     app.instance.close()
   })

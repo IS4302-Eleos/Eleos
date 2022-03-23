@@ -1,11 +1,17 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.5.0;
 import "./Campaign.sol";
+import "./AddressSet.sol";
 
 contract CampaignFactory {
+    using AddressSet for AddressSet.Set;
+
     address public endorsementAddress;
 
     event CampaignStarted(address ownerAddress, address campaignAddress);
+    event Donate(address campaignAddress, address donorAddress, uint256 amount);
+
+    AddressSet.Set createdCampaigns;
 
     constructor(address _endorsementAddress) payable {
         require(
@@ -64,11 +70,19 @@ contract CampaignFactory {
             _campaignDescription
         );
 
+        // Add new campaign to set of created campaigns
+        createdCampaigns.insert(address(newCampaign));
+
         emit CampaignStarted(_campaignOwnerAddress, address(newCampaign));
         return address(newCampaign);
     }
 
     function getEndorsementAddress() public view returns (address) {
         return endorsementAddress;
+    }
+
+    function emitDonateEvent(address donorAddress, uint256 amount) public {
+        require(createdCampaigns.exists(msg.sender), "Sender must be a Campaign created from this CampaignFactory");
+        emit Donate(msg.sender, donorAddress, amount);
     }
 }

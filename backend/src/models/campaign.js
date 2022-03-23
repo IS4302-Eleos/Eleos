@@ -2,15 +2,15 @@ import mongoose from 'mongoose'
 
 const CampaignSchema = new mongoose.Schema({
   campaignAddress: {
-    type: Buffer,
+    type: String,
     required: true,
     unique: true
   },
   campaignName: String,
   organisationUrl: String,
   endTimestamp: Date,
-  beneficiaryAddress: Buffer,
-  campaignOwnerAddress: Buffer,
+  beneficiaryAddress: String,
+  campaignOwnerAddress: String,
   targetDonationAmount: String,
 
   campaignDescription: String
