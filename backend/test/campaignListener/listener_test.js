@@ -47,6 +47,7 @@ describe('Testing campaignListener', () => {
       })
 
       listenerProcess = spawn('node', ['campaignListener/listener.js'], {
+        shell: true,
         env: { CAMPAIGN_FACTORY_ADDRESS: campaignFactoryInstance.address },
         detached: true
       })
@@ -116,6 +117,7 @@ describe('Testing campaignListener', () => {
       })
 
       listenerProcess = spawn('node', ['campaignListener/listener.js'], {
+        shell: true,
         env: { CAMPAIGN_FACTORY_ADDRESS: campaignFactoryInstance.address },
         detached: true
       })
