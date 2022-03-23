@@ -18,7 +18,7 @@
               </p>
               <div class="subtitle is-6">
                 <p>{{ campaignAddress }}</p>
-                <p><a :href="organisationUrl" target="_blank">Organisation Site</a></p>
+                <a :href="organisationUrl" target="_blank">{{ organisationUrl }}</a>
               </div>
               <div class="subtitle is-6">
                 <p>
