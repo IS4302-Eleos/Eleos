@@ -17,6 +17,10 @@ contract Campaign {
     mapping(address => uint256) public donations;
     address[] donorAddresses;
 
+    // Double array of withdraw records
+    address[] withdrawInstantiators;
+    uint256[] withdrawAmounts;
+
     event Donate(address donorAddress, uint256 amount);
     event Withdraw(
         address withdrawerAddress,
@@ -90,6 +94,8 @@ contract Campaign {
         hasAvailableDonationBalance(amount)
     {
         beneficiaryAddress.transfer(amount);
+        withdrawInstantiators.push(msg.sender);
+        withdrawAmounts.push(amount);
         emit Withdraw(msg.sender, amount, beneficiaryAddress);
     }
 
@@ -144,6 +150,17 @@ contract Campaign {
             donationAmounts[i] = donations[currAddressPtr];
         }
         return (donorAddresses, donationAmounts);
+    }
+
+    function getWithdrawRecords()
+        public
+        view
+        returns (
+            address[] memory,
+            uint256[] memory
+        )
+    {
+        return (withdrawInstantiators, withdrawAmounts);
     }
 
     function getDonationAmountByAddress(address donorAddress)

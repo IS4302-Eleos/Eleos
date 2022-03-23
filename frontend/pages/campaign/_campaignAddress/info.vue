@@ -170,7 +170,11 @@
             </b-tab-item>
 
             <b-tab-item label="Withdraws">
-              Withdraw Records here...
+              <div v-for="withdrawRecord, i in withdrawRecords" :key="i" class="media">
+                <div class="media-left">
+                  {{ withdrawRecord[0] }} started the withdraw. {{ withdrawRecord[1] }} ETH withdrawn to {{ beneficiaryAddress }}!
+                </div>
+              </div>
             </b-tab-item>
           </b-tabs>
         </div>
@@ -199,6 +203,7 @@ export default {
       totalDonationAmount: 0,
       availableDonationAmount: 0,
       sampleDonationRecords: {},
+      withdrawRecords: {},
       selectedAddress: '0xDEAD', // 0xDEAD to test for normal users
       campaignAddress: ''
     }
@@ -211,10 +216,10 @@ export default {
       return this.$dayjs(this.endTimestamp).fromNow(true)
     },
     donationProgress () {
-      if (this.totalDonationAmount === 0) {
+      if (this.totalDonationAmount >= this.targetDonationAmount) {
         return 100
       }
-      return Math.min((this.availableDonationAmount / this.totalDonationAmount), 1) * 100
+      return Math.min((this.totalDonationAmount / this.targetDonationAmount), 1) * 100
     },
     availableDonationsETH () {
       return Web3.utils.fromWei(this.availableDonationAmount, 'ether')
@@ -242,6 +247,7 @@ export default {
       'getCampaignTargetAmount',
       'getCampaignTotalDonations',
       'getCampaignDonationRecords',
+      'getCampaignWithdrawRecords',
       'getCampaignInstance'
     ]),
     donate () {
@@ -258,12 +264,28 @@ export default {
       }
       this.noOfDonors = donors.length
     },
+    setWithdrawRecords (withdrawRecords) {
+      const withdrawInstantiators = withdrawRecords[0]
+      const withdrawAmounts = withdrawRecords[1]
+      for (let i = 0; i < withdrawInstantiators.length; i++) {
+        this.withdrawRecords[i] = [withdrawInstantiators[i], Web3.utils.fromWei(withdrawAmounts[i])]
+      }
+      console.log(this.withdrawRecords)
+    },
     async loadCampaignDetails () {
       const campaignInstance = await this.getCampaignInstance(this.campaignAddress)
-      const results = await Promise.all([this.getCampaignDonationRecords(campaignInstance), this.getCampaignTotalDonations(campaignInstance), this.getCampaignTargetAmount(campaignInstance)])
+      const results = await Promise.all(
+        [
+          this.getCampaignDonationRecords(campaignInstance),
+          this.getCampaignTotalDonations(campaignInstance),
+          this.getCampaignTargetAmount(campaignInstance),
+          this.getCampaignWithdrawRecords(campaignInstance)
+        ]
+      )
       this.setDonationRecords(results[0])
       this.totalDonationAmount = results[1]
       this.targetDonationAmount = results[2]
+      this.setWithdrawRecords(results[3])
     },
     async setOtherCampaignDetails () {
       let campaignDetails
