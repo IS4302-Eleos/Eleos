@@ -48,7 +48,7 @@
               </p>
             </div>
             <div class="media-right">
-              <b-field v-if="!isCampaignOwnerOrBeneficiary" grouped>
+              <b-field v-if="!isBeneficiary" grouped>
                 <b-numberinput
                   v-model="newDonationAmount"
                   controls-position="compact"
@@ -61,7 +61,7 @@
                   </b-button>
                 </p>
               </b-field>
-              <b-field v-else grouped>
+              <b-field v-if="isCampaignOwnerOrBeneficiary" grouped>
                 <b-numberinput
                   v-model="newWithdrawalAmount"
                   controls-position="compact"
@@ -251,6 +251,9 @@ export default {
         return 100
       }
       return Math.round(Math.min((this.totalDonationAmount / this.targetDonationAmount), 1) * 100)
+    },
+    isBeneficiary () {
+      return this.account === this.beneficiaryAddress
     },
     isCampaignOwnerOrBeneficiary () {
       return this.account === this.campaignOwnerAddress || this.account === this.beneficiaryAddress
