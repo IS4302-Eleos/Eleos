@@ -11,24 +11,30 @@ export const actions = {
     return campaignInstance
   },
   // Get donation amount of a campaign
-  async getCampaignTotalDonations (context, campaignInstance) {
+  async getTotalDonations (context, campaignInstance) {
     const totalDonationsWei = await campaignInstance.methods.getTotalDonationAmount().call()
     const totalDonationsEth = Web3.utils.fromWei(totalDonationsWei, 'ether')
     return Number(totalDonationsEth)
   },
-  async getCampaignDonationRecords (context, campaignInstance) {
+  async getDonationRecords (context, campaignInstance) {
     const donationRecords = await campaignInstance.methods.getDonationRecords().call()
     return donationRecords
   },
-  async getCampaignWithdrawRecords (context, campaignInstance) {
+  async getWithdrawRecords (context, campaignInstance) {
     const withdrawRecords = await campaignInstance.methods.getWithdrawRecords().call()
     return withdrawRecords
   },
   // Temporarily get target amount from blockchain...
-  async getCampaignTargetAmount (context, campaignInstance) {
+  async getTargetAmount (context, campaignInstance) {
     const targetAmount = await campaignInstance.methods.getTargetDonationAmount().call()
     const targetAmountEth = Web3.utils.fromWei(targetAmount, 'ether')
     return targetAmountEth
+  },
+  // Get withdrawal balance of campaign
+  async getWithdrawalBalance (context, campaignInstance) {
+    const withdrawBalance = await campaignInstance.methods.getWithdrawalBalance().call()
+    const withdrawBalanceEth = Web3.utils.fromWei(withdrawBalance, 'ether')
+    return withdrawBalanceEth
   },
   // Donate to campaign
   async donate (context, { campaignInstance, amountInEth }) {
@@ -36,6 +42,12 @@ export const actions = {
     await campaignInstance.methods.donate().send({
       from: context.rootState.account,
       value: amountInWei
+    })
+  },
+  async withdraw (context, { campaignInstance, amountInEth }) {
+    const amountInWei = Web3.utils.toWei(amountInEth.toString(), 'ether')
+    await campaignInstance.methods.withdraw(amountInWei).send({
+      from: context.rootState.account
     })
   }
 }

@@ -49,7 +49,12 @@
             </div>
             <div class="media-right">
               <b-field v-if="!isCampaignOwnerOrBeneficiary" grouped>
-                <b-numberinput v-model="newDonationAmount" controls-position="compact" :min="0" :step="0.01" />
+                <b-numberinput
+                  v-model="newDonationAmount"
+                  controls-position="compact"
+                  :min="0"
+                  :step="0.01"
+                />
                 <p class="control">
                   <b-button class="button is-success" @click="submitDonation">
                     Donate
@@ -57,7 +62,13 @@
                 </p>
               </b-field>
               <b-field v-else grouped>
-                <b-input placeholder="Withdraw ETH..." type="search" />
+                <b-numberinput
+                  v-model="newWithdrawalAmount"
+                  controls-position="compact"
+                  :min="0"
+                  :max="withdrawalBalance"
+                  :step="0.01"
+                />
                 <p class="control">
                   <b-button class="button is-success" @click="submitWithdrawal">
                     Withdraw
@@ -67,7 +78,7 @@
             </div>
           </div>
           <hr>
-          <div v-if="!isCampaignOwnerOrBeneficiary" class="mb-6">
+          <div class="mb-6">
             <b-progress
               v-if="donationProgress < 100"
               type="is-primary"
@@ -108,20 +119,20 @@
                 <div v-if="isCampaignOwnerOrBeneficiary" class="level-item has-text-centered">
                   <div>
                     <p class="heading">
-                      Available Donations Amt
+                      Withdrawal Balance
                     </p>
                     <p class="title">
-                      <template v-if="availableDonationAmount">
-                        {{ availableDonationAmount }} ETH
+                      <template v-if="withdrawalBalance">
+                        {{ withdrawalBalance }} ETH
                       </template>
-                      <b-skeleton :active="!availableDonationAmount" size="is-large" />
+                      <b-skeleton :active="!withdrawalBalance" size="is-large" />
                     </p>
                   </div>
                 </div>
                 <div class="level-item has-text-centered">
                   <div>
                     <p class="heading">
-                      Total Donations Amt
+                      Total Amount
                     </p>
                     <p class="title">
                       <template v-if="totalDonationAmount !== null">
@@ -134,7 +145,7 @@
                 <div class="level-item has-text-centered">
                   <div>
                     <p class="heading">
-                      Target Donations Amt
+                      Target Amount
                     </p>
                     <p class="title">
                       <template v-if="targetDonationAmount">
@@ -167,7 +178,7 @@
                   <NuxtLink :to="`/user/${donor}`">
                     {{ donor }}
                   </NuxtLink>
-                  donated {{ donationAmount }} ETH!
+                  donated {{ donationAmount }} ETH
                 </div>
               </div>
             </b-tab-item>
@@ -175,7 +186,13 @@
             <b-tab-item label="Withdraws">
               <div v-for="withdrawRecord, i in withdrawRecords" :key="i" class="media">
                 <div class="media-left">
-                  {{ withdrawRecord[0] }} started the withdraw. {{ withdrawRecord[1] }} ETH withdrawn to {{ beneficiaryAddress }}!
+                  <NuxtLink :to="`/user/${withdrawRecord[0]}`">
+                    {{ withdrawRecord[0] }}
+                  </NuxtLink>
+                  initiated a withdrawal of {{ withdrawRecord[1] }} ETH to
+                  <NuxtLink :to="`/user/${beneficiaryAddress}`">
+                    {{ beneficiaryAddress }}
+                  </NuxtLink>
                 </div>
               </div>
             </b-tab-item>
@@ -208,11 +225,12 @@ export default {
       // Information from blockchain
       noOfDonors: 0,
       totalDonationAmount: 0,
-      availableDonationAmount: 0,
+      withdrawalBalance: 0,
       sampleDonationRecords: {},
       withdrawRecords: {},
       // Information on page
-      newDonationAmount: 0
+      newDonationAmount: 0,
+      newWithdrawalAmount: 0
     }
   },
   computed: {
@@ -232,16 +250,7 @@ export default {
       if (this.totalDonationAmount >= this.targetDonationAmount) {
         return 100
       }
-      return Math.min((this.totalDonationAmount / this.targetDonationAmount), 1) * 100
-    },
-    availableDonationsETH () {
-      return Web3.utils.fromWei(this.availableDonationAmount, 'ether')
-    },
-    totalDonationsETH () {
-      return Web3.utils.fromWei(this.totalDonationAmount, 'ether')
-    },
-    targetDonationsETH () {
-      return Web3.utils.fromWei(this.targetDonationAmount, 'ether')
+      return Math.round(Math.min((this.totalDonationAmount / this.targetDonationAmount), 1) * 100)
     },
     isCampaignOwnerOrBeneficiary () {
       return this.account === this.campaignOwnerAddress || this.account === this.beneficiaryAddress
@@ -257,6 +266,12 @@ export default {
       await this.getCampaigns()
     }
 
+    // If campaign does not exist
+    if (!(this.campaignAddress in this.campaigns)) {
+      this.$router.push('/404')
+      return
+    }
+
     // Update campaign info in state
     this.setFixedCampaignDetails()
     this.loadBlockchainCampaignDetails()
@@ -266,12 +281,14 @@ export default {
       'getCampaigns'
     ]),
     ...mapActions('contract/campaign', [
-      'getCampaignTargetAmount',
-      'getCampaignTotalDonations',
-      'getCampaignDonationRecords',
-      'getCampaignWithdrawRecords',
+      'getTargetAmount',
+      'getTotalDonations',
+      'getDonationRecords',
+      'getWithdrawRecords',
       'getCampaignInstance',
-      'donate'
+      'getWithdrawalBalance',
+      'donate',
+      'withdraw'
     ]),
     async submitDonation () {
       if (this.newDonationAmount === 0) {
@@ -307,8 +324,48 @@ export default {
         })
       }
     },
-    submitWithdrawal () {
-      console.log('withdraw!')
+    async submitWithdrawal () {
+      if (this.withdrawalBalance === 0) {
+        this.$buefy.toast.open({
+          duration: 5000,
+          message: 'All donations have been withdrawn.',
+          type: 'is-danger'
+        })
+        return
+      }
+
+      if (this.newWithdrawalAmount === 0) {
+        this.$buefy.toast.open({
+          duration: 5000,
+          message: 'Please withdraw at least 0.01 ETH',
+          type: 'is-warning'
+        })
+        return
+      }
+
+      try {
+        // Submit withdrawal
+        await this.withdraw({
+          campaignInstance: this.campaignInstance,
+          amountInEth: this.newWithdrawalAmount
+        })
+
+        // Update withdrawal records
+        this.loadBlockchainCampaignDetails()
+
+        this.$buefy.toast.open({
+          duration: 5000,
+          message: 'Withdrawal successful!',
+          type: 'is-success'
+        })
+      } catch (error) {
+        console.log(error)
+        this.$buefy.toast.open({
+          duration: 5000,
+          message: 'Unable to withdraw. Please try again later.',
+          type: 'is-danger'
+        })
+      }
     },
     setDonationRecords (donationRecords) {
       const donors = donationRecords[0]
@@ -329,14 +386,16 @@ export default {
       // Retrieve information from campaign on the blockchain
       const results = await Promise.all(
         [
-          this.getCampaignDonationRecords(this.campaignInstance),
-          this.getCampaignTotalDonations(this.campaignInstance),
-          this.getCampaignWithdrawRecords(this.campaignInstance)
+          this.getDonationRecords(this.campaignInstance),
+          this.getTotalDonations(this.campaignInstance),
+          this.getWithdrawRecords(this.campaignInstance),
+          this.getWithdrawalBalance(this.campaignInstance)
         ]
       )
       this.setDonationRecords(results[0])
       this.totalDonationAmount = results[1]
       this.setWithdrawRecords(results[2])
+      this.withdrawalBalance = results[3]
     },
     setFixedCampaignDetails () {
       // Update campaign info in state

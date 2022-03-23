@@ -171,7 +171,7 @@ contract Campaign {
         return donations[donorAddress];
     }
 
-    function getAvailableDonationBalance() public view returns (uint256) {
+    function getWithdrawalBalance() public view returns (uint256) {
         return address(this).balance;
     }
 }

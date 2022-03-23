@@ -58,14 +58,14 @@ export default {
     if (this.isConnected) {
       // Get current donation amount of campaign
       const campaignInstance = await this.getCampaignInstance(this.address)
-      const totalDonationAmount = await this.getCampaignTotalDonations(campaignInstance)
+      const totalDonationAmount = await this.getTotalDonations(campaignInstance)
       this.currentAmount = totalDonationAmount
     }
   },
   methods: {
     ...mapActions('contract/campaign', [
       'getCampaignInstance',
-      'getCampaignTotalDonations'
+      'getTotalDonations'
     ])
   }
 }
