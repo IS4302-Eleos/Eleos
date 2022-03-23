@@ -361,8 +361,8 @@ export default {
           message: 'Withdrawal successful!',
           type: 'is-success'
         })
-      } catch (error) {
-        console.log(error)
+      } catch (err) {
+        console.log(err)
         this.$buefy.toast.open({
           duration: 5000,
           message: 'Unable to withdraw. Please try again later.',
