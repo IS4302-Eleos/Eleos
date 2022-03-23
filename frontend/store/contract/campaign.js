@@ -17,8 +17,12 @@ export const actions = {
     return Number(totalDonationsEth)
   },
   async getCampaignDonationRecords (context, campaignInstance) {
-    const test = await campaignInstance.methods.getDonationRecords().call()
-    return test
+    const donationRecords = await campaignInstance.methods.getDonationRecords().call()
+    return donationRecords
+  },
+  async getCampaignWithdrawRecords (context, campaignInstance) {
+    const withdrawRecords = await campaignInstance.methods.getWithdrawRecords().call()
+    return withdrawRecords
   },
   // Temporarily get target amount from blockchain...
   async getCampaignTargetAmount (context, campaignInstance) {
