@@ -270,7 +270,6 @@ export default {
       for (let i = 0; i < withdrawInstantiators.length; i++) {
         this.withdrawRecords[i] = [withdrawInstantiators[i], Web3.utils.fromWei(withdrawAmounts[i])]
       }
-      console.log(this.withdrawRecords)
     },
     async loadCampaignDetails () {
       const campaignInstance = await this.getCampaignInstance(this.campaignAddress)
