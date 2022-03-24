@@ -1,11 +1,3 @@
-import Campaign from '../src/models/campaign.js'
-
-function subscribeToContractEvents (contractInstance, event, callback) {
-  const subscription = contractInstance[event]({})
-  subscription.on('data', callback)
-  return subscription
-}
-
 async function getCampaignInfo (campaignInstance) {
   const res = await Promise.all([
     campaignInstance.getCampaignName.call(),
@@ -29,9 +21,32 @@ async function getCampaignInfo (campaignInstance) {
   }
 }
 
-async function storeCampaignInfo (campaignInfo) {
-  const campaignDocument = new Campaign(campaignInfo)
-  return await campaignDocument.save()
+async function writeSingleDocument (json, model) {
+  try {
+    return await model.create(json)
+  } catch (err) {}
 }
 
-export { subscribeToContractEvents, getCampaignInfo, storeCampaignInfo }
+async function writeBulkDocuments (jsonList, model) {
+  try {
+    return await model.insertMany(jsonList, { ordered: false })
+  } catch (err) {}
+}
+
+function getAllEvents (contractInstance, eventName) {
+  const options = { fromBlock: 0, toBlock: 'latest' }
+  return contractInstance.getPastEvents(eventName, options)
+}
+
+function subscribeToContract (contractInstance, eventName, callback) {
+  return contractInstance[eventName]({})
+    .on('data', callback)
+}
+
+export default {
+  getCampaignInfo,
+  writeSingleDocument,
+  writeBulkDocuments,
+  getAllEvents,
+  subscribeToContract
+}

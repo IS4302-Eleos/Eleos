@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >= 0.5.0;
+import "./CampaignFactory.sol";
 
 contract Campaign {
     string campaignName;
@@ -9,6 +10,8 @@ contract Campaign {
     address campaignOwnerAddress;
     uint256 targetDonationAmount;
     string campaignDescription;
+
+    CampaignFactory origin;
 
     // Default starting donated sum
     uint256 totalDonationAmount = 0;
@@ -39,6 +42,7 @@ contract Campaign {
         campaignOwnerAddress = _campaignOwnerAddress;
         targetDonationAmount = _targetDonationAmount;
         campaignDescription = _campaignDescription;
+        origin = CampaignFactory(msg.sender);
     }
 
     // Checks if the donation value is not zero.
@@ -76,6 +80,7 @@ contract Campaign {
         totalDonationAmount += msg.value;
         donations[msg.sender] += msg.value;
         emit Donate(msg.sender, msg.value);
+        origin.emitDonateEvent(msg.sender, msg.value);
     }
 
     // Withdraws the specified eth amount from this campaign contract.
