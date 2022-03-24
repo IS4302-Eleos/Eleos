@@ -208,7 +208,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import Web3 from 'web3'
+import { ethers } from 'ethers'
 
 export default {
   name: 'InfoPage',
@@ -264,7 +264,7 @@ export default {
     }
   },
   async mounted () {
-    if (!this.isConnected) {
+    if (!this.$wallet.provider) {
       this.$buefy.toast.open({
         duration: 5000,
         message: 'You are not connected to the blockchain. Please connect to the blockchain and refresh the page.',
@@ -281,13 +281,10 @@ export default {
       await this.getCampaigns()
     }
 
-    if (this.isConnected) {
-      this.campaignInstance = await this.getCampaignInstance(this.campaignAddress)
-    }
-
     // Update campaign info in state
     this.setFixedCampaignDetails()
-    if (this.isConnected) {
+    if (await this.$wallet.provider.ready) {
+      this.campaignInstance = await this.getCampaignInstance(this.campaignAddress)
       this.loadBlockchainCampaignDetails()
     }
   },
@@ -386,7 +383,7 @@ export default {
       const donors = donationRecords[0]
       const donationAmounts = donationRecords[1]
       for (let i = 0; i < donors.length; i++) {
-        this.sampleDonationRecords[donors[i]] = Web3.utils.fromWei(donationAmounts[i])
+        this.sampleDonationRecords[donors[i]] = ethers.utils.formatEther(donationAmounts[i])
       }
       this.noOfDonors = donors.length
     },
@@ -394,7 +391,7 @@ export default {
       const withdrawInstantiators = withdrawRecords[0]
       const withdrawAmounts = withdrawRecords[1]
       for (let i = 0; i < withdrawInstantiators.length; i++) {
-        this.withdrawRecords[i] = [withdrawInstantiators[i], Web3.utils.fromWei(withdrawAmounts[i])]
+        this.withdrawRecords[i] = [withdrawInstantiators[i], ethers.utils.formatEther(withdrawAmounts[i])]
       }
     },
     async loadBlockchainCampaignDetails () {

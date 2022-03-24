@@ -1,5 +1,5 @@
 import jwtDecode from 'jwt-decode'
-import Web3 from 'web3'
+import { ethers } from 'ethers'
 
 export const state = () => ({
   isAPIEndpointActive: true,
@@ -69,12 +69,12 @@ export const actions = {
       return false
     }
 
-    const account = context.rootState.account
+    const account = this.$wallet.account
 
     if (context.state.jwt) {
       // Check if JWT has expired and is using the account of the current user.
       const JWTdecoded = jwtDecode(context.state.jwt)
-      if (JWTdecoded.exp && JWTdecoded.exp > (Date.now() / 1000) && JWTdecoded.publickey && Web3.utils.toChecksumAddress(JWTdecoded.publickey) === account) {
+      if (JWTdecoded.exp && JWTdecoded.exp > (Date.now() / 1000) && JWTdecoded.publickey && ethers.utils.getAddress(JWTdecoded.publickey) === account) {
         return true
       }
 
@@ -88,9 +88,9 @@ export const actions = {
       })
 
       // Sign the challenge and send it back
-      const web3 = context.rootState.web3 // Change to state after addCampaign changed
-      const challenge = nonceRes.challenge
-      const signature = await web3.eth.personal.sign(challenge, account) // Sign the challenge
+      // const ethers = context.rootState.ethers // Change to state after addCampaign changed
+      const challenge = ethers.utils.arrayify(nonceRes.challenge)
+      const signature = await this.$wallet.provider.getSigner().signMessage(challenge) // Sign the challenge
 
       const jwtRes = await this.$http.$post('/auth/authenticate', {
         pubkey: account,

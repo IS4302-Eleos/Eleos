@@ -1,8 +1,8 @@
-import Web3 from 'web3'
+import { ethers } from 'ethers'
 
 export default function ({ params, redirect, route, next }) {
   const campaign = !params.campaignAddress ? params.pathMatch : params.campaignAddress
-  if (!campaign || !Web3.utils.isAddress(campaign) || !Web3.utils.checkAddressChecksum(campaign)) {
+  if (!campaign || !ethers.utils.isAddress(campaign)) {
     return redirect('/')
   }
 
