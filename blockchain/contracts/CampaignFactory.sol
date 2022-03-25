@@ -2,24 +2,35 @@
 pragma solidity >=0.5.0;
 import "./Campaign.sol";
 import "./AddressSet.sol";
+import "./Reputation.sol";
 
 contract CampaignFactory {
     using AddressSet for AddressSet.Set;
 
-    address public endorsementAddress;
+    address owner;
+    Reputation reputation;
 
     event CampaignStarted(address ownerAddress, address campaignAddress);
     event Donate(address campaignAddress, address donorAddress, uint256 amount);
 
     AddressSet.Set createdCampaigns;
 
-    constructor(address _endorsementAddress) payable {
+    constructor() payable {
         require(
             msg.value >= 0.01 ether,
             "CampaignFactory must be deployed with 0.01 ETH"
         );
 
-        endorsementAddress = _endorsementAddress;
+        owner = msg.sender;
+    }
+
+    // Set Reputation address
+    function setReputationAddress(address _reputationAddress) public {
+        require(
+            msg.sender == owner,
+            "Only owner can set the Reputation address"
+        );
+        reputation = Reputation(_reputationAddress);
     }
 
     // Checks if campaign end timestamp is in the future
@@ -77,12 +88,18 @@ contract CampaignFactory {
         return address(newCampaign);
     }
 
-    function getEndorsementAddress() public view returns (address) {
-        return endorsementAddress;
-    }
-
     function emitDonateEvent(address donorAddress, uint256 amount) public {
         require(createdCampaigns.exists(msg.sender), "Sender must be a Campaign created from this CampaignFactory");
         emit Donate(msg.sender, donorAddress, amount);
+    }
+
+    function updateReputation(address beneficiaryAddress, uint256 value)
+        public
+    {
+        require(
+            createdCampaigns.exists(msg.sender),
+            "Sender must be a Campaign created from this CampaignFactory"
+        );
+        reputation.updateReputation(beneficiaryAddress, value);
     }
 }
