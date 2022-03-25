@@ -283,7 +283,7 @@ export default {
 
     // Update campaign info in state
     this.setFixedCampaignDetails()
-    if (await this.$wallet.provider.ready) {
+    if (this.$wallet.provider && await this.$wallet.provider.ready) {
       this.campaignInstance = await this.getCampaignInstance(this.campaignAddress)
       this.loadBlockchainCampaignDetails()
     }

@@ -2,7 +2,7 @@ import { ethers } from 'ethers'
 
 export default function ({ params, redirect, route, next }) {
   const campaign = !params.campaignAddress ? params.pathMatch : params.campaignAddress
-  if (!campaign || !ethers.utils.isAddress(campaign)) {
+  if (!campaign || !ethers.utils.isAddress(campaign) || ethers.utils.getAddress(campaign) !== campaign) {
     return redirect('/')
   }
 
