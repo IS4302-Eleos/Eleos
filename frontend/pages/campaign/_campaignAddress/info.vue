@@ -47,7 +47,7 @@
                 <b-skeleton :active="!campaignDescription" :count="3" />
               </p>
             </div>
-            <div v-if="isConnected" class="media-right">
+            <div v-if="hasProvider" class="media-right">
               <b-field v-if="!isBeneficiary" grouped>
                 <b-numberinput
                   v-model="newDonationAmount"
@@ -101,7 +101,7 @@
                 Target Achieved
               </b-progress>
             </template>
-            <b-skeleton :active="!isConnected" size="is-large" />
+            <b-skeleton :active="!hasProvider" size="is-large" />
           </div>
           <div class="media">
             <div class="media-content">
@@ -237,13 +237,12 @@ export default {
     }
   },
   computed: {
-    ...mapState([
-      'isConnected',
-      'account'
-    ]),
     ...mapState('api', [
       'campaigns'
     ]),
+    hasProvider () {
+      return this.$wallet.provider
+    },
     timeLeft () {
       if (this.endTimestamp === 8640000000000000) {
         return 'Indefinite'
@@ -257,14 +256,14 @@ export default {
       return Math.round(Math.min((this.totalDonationAmount / this.targetDonationAmount), 1) * 100)
     },
     isBeneficiary () {
-      return this.account === this.beneficiaryAddress
+      return this.$wallet.account === this.beneficiaryAddress
     },
     isCampaignOwnerOrBeneficiary () {
-      return this.account === this.campaignOwnerAddress || this.account === this.beneficiaryAddress
+      return this.$wallet.account === this.campaignOwnerAddress || this.$wallet.account === this.beneficiaryAddress
     }
   },
   async mounted () {
-    if (!this.$wallet.provider) {
+    if (!this.hasProvider) {
       this.$buefy.toast.open({
         duration: 5000,
         message: 'You are not connected to the blockchain. Please connect to the blockchain and refresh the page.',
@@ -283,7 +282,7 @@ export default {
 
     // Update campaign info in state
     this.setFixedCampaignDetails()
-    if (this.$wallet.provider && await this.$wallet.provider.ready) {
+    if (this.hasProvider && await this.$wallet.provider.ready) {
       this.campaignInstance = await this.getCampaignInstance(this.campaignAddress)
       this.loadBlockchainCampaignDetails()
     }
