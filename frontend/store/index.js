@@ -1,8 +1,7 @@
 import { NotificationProgrammatic as Notification } from 'buefy'
-import Web3 from 'web3'
+import { ethers } from 'ethers'
 
 export const state = () => ({
-  web3: null,
   isConnected: false,
   isConnecting: true,
   isCorrectChain: true,
@@ -21,9 +20,6 @@ export const getters = {
 }
 
 export const mutations = {
-  setWeb3 (state, web3) {
-    state.web3 = web3
-  },
   setConnected (state, isConnected) {
     state.isConnected = isConnected
   },
@@ -32,7 +28,7 @@ export const mutations = {
     window.localStorage.setItem('hasPreviouslyConnected', previouslyConnected)
   },
   setAccount (state, account) {
-    state.account = Web3.utils.toChecksumAddress(account)
+    state.account = ethers.utils.getAddress(account)
   },
   setIsCorrectChain (state, isCorrectChain) {
     state.isCorrectChain = isCorrectChain
@@ -48,7 +44,7 @@ export const mutations = {
 export const actions = {
   async verifyCurrentChain (context, chainId) {
     if (!chainId) {
-      chainId = await context.state.web3.eth.getChainId()
+      chainId = (await this.$wallet.provider.getNetwork()).chainId
     }
 
     if (Number(chainId) !== Number(this.$config.chain_id)) {
@@ -73,8 +69,7 @@ export const actions = {
     if (!context.rootGetters.hasProvider) {
       return false
     }
-
-    context.commit('setWeb3', Object.freeze(new Web3(context.rootGetters.getProvider)))
+    await this.$wallet.init()
 
     if (!context.state.hasRegisteredEvents) {
       context.getters.getProvider.on('chainChanged', async (chainId) => {
@@ -152,7 +147,6 @@ export const actions = {
         return false
       }
     } catch (error) {
-      console.error(error)
       Notification.open({
         type: 'is-danger',
         hasIcon: true,

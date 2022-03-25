@@ -1,4 +1,5 @@
 import campaignFactoryArtifacts from 'static/CampaignFactory.json'
+import { ethers } from 'ethers'
 
 export const actions = {
   async callToCampaignFactory (
@@ -21,21 +22,22 @@ export const actions = {
       // Set an "impossible" end date
       timestamp = 8640000000000000
     }
-    // Web3 instance connecting to ganache
-    const web3 = context.rootState.web3
+    // Ethers provider instance connecting to ganache
+    const provider = this.$wallet.provider
 
-    const targetAmountInWei = web3.utils.toWei(String(targetAmount))
+    const targetAmountInWei = ethers.utils.parseEther(targetAmount, 'ether')
 
     // Gets the network ID of the ganache
-    const networkId = await web3.eth.net.getId()
+    const networkId = (await provider.send('net_version', []))
 
     // Creates the CampaignFactory Instance
-    const contract = new web3.eth.Contract(
+    const contract = new ethers.Contract(
+      campaignFactoryArtifacts.networks[networkId].address,
       campaignFactoryArtifacts.abi,
-      campaignFactoryArtifacts.networks[networkId].address
+      provider.getSigner()
     )
     // Calls the startCampaign() method
-    const res = await contract.methods.startCampaign(
+    const res = await (await contract.startCampaign(
       campaignName,
       beneficiaryUrl,
       timestamp,
@@ -43,11 +45,8 @@ export const actions = {
       campaignOwnerAddress,
       targetAmountInWei,
       campaignDescription
-    ).send({
-      from: campaignOwnerAddress,
-      gas: 2500000
-    })
-    const newCampaignAddress = res.events.CampaignStarted.returnValues.campaignAddress
-    return (newCampaignAddress)
+    )).wait()
+
+    return (res.events.find(e => e.event === 'CampaignStarted').args.campaignAddress)
   }
 }

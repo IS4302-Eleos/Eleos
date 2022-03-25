@@ -1,53 +1,53 @@
 import campaignArtifact from 'static/Campaign.json'
-import Web3 from 'web3'
+import { ethers } from 'ethers'
 
 export const actions = {
   // Get campaign instance from the blockchain
   getCampaignInstance (context, address) {
-    const campaignInstance = new context.rootState.web3.eth.Contract(
+    const campaignInstance = new ethers.Contract(
+      address,
       campaignArtifact.abi,
-      address
+      this.$wallet.provider
     )
     return campaignInstance
   },
   // Get donation amount of a campaign
   async getTotalDonations (context, campaignInstance) {
-    const totalDonationsWei = await campaignInstance.methods.getTotalDonationAmount().call()
-    const totalDonationsEth = Web3.utils.fromWei(totalDonationsWei, 'ether')
+    const totalDonationsWei = await campaignInstance.getTotalDonationAmount()
+    const totalDonationsEth = ethers.utils.formatUnits(totalDonationsWei, 'ether')
     return Number(totalDonationsEth)
   },
   async getDonationRecords (context, campaignInstance) {
-    const donationRecords = await campaignInstance.methods.getDonationRecords().call()
+    const donationRecords = await campaignInstance.getDonationRecords()
     return donationRecords
   },
   async getWithdrawRecords (context, campaignInstance) {
-    const withdrawRecords = await campaignInstance.methods.getWithdrawRecords().call()
+    const withdrawRecords = await campaignInstance.getWithdrawRecords()
     return withdrawRecords
   },
   // Temporarily get target amount from blockchain...
   async getTargetAmount (context, campaignInstance) {
-    const targetAmount = await campaignInstance.methods.getTargetDonationAmount().call()
-    const targetAmountEth = Web3.utils.fromWei(targetAmount, 'ether')
+    const targetAmount = await campaignInstance.getTargetDonationAmount()
+    const targetAmountEth = ethers.utils.formatUnits(targetAmount, 'ether')
     return targetAmountEth
   },
   // Get withdrawal balance of campaign
   async getWithdrawalBalance (context, campaignInstance) {
-    const withdrawBalance = await campaignInstance.methods.getWithdrawalBalance().call()
-    const withdrawBalanceEth = Web3.utils.fromWei(withdrawBalance, 'ether')
+    const withdrawBalance = await campaignInstance.getWithdrawalBalance()
+    const withdrawBalanceEth = ethers.utils.formatUnits(withdrawBalance, 'ether')
     return withdrawBalanceEth
   },
   // Donate to campaign
   async donate (context, { campaignInstance, amountInEth }) {
-    const amountInWei = Web3.utils.toWei(amountInEth.toString(), 'ether')
-    await campaignInstance.methods.donate().send({
-      from: context.rootState.account,
+    const amountInWei = ethers.utils.parseEther(amountInEth.toString(), 'ether')
+    await (await campaignInstance.connect(this.$wallet.provider.getSigner()).donate({
       value: amountInWei
-    })
+    })).wait()
   },
   async withdraw (context, { campaignInstance, amountInEth }) {
-    const amountInWei = Web3.utils.toWei(amountInEth.toString(), 'ether')
-    await campaignInstance.methods.withdraw(amountInWei).send({
+    const amountInWei = ethers.utils.parseEther(amountInEth.toString(), 'ether')
+    await (await campaignInstance.connect(this.$wallet.provider.getSigner()).withdraw(amountInWei, {
       from: context.rootState.account
-    })
+    })).wait()
   }
 }

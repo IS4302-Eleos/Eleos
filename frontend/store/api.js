@@ -1,5 +1,5 @@
 import { jsonToGraphQLQuery } from 'json-to-graphql-query'
-import Web3 from 'web3'
+import { ethers } from 'ethers'
 
 export const state = () => ({
   campaigns: {}
@@ -14,7 +14,7 @@ export const mutations = {
 
       // Convert target donation amount to eth
       campaign.targetDonationAmount = Number(
-        Web3.utils.fromWei(
+        ethers.utils.formatUnits(
           campaign.targetDonationAmount,
           'ether'
         )
