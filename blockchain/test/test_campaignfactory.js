@@ -1,8 +1,7 @@
 const truffleAssert = require("truffle-assertions");
 
-const Campaign = artifacts.require("Campaign");
 const CampaignFactory = artifacts.require("CampaignFactory");
-const Endorsement = artifacts.require("Endorsement");
+const Reputation = artifacts.require("Reputation");
 
 contract("CampaignFactory", (accounts) => {
   const deployingAccount = accounts[0];
@@ -10,24 +9,25 @@ contract("CampaignFactory", (accounts) => {
   const campaignOwner = accounts[2];
 
   let campaignFactoryInstance;
-  let campaignInstance;
-  let endorsementInstance;
 
   before(async () => {
     const deploymentAmount = web3.utils.toWei("0.01", "ether");
 
-    // Deploy Endorsement contract
-    endorsementInstance = await Endorsement.new({
+    // Deploy CampaignFactory contract
+    campaignFactoryInstance = await CampaignFactory.new({
+      from: deployingAccount,
+      value: deploymentAmount
+    });
+
+    // Deploy Reputation contract
+    const reputationInstance = await Reputation.new(campaignFactoryInstance.address, {
       from: deployingAccount
     });
 
-    // Deploy CampaignFactory contract
-    campaignFactoryInstance = await CampaignFactory.new(
-      endorsementInstance.address,
-      {
-        from: deployingAccount,
-        value: deploymentAmount
-      });
+    // Set Reputation address in CampaignFactory contract
+    campaignFactoryInstance.setReputationAddress(reputationInstance.address, {
+      from: deployingAccount
+    });
   });
 
   it("should create new campaign", async () => {
@@ -51,11 +51,5 @@ contract("CampaignFactory", (accounts) => {
 
     // Watch for CampaignStarted Event
     await truffleAssert.eventEmitted(tx, "CampaignStarted");
-
-    // Update new campaign instance
-    const campaignAddress = tx.logs[0].args.campaignAddress;
-    campaignInstance = await Campaign.at(campaignAddress);
-
-    console.log("Campaign has been deployed at " + campaignInstance.address);
   });
 });

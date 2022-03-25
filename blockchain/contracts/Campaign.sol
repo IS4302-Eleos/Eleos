@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity >= 0.5.0;
+pragma solidity >=0.5.0;
 import "./CampaignFactory.sol";
+import "./Reputation.sol";
 
 contract Campaign {
     string campaignName;
@@ -31,7 +32,7 @@ contract Campaign {
         address toAddress
     );
 
-    constructor (
+    constructor(
         string memory _campaignName,
         string memory _organisationUrl,
         uint64 _endTimestamp,
@@ -89,6 +90,9 @@ contract Campaign {
         donations[msg.sender] += msg.value;
         emit Donate(msg.sender, msg.value);
         origin.emitDonateEvent(msg.sender, msg.value);
+
+        // Update reputation
+        origin.updateReputation(beneficiaryAddress, msg.value);
     }
 
     // Withdraws the specified eth amount from this campaign contract.
