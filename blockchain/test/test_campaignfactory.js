@@ -1,6 +1,5 @@
 const truffleAssert = require("truffle-assertions");
 
-const Campaign = artifacts.require("Campaign");
 const CampaignFactory = artifacts.require("CampaignFactory");
 const Reputation = artifacts.require("Reputation");
 
