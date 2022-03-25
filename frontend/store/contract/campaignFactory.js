@@ -25,7 +25,7 @@ export const actions = {
     // Ethers provider instance connecting to ganache
     const provider = this.$wallet.provider
 
-    const targetAmountInWei = ethers.utils.parseEther(targetAmount, 'ether')
+    const targetAmountInWei = ethers.utils.parseEther(targetAmount.toString())
 
     // Gets the network ID of the ganache
     const networkId = (await provider.send('net_version', []))

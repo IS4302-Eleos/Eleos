@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!--Please replace me-->
     <section class="section container">
       <div class="container">
         <div class="card">
@@ -23,7 +22,9 @@
                       <p class="heading">
                         Reputation
                       </p>
-                      <p class="title">123</p>
+                      <p class="title">
+                        123
+                      </p>
                     </div>
                   </div>
                   <div class="level-item has-text-centered">
@@ -31,7 +32,9 @@
                       <p class="heading">
                         No. of Donations Made
                       </p>
-                      <p class="title">123</p>
+                      <p class="title">
+                        {{ donations.length }}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -39,22 +42,22 @@
             </div>
             <b-tabs position="is-centered" class="block">
               <b-tab-item label="Donation Records">
-                <div class="media">
+                <div v-for="d in donations" :key="d.transactionHash" class="media">
                   <div class="media-left">
-                    Donated to Campaign at
-                    <NuxtLink :to="`/campaign/${campaignAddress}/info`">
-                      { 0xDEAD }
+                    Donated {{ d.amount }} ether to Campaign
+                    <NuxtLink :to="`/campaign/${d.campaignAddress}/info`">
+                      {{ d.campaignAddress }}
                     </NuxtLink>
                   </div>
                 </div>
               </b-tab-item>
 
               <b-tab-item label="Benefitted Campaigns">
-                <div class="media">
+                <div v-for="b in beneficiary" :key="b.campaignAddress" class="media">
                   <div class="media-left">
                     Added as beneficiary to Campaign at
-                    <NuxtLink :to="`/campaign/${campaignAddress}/info`">
-                      { 0x505 }
+                    <NuxtLink :to="`/campaign/${b.campaignAddress}/info`">
+                      {{ b.campaignAddress }}
                     </NuxtLink>
                   </div>
                 </div>
@@ -69,12 +72,23 @@
 </template>
 
 <script>
+import { ethers } from 'ethers'
 export default {
   name: 'UserPage',
-  data () {
+  async asyncData ({ store, route, redirect }) {
+    const userAddress = route.params.userAddress
+    if (!userAddress || !ethers.utils.isAddress(userAddress)) {
+      return redirect('/')
+    }
+    const beneficiary = await store.dispatch('api/getCampaignByBeneficiaryAddress', route.params.userAddress)
+    let donations = await store.dispatch('api/getDonations', route.params.userAddress)
+    donations = donations.map((d) => {
+      d.amount = ethers.utils.formatEther(d.amount, 'ether')
+      return d
+    })
     return {
-      title: 'Testing file name as dynamic route',
-      validUserAddress: true
+      donations,
+      beneficiary
     }
   }
 }
