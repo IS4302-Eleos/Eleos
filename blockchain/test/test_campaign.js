@@ -3,6 +3,7 @@ const assert = require("assert");
 
 const Campaign = artifacts.require("Campaign");
 const CampaignFactory = artifacts.require("CampaignFactory");
+const Reputation = artifacts.require("Reputation");
 
 contract("Campaign", (accounts) => {
   const deployingAccount = accounts[0];
@@ -11,6 +12,7 @@ contract("Campaign", (accounts) => {
   const donor = accounts[3];
 
   let campaignInstance;
+  let reputationInstance;
 
   before(async () => {
     // Campaign details
@@ -22,14 +24,21 @@ contract("Campaign", (accounts) => {
     const targetDonationAmount = 10;
     const campaignDescription = "It's a cool charity";
 
-    const campaignFactoryInstance = await CampaignFactory.new(
-      "0xf4a8f74879182ff2a07468508bec89e1e7464027" // Placeholder endorsement address
-      ,
-      {
-        from: deployingAccount,
-        value: web3.utils.toWei("0.01", "ether")
-      }
-    );
+    // Deploy CampaignFactory
+    const campaignFactoryInstance = await CampaignFactory.new({
+      from: deployingAccount,
+      value: web3.utils.toWei("0.01", "ether")
+    });
+
+    // Deploy Reputation contract
+    reputationInstance = await Reputation.new(campaignFactoryInstance.address, {
+      from: deployingAccount
+    });
+
+    // Set Reputation address in CampaignFactory contract
+    campaignFactoryInstance.setReputationAddress(reputationInstance.address, {
+      from: deployingAccount
+    });
 
     // Deploy campaign
     const tx = await campaignFactoryInstance.startCampaign(
