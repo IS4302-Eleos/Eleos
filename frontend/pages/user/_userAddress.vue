@@ -41,7 +41,8 @@
               <b-tab-item label="Donation Records">
                 <div class="media">
                   <div class="media-left">
-                    Donated to Campaign at <NuxtLink :to="`/campaign/${donor}`">
+                    Donated to Campaign at
+                    <NuxtLink :to="`/campaign/${campaignAddress}/info`">
                       { 0xDEAD }
                     </NuxtLink>
                   </div>
@@ -51,7 +52,10 @@
               <b-tab-item label="Benefitted Campaigns">
                 <div class="media">
                   <div class="media-left">
-                    Added as beneficiary to Campaign at {0x505}
+                    Added as beneficiary to Campaign at
+                    <NuxtLink :to="`/campaign/${campaignAddress}/info`">
+                      { 0x505 }
+                    </NuxtLink>
                   </div>
                 </div>
               </b-tab-item>
