@@ -5,7 +5,7 @@ import Donation from '../models/donation.js'
 
 // Converting a mongoose model to a graphql schema object
 const options = {
-  removeFields: ['_id','__v']
+  removeFields: ['_id', '__v']
 }
 const CampaignTC = composeMongoose(Campaign, options)
 const DonationTC = composeMongoose(Donation, options)

@@ -171,19 +171,19 @@ describe('Campaigns test ', () => {
     it('filter by beneficiary address', async () => {
       const query = {
         query: {
-        campaigns: {
-          __args: {
-            filter: {
-              beneficiaryAddress: '0xdeadc0dedeadc0de'
-            }
-          },
-          campaignAddress: true,
-          campaignName: true,
-          endTimestamp: true,
-          campaignOwnerAddress: true,
-          beneficiaryAddress: true
+          campaigns: {
+            __args: {
+              filter: {
+                beneficiaryAddress: '0xdeadc0dedeadc0de'
+              }
+            },
+            campaignAddress: true,
+            campaignName: true,
+            endTimestamp: true,
+            campaignOwnerAddress: true,
+            beneficiaryAddress: true
+          }
         }
-      }
       }
 
       const res = await chai.request(server).post('/graphql').send({
@@ -285,13 +285,13 @@ describe('Donations test', () => {
           transactionHash: '0x1234567890123456789012345678901234567890',
           campaignAddress: '0x7c09773E7F6228b0D069156549aD1c404C2C685D',
           donorAddress: '0x1aeC06D4d8B8303b73bEe7A754d454Fe012057e9',
-          amount: "999"
+          amount: '999'
         },
         {
           transactionHash: '0x1234567890123456789012345678901234567891',
           campaignAddress: '0x01D112b8023894AdD0d9EbEF35EAa14F1A43Fdd6',
           donorAddress: '0x1aeC06D4d8B8303b73bEe7A754d454Fe012057e9',
-          amount: "9991"
+          amount: '9991'
         }
       ]
     })
