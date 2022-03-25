@@ -249,6 +249,7 @@ describe('Donations test', () => {
 
   after(async () => {
     await Campaign.collection.drop()
+    await Donation.collection.drop()
     mongoose.connection.close()
     app.instance.close()
   })
