@@ -3,63 +3,37 @@
     <section class="section container">
       <div class="container">
         <div class="card">
-          <div class="hero is-success">
-            <div class="hero-body">
-              <figure class="image is-128x128">
-                <img class="is-rounded" src="https://bulma.io/images/placeholders/128x128.png" alt="Placeholder image">
-              </figure>
-              <p class="subtitle mt-6">
-                {{ $route.params.userAddress }}
-              </p>
-            </div>
-          </div>
+          <user-header :address="$route.params.userAddress" />
           <div class="card-content">
             <div class="media">
               <div class="media-content">
-                <div class="level">
-                  <div class="level-item has-text-centered">
-                    <div>
-                      <p class="heading">
-                        Reputation
-                      </p>
-                      <p class="title">
-                        123
-                      </p>
-                    </div>
-                  </div>
-                  <div class="level-item has-text-centered">
-                    <div>
-                      <p class="heading">
-                        No. of Donations Made
-                      </p>
-                      <p class="title">
-                        {{ donations.length }}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                <user-stats :noOfDonations="donations.length" />
               </div>
             </div>
             <b-tabs position="is-centered" class="block">
               <b-tab-item label="Donation Records">
-                <div v-for="d in donations" :key="d.transactionHash" class="media">
-                  <div class="media-left">
-                    Donated {{ d.amount }} ether to Campaign
-                    <NuxtLink :to="`/campaign/${d.campaignAddress}/info`">
-                      {{ d.campaignAddress }}
-                    </NuxtLink>
-                  </div>
+                <div v-if="donations.length">
+                  <user-donation-record
+                    v-for="donation in donations"
+                    :key="donation.transactionHash"
+                    :campaignAddress="donation.campaignAddress"
+                    :amount="donation.amount"
+                    />
+                </div>
+                <div v-else>
+                  No donations made...
                 </div>
               </b-tab-item>
-
               <b-tab-item label="Benefitted Campaigns">
-                <div v-for="b in beneficiary" :key="b.campaignAddress" class="media">
-                  <div class="media-left">
-                    Added as beneficiary to Campaign at
-                    <NuxtLink :to="`/campaign/${b.campaignAddress}/info`">
-                      {{ b.campaignAddress }}
-                    </NuxtLink>
-                  </div>
+                <div v-if="beneficiary.length">
+                  <user-beneficiary-record
+                    v-for="b in beneficiary"
+                    :key="b.campaignAddress"
+                    :campaignAddress="b.campaignAddress"
+                    />
+                </div>
+                <div v-else>
+                  Not beneficiary of any campaigns...
                 </div>
               </b-tab-item>
             </b-tabs>
@@ -67,14 +41,22 @@
         </div>
       </div>
     </section>
-    <!--end of me-->
   </div>
 </template>
 
 <script>
 import { ethers } from 'ethers'
+
+import UserHeader from '~/components/UserHeader'
+import UserStats from '~/components/UserStats'
+import UserDonationRecord from '~/components/UserDonationRecord'
+import UserBeneficiaryRecord from '~/components/UserBeneficiaryRecord'
+
 export default {
   name: 'UserPage',
+  components: {
+    UserHeader
+  },
   async asyncData ({ store, route, redirect }) {
     const userAddress = route.params.userAddress
     if (!userAddress || !ethers.utils.isAddress(userAddress)) {
