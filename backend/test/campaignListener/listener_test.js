@@ -37,11 +37,11 @@ describe('Testing campaignListener', () => {
     let campaignFactoryInstance
 
     before(async () => {
-      const endorsementInstance = await constants.endorsementContract.new({
+      const reputationInstance = await constants.reputationContract.new({
         from: contractOwner
       })
 
-      campaignFactoryInstance = await constants.campaignFactoryContract.new(endorsementInstance.address, {
+      campaignFactoryInstance = await constants.campaignFactoryContract.new(reputationInstance.address, {
         from: contractOwner,
         value: Web3.utils.toWei('0.01', 'ether')
       })
@@ -107,11 +107,11 @@ describe('Testing campaignListener', () => {
     let campaignFactoryInstance
 
     before(async () => {
-      const endorsementInstance = await constants.endorsementContract.new({
+      const reputationInstance = await constants.reputationContract.new({
         from: contractOwner
       })
 
-      campaignFactoryInstance = await constants.campaignFactoryContract.new(endorsementInstance.address, {
+      campaignFactoryInstance = await constants.campaignFactoryContract.new(reputationInstance.address, {
         from: contractOwner,
         value: Web3.utils.toWei('0.01', 'ether')
       })

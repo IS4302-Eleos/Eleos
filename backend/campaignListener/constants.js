@@ -10,14 +10,14 @@ const PROVIDER_ENDPOINT = `ws://${config.bc.host}:${config.bc.port}`
 
 const campaignFactoryContract = contract(JSON.parse(fs.readFileSync(config.bc.campaignFactoryPath)))
 const campaignContract = contract(JSON.parse(fs.readFileSync(config.bc.campaignPath)))
-const endorsementContract = contract(JSON.parse(fs.readFileSync(config.bc.endorsementPath)))
+const reputationContract = contract(JSON.parse(fs.readFileSync(config.bc.reputationPath)))
 
 const provider = new Web3.providers.WebsocketProvider(PROVIDER_ENDPOINT)
 const web3 = new Web3(provider)
 
 campaignContract.setProvider(provider)
 campaignFactoryContract.setProvider(provider)
-endorsementContract.setProvider(provider)
+reputationContract.setProvider(provider)
 
 export default {
   EVENT_CAMPAIGN_STARTED,
@@ -25,7 +25,7 @@ export default {
   PROVIDER_ENDPOINT,
   campaignFactoryContract,
   campaignContract,
-  endorsementContract,
+  reputationContract,
   provider,
   web3
 }

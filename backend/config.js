@@ -17,7 +17,7 @@ export default {
     port: process.env.GANACHE_PORT || 8545,
     campaignPath: process.env.CAMPAIGN_CONTRACT_PATH || '../blockchain/build/contracts/Campaign.json',
     campaignFactoryPath: process.env.CAMPAIGN_FACTORY_CONTRACT_PATH || '../blockchain/build/contracts/CampaignFactory.json',
-    endorsementPath: process.env.ENDORSEMENT_CONTRACT_PATH || '../blockchain/build/contracts/Endorsement.json'
+    reputationPath: process.env.REPUTATION_CONTRACT_PATH || '../blockchain/build/contracts/Reputation.json'
   },
   jwtSecret: process.env.JWT_SECRET || 'Hehedonttellyou'
 }
