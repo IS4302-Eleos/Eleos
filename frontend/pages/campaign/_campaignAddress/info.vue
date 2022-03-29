@@ -180,8 +180,8 @@
           </div>
           <b-tabs position="is-centered" class="block">
             <b-tab-item label="Donations">
-              <div v-if="withdrawRecords.length">
-                <div v-for="(donationAmount, donor) in sampleDonationRecords" :key="donor" class="media">
+              <div v-if="Object.keys(donationRecords).length">
+                <div v-for="(donationAmount, donor) in donationRecords" :key="donor" class="media">
                   <div class="media-left">
                     <NuxtLink :to="`/user/${donor}`">
                       {{ donor }}
@@ -196,7 +196,7 @@
             </b-tab-item>
 
             <b-tab-item label="Withdraws">
-              <div v-if="withdrawRecords.length">
+              <div v-if="Object.keys(withdrawRecords).length">
                 <div v-for="withdrawRecord, i in withdrawRecords" :key="i" class="media">
                   <div class="media-left">
                     <NuxtLink :to="`/user/${withdrawRecord[0]}`">
@@ -243,7 +243,7 @@ export default {
       noOfDonors: null,
       totalDonationAmount: null,
       withdrawalBalance: null,
-      sampleDonationRecords: {},
+      donationRecords: {},
       withdrawRecords: {},
       // Information on page
       newDonationAmount: 0,
@@ -285,6 +285,7 @@ export default {
         type: 'is-warning'
       })
     }
+    console.log(this.donationRecords.length)
 
     // Set campaign address from route
     this.campaignAddress = this.$route.params.campaignAddress
@@ -402,7 +403,7 @@ export default {
       const donors = donationRecords[0]
       const donationAmounts = donationRecords[1]
       for (let i = 0; i < donors.length; i++) {
-        this.sampleDonationRecords[donors[i]] = ethers.utils.formatEther(donationAmounts[i])
+        this.donationRecords[donors[i]] = ethers.utils.formatEther(donationAmounts[i])
       }
       this.noOfDonors = donors.length
     },

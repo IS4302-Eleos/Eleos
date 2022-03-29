@@ -8,6 +8,7 @@
             <div class="media">
               <div class="media-content">
                 <user-stats
+                  :reputation="reputation"
                   :no-of-donations="donations.length"
                   :wallet-amount="walletAmount"
                 />
@@ -68,8 +69,10 @@ export default {
     if (!userAddress || !ethers.utils.isAddress(userAddress)) {
       return redirect('/')
     }
+    const repRate = 0.01
     const walletAmount = await store.dispatch('getUserWalletAmount', userAddress)
     const beneficiary = await store.dispatch('api/getCampaignByBeneficiaryAddress', userAddress)
+    const reputation = await store.dispatch('contract/reputation/getReputation', userAddress) / repRate
     let donations = await store.dispatch('api/getDonations', userAddress)
     donations = donations.map((d) => {
       d.amount = ethers.utils.formatEther(d.amount, 'ether')
@@ -78,7 +81,8 @@ export default {
     return {
       donations,
       beneficiary,
-      walletAmount
+      walletAmount,
+      reputation
     }
   }
 }
