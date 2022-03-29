@@ -1,12 +1,19 @@
-import campaignArtifact from 'static/Campaign.json'
 import { ethers } from 'ethers'
+
+export const state = () => ({
+  campaigns: {},
+  campaignArtifact: null
+})
 
 export const actions = {
   // Get campaign instance from the blockchain
-  getCampaignInstance (context, address) {
+  async getCampaignInstance (context, address) {
+    if (context.state.campaignArtifact === null) {
+      context.state.campaignArtifact = await this.$http.$get('Campaign.json', { 'prefixUrl': '/' })
+    }
     const campaignInstance = new ethers.Contract(
       address,
-      campaignArtifact.abi,
+      context.state.campaignArtifact.abi,
       this.$wallet.provider
     )
     return campaignInstance

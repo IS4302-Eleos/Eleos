@@ -145,16 +145,16 @@
                     </p>
                   </div>
                 </div>
-                <div class="level-item has-text-centered">
+                <div class="level-item has-text-centered" v-if="targetDonationAmount === null || targetDonationAmount">
                   <div>
                     <p class="heading">
                       Target Amount
                     </p>
                     <p class="title">
-                      <template v-if="targetDonationAmount">
-                        {{ targetDonationAmount }} ETH
+                      <template v-if="targetDonationAmount !== null">
+                        <span>{{ targetDonationAmount }} ETH</span>
                       </template>
-                      <b-skeleton :active="!targetDonationAmount" size="is-large" />
+                      <b-skeleton :active="targetDonationAmount === null" size="is-large" />
                     </p>
                   </div>
                 </div>
