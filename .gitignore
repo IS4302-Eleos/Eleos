@@ -4,7 +4,7 @@ blockchain/build/
 # Copied built contracts .json
 frontend/static/CampaignFactory.json
 frontend/static/Campaign.json
-frontend/static/Endorsement.json
+frontend/static/Reputation.json
 
 # Node
 backend/node_modules/

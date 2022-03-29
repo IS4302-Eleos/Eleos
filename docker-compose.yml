@@ -2,66 +2,61 @@ services:
 
   blockchain:
     image: trufflesuite/ganache-cli:latest
-    command: -d
-        --db /app
-        -i eleos
-        --accounts 20
-        --deterministic
-        --mnemonic="grit portion captain traffic same bacon donate captain brown success impulse security"
     ports:
       - 8545:8545
-    logging:
-      driver: none 
+    # logging:
+    #   driver: none 
 
   database:
     image: mongo:latest
     environment:
       MONGO_INITDB_ROOT_USERNAME: test
       MONGO_INITDB_ROOT_PASSWORD: test
-    ports:
-      - 27017:27017
     logging:
       driver: none 
 
-  
-  run-some-commands-on-host-blockchain:
-    image: ubuntu:latest
+  listener:
     depends_on:
       - blockchain
       - database
-    network_mode: host
-    user: root
+    build:
+      context: ./
+      dockerfile: blockchain/Dockerfile
+    environment:
+      GANACHE_HOST: blockchain
+      DB_HOST: database
     volumes:
-      - /:/host
-    entrypoint: ["chroot", "/host", "/bin/bash", "-c"]
-    command:
-    - |
-      cd $PWD/blockchain && su $USER -c 'npm install && npm run build && npm run migrate' 
-      cd $PWD/backend && npm install && node campaignListener/listener.js
+      - "contracts:/eleos/blockchain/build/contracts"
 
-  run-some-commands-on-host-backend:
-    image: ubuntu:latest
+  backend:
     depends_on:
-      - run-some-commands-on-host-blockchain
-    user: root
-    volumes:
-      - /:/host
-    network_mode: host
-    entrypoint: ["chroot", "/host", "/bin/bash","-c"]
-    command:
-    - cd $PWD/backend && npm install && node index.js
-
-  run-some-commands-on-host-frontend:
-    image: ubuntu:latest
+      - blockchain
+      - database
+    ports:
+      - 8080:8080
+    build:
+      context: ./
+      dockerfile: backend/Dockerfile
+    environment:
+      DB_HOST: database
+      API_PORT: 8080
+  
+  frontend:
     depends_on:
-      - run-some-commands-on-host-backend
-    network_mode: host
-    user: root
+      - blockchain
+      - backend
+    ports:
+      - 80:3000
+    build:
+      context: ./
+      dockerfile: frontend/Dockerfile
+    environment:
+      PORT: 3000
+      HOST: 0.0.0.0
+      API_BASEURL: http://localhost:8080
+      GANACHE_BASEURL: http://localhost:8545
     volumes:
-      - /:/host
-    entrypoint: ["chroot", "/host", "/bin/bash","-c"]
-    command:
-    - |
-      cd $PWD/frontend && npm install && npm run build && npm start
+      - "contracts:/eleos/frontend/static"
 
-
+volumes:
+  contracts:

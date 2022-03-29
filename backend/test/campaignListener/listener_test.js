@@ -37,13 +37,17 @@ describe('Testing campaignListener', () => {
     let campaignFactoryInstance
 
     before(async () => {
-      const endorsementInstance = await constants.endorsementContract.new({
+      campaignFactoryInstance = await constants.campaignFactoryContract.new({
+        from: contractOwner,
+        value: Web3.utils.toWei('0.01', 'ether')
+      })
+
+      const reputationInstance = await constants.reputationContract.new(campaignFactoryInstance.address, {
         from: contractOwner
       })
 
-      campaignFactoryInstance = await constants.campaignFactoryContract.new(endorsementInstance.address, {
-        from: contractOwner,
-        value: Web3.utils.toWei('0.01', 'ether')
+      await campaignFactoryInstance.setReputationAddress(reputationInstance.address, {
+        from: contractOwner
       })
 
       listenerProcess = spawn('node', ['campaignListener/listener.js'], {
@@ -107,13 +111,17 @@ describe('Testing campaignListener', () => {
     let campaignFactoryInstance
 
     before(async () => {
-      const endorsementInstance = await constants.endorsementContract.new({
+      campaignFactoryInstance = await constants.campaignFactoryContract.new({
+        from: contractOwner,
+        value: Web3.utils.toWei('0.01', 'ether')
+      })
+
+      const reputationInstance = await constants.reputationContract.new(campaignFactoryInstance.address, {
         from: contractOwner
       })
 
-      campaignFactoryInstance = await constants.campaignFactoryContract.new(endorsementInstance.address, {
-        from: contractOwner,
-        value: Web3.utils.toWei('0.01', 'ether')
+      await campaignFactoryInstance.setReputationAddress(reputationInstance.address, {
+        from: contractOwner
       })
 
       listenerProcess = spawn('node', ['campaignListener/listener.js'], {

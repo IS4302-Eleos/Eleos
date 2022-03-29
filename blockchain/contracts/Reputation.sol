@@ -17,7 +17,7 @@ contract Reputation {
     {
         require(
             msg.sender == campaignFactory,
-            "Only campaign contracts can update reputation"
+            "Only CampaignFactory can update reputation"
         );
         reputation[beneficiaryAddress] += value;
     }

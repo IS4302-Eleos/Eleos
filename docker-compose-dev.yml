@@ -1,0 +1,67 @@
+services:
+
+  blockchain:
+    image: trufflesuite/ganache-cli:latest
+    command: -d
+        --db /app
+        -i eleos
+        --accounts 20
+        --deterministic
+        --mnemonic="grit portion captain traffic same bacon donate captain brown success impulse security"
+    ports:
+      - 8545:8545
+    logging:
+      driver: none 
+
+  database:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: test
+      MONGO_INITDB_ROOT_PASSWORD: test
+    ports:
+      - 27017:27017
+    logging:
+      driver: none 
+
+  
+  run-some-commands-on-host-blockchain:
+    image: ubuntu:latest
+    depends_on:
+      - blockchain
+      - database
+    network_mode: host
+    user: root
+    volumes:
+      - /:/host
+    entrypoint: ["chroot", "/host", "/bin/bash", "-c"]
+    command:
+    - |
+      cd $PWD/blockchain && su $USER -c 'npm install && npm run build && npm run migrate' 
+      cd $PWD/backend && npm install && node campaignListener/listener.js
+
+  run-some-commands-on-host-backend:
+    image: ubuntu:latest
+    depends_on:
+      - run-some-commands-on-host-blockchain
+    user: root
+    volumes:
+      - /:/host
+    network_mode: host
+    entrypoint: ["chroot", "/host", "/bin/bash","-c"]
+    command:
+    - cd $PWD/backend && npm install && node index.js
+
+  run-some-commands-on-host-frontend:
+    image: ubuntu:latest
+    depends_on:
+      - run-some-commands-on-host-backend
+    network_mode: host
+    user: root
+    volumes:
+      - /:/host
+    entrypoint: ["chroot", "/host", "/bin/bash","-c"]
+    command:
+    - |
+      cd $PWD/frontend && npm install && npm run build && npm start
+
+
