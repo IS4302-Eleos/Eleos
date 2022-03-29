@@ -8,6 +8,7 @@
             <div class="media">
               <div class="media-content">
                 <user-stats
+                  :reputation="reputation"
                   :noOfDonations="donations.length"
                   :walletAmount="walletAmount"
                   />
@@ -58,15 +59,20 @@ import UserBeneficiaryRecord from '~/components/UserBeneficiaryRecord'
 export default {
   name: 'UserPage',
   components: {
-    UserHeader
+    UserHeader,
+    UserStats,
+    UserDonationRecord,
+    UserBeneficiaryRecord
   },
   async asyncData ({ store, route, redirect }) {
     const userAddress = route.params.userAddress
     if (!userAddress || !ethers.utils.isAddress(userAddress)) {
       return redirect('/')
     }
+    const repRate = 0.01
     const walletAmount = await store.dispatch('getUserWalletAmount', userAddress)
     const beneficiary = await store.dispatch('api/getCampaignByBeneficiaryAddress', userAddress)
+    const reputation = await store.dispatch('contract/reputation/getReputation', userAddress) / repRate
     let donations = await store.dispatch('api/getDonations', userAddress)
     donations = donations.map((d) => {
       d.amount = ethers.utils.formatEther(d.amount, 'ether')
@@ -75,7 +81,8 @@ export default {
     return {
       donations,
       beneficiary,
-      walletAmount
+      walletAmount,
+      reputation
     }
   }
 }
