@@ -176,27 +176,37 @@
           </div>
           <b-tabs position="is-centered" class="block">
             <b-tab-item label="Donations">
-              <div v-for="(donationAmount, donor) in sampleDonationRecords" :key="donor" class="media">
-                <div class="media-left">
-                  <NuxtLink :to="`/user/${donor}`">
-                    {{ donor }}
-                  </NuxtLink>
-                  donated {{ donationAmount }} ETH
+              <div v-if="withdrawRecords.length">
+                <div v-for="(donationAmount, donor) in sampleDonationRecords" :key="donor" class="media">
+                  <div class="media-left">
+                    <NuxtLink :to="`/user/${donor}`">
+                      {{ donor }}
+                    </NuxtLink>
+                    donated {{ donationAmount }} ETH
+                  </div>
                 </div>
+              </div>
+              <div v-else>
+                No donations to this campaign yet...
               </div>
             </b-tab-item>
 
             <b-tab-item label="Withdraws">
-              <div v-for="withdrawRecord, i in withdrawRecords" :key="i" class="media">
-                <div class="media-left">
-                  <NuxtLink :to="`/user/${withdrawRecord[0]}`">
-                    {{ withdrawRecord[0] }}
-                  </NuxtLink>
-                  initiated a withdrawal of {{ withdrawRecord[1] }} ETH to
-                  <NuxtLink :to="`/user/${beneficiaryAddress}`">
-                    {{ beneficiaryAddress }}
-                  </NuxtLink>
+              <div v-if="withdrawRecords.length">
+                <div v-for="withdrawRecord, i in withdrawRecords" :key="i" class="media">
+                  <div class="media-left">
+                    <NuxtLink :to="`/user/${withdrawRecord[0]}`">
+                      {{ withdrawRecord[0] }}
+                    </NuxtLink>
+                    initiated a withdrawal of {{ withdrawRecord[1] }} ETH to
+                    <NuxtLink :to="`/user/${beneficiaryAddress}`">
+                      {{ beneficiaryAddress }}
+                    </NuxtLink>
+                  </div>
                 </div>
+              </div>
+              <div v-else>
+                No withdraws initiated yet...
               </div>
             </b-tab-item>
           </b-tabs>
