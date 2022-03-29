@@ -14,5 +14,5 @@ COPY ./frontend/ frontend/
 # Install wait-for-it
 RUN wget https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh && chmod +x wait-for-it.sh
 
-CMD ./wait-for-it.sh backend:8080 && \
+CMD ./wait-for-it.sh backend:8080 -t 120 && \
     cd frontend && npm run build && npm run start
