@@ -4,6 +4,12 @@ export const state = () => ({
   campaignFactoryArtifacts: null
 })
 
+export const mutations = {
+  setCampaignFactoryArtifacts (state, campaignFactoryArtifacts) {
+    state.campaignFactoryArtifacts = campaignFactoryArtifacts
+  }
+}
+
 export const actions = {
   async callToCampaignFactory (
     context,
@@ -35,7 +41,7 @@ export const actions = {
 
     // Pull the compiled contract JSON and cache it
     if (context.state.campaignFactoryArtifacts === null) {
-      context.state.campaignFactoryArtifacts = await this.$http.$get('CampaignFactory.json', { prefixUrl: '/' })
+      context.commit('setCampaignFactoryArtifacts', await this.$http.$get('CampaignFactory.json', { prefixUrl: '/' }))
     }
 
     // Creates the CampaignFactory Instance

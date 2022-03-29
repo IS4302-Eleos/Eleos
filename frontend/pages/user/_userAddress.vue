@@ -8,9 +8,9 @@
             <div class="media">
               <div class="media-content">
                 <user-stats
-                  :noOfDonations="donations.length"
-                  :walletAmount="walletAmount"
-                  />
+                  :no-of-donations="donations.length"
+                  :wallet-amount="walletAmount"
+                />
               </div>
             </div>
             <b-tabs position="is-centered" class="block">
@@ -19,9 +19,9 @@
                   <user-donation-record
                     v-for="donation in donations"
                     :key="donation.transactionHash"
-                    :campaignAddress="donation.campaignAddress"
+                    :campaign-address="donation.campaignAddress"
                     :amount="donation.amount"
-                    />
+                  />
                 </div>
                 <div v-else>
                   No donations made...
@@ -32,8 +32,8 @@
                   <user-beneficiary-record
                     v-for="b in beneficiary"
                     :key="b.campaignAddress"
-                    :campaignAddress="b.campaignAddress"
-                    />
+                    :campaign-address="b.campaignAddress"
+                  />
                 </div>
                 <div v-else>
                   Not beneficiary of any campaigns...
@@ -58,7 +58,10 @@ import UserBeneficiaryRecord from '~/components/UserBeneficiaryRecord'
 export default {
   name: 'UserPage',
   components: {
-    UserHeader
+    UserHeader,
+    UserStats,
+    UserDonationRecord,
+    UserBeneficiaryRecord
   },
   async asyncData ({ store, route, redirect }) {
     const userAddress = route.params.userAddress

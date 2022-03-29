@@ -1,6 +1,10 @@
 <template>
   <section class="section container">
     <div class="container">
+      <b-message v-if="hasError" type="is-danger" has-icon>
+        <p>We are unable to get details of this Campaign. </p>
+        <p>Please check if the address is a valid Campaign contract created by Eleos.</p>
+      </b-message>
       <div class="card">
         <div class="card-image">
           <figure class="image is-16by9">
@@ -243,7 +247,8 @@ export default {
       withdrawRecords: {},
       // Information on page
       newDonationAmount: 0,
-      newWithdrawalAmount: 0
+      newWithdrawalAmount: 0,
+      hasError: false
     }
   },
   computed: {
@@ -288,6 +293,11 @@ export default {
     // To be replaced with graphql api call to get single campaign if possible
     if (Object.entries(this.campaigns).length === 0 || !(this.campaignAddress in this.campaigns)) {
       await this.getCampaigns()
+    }
+
+    if (!(this.campaignAddress in this.campaigns)) {
+      this.hasError = true
+      return
     }
 
     // Update campaign info in state
@@ -405,18 +415,23 @@ export default {
     },
     async loadBlockchainCampaignDetails () {
       // Retrieve information from campaign on the blockchain
-      const results = await Promise.all(
-        [
-          this.getDonationRecords(this.campaignInstance),
-          this.getTotalDonations(this.campaignInstance),
-          this.getWithdrawRecords(this.campaignInstance),
-          this.getWithdrawalBalance(this.campaignInstance)
-        ]
-      )
-      this.setDonationRecords(results[0])
-      this.totalDonationAmount = results[1]
-      this.setWithdrawRecords(results[2])
-      this.withdrawalBalance = results[3]
+      try {
+        const results = await Promise.all(
+          [
+            this.getDonationRecords(this.campaignInstance),
+            this.getTotalDonations(this.campaignInstance),
+            this.getWithdrawRecords(this.campaignInstance),
+            this.getWithdrawalBalance(this.campaignInstance)
+          ]
+        )
+        this.setDonationRecords(results[0])
+        this.totalDonationAmount = results[1]
+        this.setWithdrawRecords(results[2])
+        this.withdrawalBalance = results[3]
+      } catch (err) {
+        this.hasError = true
+        console.error(err)
+      }
     },
     setFixedCampaignDetails () {
       // Update campaign info in state

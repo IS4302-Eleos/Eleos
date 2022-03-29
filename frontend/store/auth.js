@@ -69,7 +69,7 @@ export const actions = {
       return false
     }
 
-    const account = this.$wallet.account
+    const account = ethers.utils.getAddress(this.$wallet.account)
 
     if (context.state.jwt) {
       // Check if JWT has expired and is using the account of the current user.
