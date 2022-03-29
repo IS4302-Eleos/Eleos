@@ -35,7 +35,7 @@ export const actions = {
 
     // Pull the compiled contract JSON and cache it
     if (context.state.campaignFactoryArtifacts === null) {
-      context.state.campaignFactoryArtifacts = await this.$http.$get('CampaignFactory.json', { 'prefixUrl': '/' })
+      context.state.campaignFactoryArtifacts = await this.$http.$get('CampaignFactory.json', { prefixUrl: '/' })
     }
 
     // Creates the CampaignFactory Instance

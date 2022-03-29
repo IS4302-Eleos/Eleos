@@ -145,7 +145,7 @@
                     </p>
                   </div>
                 </div>
-                <div class="level-item has-text-centered" v-if="targetDonationAmount === null || targetDonationAmount">
+                <div v-if="targetDonationAmount === null || targetDonationAmount" class="level-item has-text-centered">
                   <div>
                     <p class="heading">
                       Target Amount
