@@ -7,7 +7,10 @@
           <div class="card-content">
             <div class="media">
               <div class="media-content">
-                <user-stats :noOfDonations="donations.length" />
+                <user-stats
+                  :noOfDonations="donations.length"
+                  :walletAmount="walletAmount"
+                  />
               </div>
             </div>
             <b-tabs position="is-centered" class="block">
@@ -62,15 +65,17 @@ export default {
     if (!userAddress || !ethers.utils.isAddress(userAddress)) {
       return redirect('/')
     }
-    const beneficiary = await store.dispatch('api/getCampaignByBeneficiaryAddress', route.params.userAddress)
-    let donations = await store.dispatch('api/getDonations', route.params.userAddress)
+    const walletAmount = await store.dispatch('getUserWalletAmount', userAddress)
+    const beneficiary = await store.dispatch('api/getCampaignByBeneficiaryAddress', userAddress)
+    let donations = await store.dispatch('api/getDonations', userAddress)
     donations = donations.map((d) => {
       d.amount = ethers.utils.formatEther(d.amount, 'ether')
       return d
     })
     return {
       donations,
-      beneficiary
+      beneficiary,
+      walletAmount
     }
   }
 }

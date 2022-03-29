@@ -20,6 +20,16 @@
         </p>
       </div>
     </div>
+    <div class="level-item has-text-centered">
+      <div>
+        <p class="heading">
+          Wallet Amt
+        </p>
+        <p class="title">
+          {{ walletAmount }}
+        </p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -33,6 +43,10 @@ export default {
     },
     reputation: {
       type: Number,
+      default: 0
+    },
+    walletAmount: {
+      type: [Number, String],
       default: 0
     }
   }
