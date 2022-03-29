@@ -26,6 +26,7 @@ export default ({ env }, inject) => {
 
     async setAccount (newAccount) {
       if (newAccount) {
+        newAccount = ethers.utils.getAddress(newAccount)
         this.account = newAccount
         this.accountCompact = `${newAccount.substring(0, 4)}...${newAccount.substring(newAccount.length - 4)}`
 

@@ -16,21 +16,33 @@
     </template>
 
     <template #end>
-      <b-navbar-item tag="div">
+      <!-- TODO -->
+      <!-- <b-navbar-item tag="div">
         <b-field>
           <b-input rounded placeholder="Search..." type="search" icon="magnify" disabled />
           <p class="control">
             <b-button rounded outlined label="Search" disabled />
           </p>
         </b-field>
-      </b-navbar-item>
+      </b-navbar-item> -->
       <b-navbar-item tag="div">
         <div class="buttons">
           <b-button v-if="isConnected && isAuthenticated" type="is-primary" icon-left="plus-circle" tag="NuxtLink" to="/campaign/add">
             Start a Campaign
           </b-button>
-          <b-button type="is-success" :disabled="!hasProvider || isConnected || !isCorrectChain" :loading="isConnecting" @click="login">
+          <b-button v-if="!isConnected" type="is-success" :disabled="!hasProvider || isConnected || !isCorrectChain" :loading="isConnecting" @click="login">
             {{ hasProvider ? (isConnected ? 'Connected' : 'Connect') : 'No Provider' }}
+          </b-button>
+          <b-button
+            v-else
+            type="is-info"
+            icon-left="account"
+            rounded
+            :disabled="!hasProvider || !isCorrectChain"
+            tag="nuxt-link"
+            :to="`/user/${userAddress}`"
+          >
+            My Account
           </b-button>
         </div>
       </b-navbar-item>
@@ -53,7 +65,10 @@ export default {
     ...mapGetters({
       hasProvider: 'hasProvider',
       isAuthenticated: 'auth/isAuthenticated'
-    })
+    }),
+    userAddress () {
+      return this.$wallet.account
+    }
   },
   mounted () {
     this['auth/init']().then(() => {
