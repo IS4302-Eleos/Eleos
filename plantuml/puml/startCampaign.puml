@@ -1,0 +1,22 @@
+@startuml Test
+
+!include Style.puml
+
+box Blockchain network
+
+-> CampaignFactory: startCampaign()\t\t\t
+activate CampaignFactory
+
+create Campaign
+CampaignFactory -> Campaign : new Campaign()
+
+activate Campaign
+CampaignFactory <-- Campaign
+deactivate Campaign
+
+<-- CampaignFactory: address of new Campaign
+deactivate CampaignFactory
+
+end box
+
+@enduml

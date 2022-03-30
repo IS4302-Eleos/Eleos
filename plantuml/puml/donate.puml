@@ -1,0 +1,33 @@
+@startuml Test
+
+!include Style.puml
+
+
+box Blockchain network
+
+-> Campaign: donate()\t\t\t
+activate Campaign
+
+Campaign -> CampaignFactory: updateReputation()
+activate CampaignFactory
+
+
+opt Campaign originated from \nCampaignFactory
+
+CampaignFactory -> Reputation: updateReputation()
+activate Reputation
+
+CampaignFactory <-- Reputation
+deactivate Reputation
+
+end
+
+Campaign <-- CampaignFactory
+
+
+<-- Campaign
+deactivate Campaign
+
+end box
+
+@enduml
