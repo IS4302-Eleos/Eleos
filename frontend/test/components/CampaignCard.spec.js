@@ -13,6 +13,9 @@ describe('CampaignCard', () => {
           state: {
             isConnected: false
           }
+        },
+        $wallet: {
+          provider: null
         }
       },
       stubs: ['nuxt-link', 'b-skeleton']
