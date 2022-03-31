@@ -14,18 +14,19 @@ export default ({ env }, inject) => {
       return '0x' + this.network?.chainId.toString(16)
     },
 
-    async init () {
+    init () {
       if (!window.ethereum) { return }
 
       this.provider = new ethers.providers.Web3Provider(window.ethereum) // prefably diff node like Infura, Alchemy or Moralis
       this.network = this.provider.getNetwork()
-      const [account] = await this.provider.listAccounts()
+      // const [account] = await this.provider.listAccounts()
 
-      !!account && this.setAccount(account)
+      // !!account && this.setAccount(account)
     },
 
     async setAccount (newAccount) {
       if (newAccount) {
+        newAccount = ethers.utils.getAddress(newAccount)
         this.account = newAccount
         this.accountCompact = `${newAccount.substring(0, 4)}...${newAccount.substring(newAccount.length - 4)}`
 
@@ -82,7 +83,7 @@ export default ({ env }, inject) => {
       window.location.reload()
     })
 
-    // wallet.init()
+    wallet.init()
   }
 
   inject('wallet', wallet)

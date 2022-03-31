@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'CampaignCardDonation',
@@ -29,9 +29,6 @@ export default {
     }
   },
   computed: {
-    ...mapState([
-      'isConnected'
-    ]),
     hasDonationAmount () {
       return this.currentAmount !== -1 && this.targetAmount !== -1
     },
@@ -55,7 +52,7 @@ export default {
     }
   },
   async mounted () {
-    if (this.isConnected) {
+    if (this.$wallet.provider) {
       // Get current donation amount of campaign
       const campaignInstance = await this.getCampaignInstance(this.address)
       const totalDonationAmount = await this.getTotalDonations(campaignInstance)

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <section class="hero is-success is-large">
+    <section class="hero is-warning is-large">
       <div class="hero-head">
         <eleos-navbar />
       </div>

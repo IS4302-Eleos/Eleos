@@ -5,11 +5,17 @@ export const state = () => ({
   campaignArtifact: null
 })
 
+export const mutations = {
+  setCampaignArtifact (state, campaignArtifact) {
+    state.campaignArtifact = campaignArtifact
+  }
+}
+
 export const actions = {
   // Get campaign instance from the blockchain
   async getCampaignInstance (context, address) {
     if (context.state.campaignArtifact === null) {
-      context.state.campaignArtifact = await this.$http.$get('Campaign.json', { prefixUrl: '/' })
+      context.commit('setCampaignArtifact', await this.$http.$get('Campaign.json', { prefixUrl: '/' }))
     }
     const campaignInstance = new ethers.Contract(
       address,

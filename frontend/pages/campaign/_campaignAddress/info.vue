@@ -1,6 +1,10 @@
 <template>
   <section class="section container">
     <div class="container">
+      <b-message v-if="hasError" type="is-danger" has-icon>
+        <p>We are unable to get details of this Campaign. </p>
+        <p>Please check if the address is a valid Campaign contract created by Eleos.</p>
+      </b-message>
       <div class="card">
         <div class="card-image">
           <figure class="image is-16by9">
@@ -176,27 +180,37 @@
           </div>
           <b-tabs position="is-centered" class="block">
             <b-tab-item label="Donations">
-              <div v-for="(donationAmount, donor) in sampleDonationRecords" :key="donor" class="media">
-                <div class="media-left">
-                  <NuxtLink :to="`/user/${donor}`">
-                    {{ donor }}
-                  </NuxtLink>
-                  donated {{ donationAmount }} ETH
+              <div v-if="Object.keys(donationRecords).length">
+                <div v-for="(donationAmount, donor) in donationRecords" :key="donor" class="media">
+                  <div class="media-left">
+                    <NuxtLink :to="`/user/${donor}`">
+                      {{ donor }}
+                    </NuxtLink>
+                    donated {{ donationAmount }} ETH
+                  </div>
                 </div>
+              </div>
+              <div v-else>
+                No donations to this campaign yet...
               </div>
             </b-tab-item>
 
             <b-tab-item label="Withdraws">
-              <div v-for="withdrawRecord, i in withdrawRecords" :key="i" class="media">
-                <div class="media-left">
-                  <NuxtLink :to="`/user/${withdrawRecord[0]}`">
-                    {{ withdrawRecord[0] }}
-                  </NuxtLink>
-                  initiated a withdrawal of {{ withdrawRecord[1] }} ETH to
-                  <NuxtLink :to="`/user/${beneficiaryAddress}`">
-                    {{ beneficiaryAddress }}
-                  </NuxtLink>
+              <div v-if="Object.keys(withdrawRecords).length">
+                <div v-for="withdrawRecord, i in withdrawRecords" :key="i" class="media">
+                  <div class="media-left">
+                    <NuxtLink :to="`/user/${withdrawRecord[0]}`">
+                      {{ withdrawRecord[0] }}
+                    </NuxtLink>
+                    initiated a withdrawal of {{ withdrawRecord[1] }} ETH to
+                    <NuxtLink :to="`/user/${beneficiaryAddress}`">
+                      {{ beneficiaryAddress }}
+                    </NuxtLink>
+                  </div>
                 </div>
+              </div>
+              <div v-else>
+                No withdraws initiated yet...
               </div>
             </b-tab-item>
           </b-tabs>
@@ -229,11 +243,12 @@ export default {
       noOfDonors: null,
       totalDonationAmount: null,
       withdrawalBalance: null,
-      sampleDonationRecords: {},
+      donationRecords: {},
       withdrawRecords: {},
       // Information on page
       newDonationAmount: 0,
-      newWithdrawalAmount: 0
+      newWithdrawalAmount: 0,
+      hasError: false
     }
   },
   computed: {
@@ -270,6 +285,7 @@ export default {
         type: 'is-warning'
       })
     }
+    console.log(this.donationRecords.length)
 
     // Set campaign address from route
     this.campaignAddress = this.$route.params.campaignAddress
@@ -278,6 +294,11 @@ export default {
     // To be replaced with graphql api call to get single campaign if possible
     if (Object.entries(this.campaigns).length === 0 || !(this.campaignAddress in this.campaigns)) {
       await this.getCampaigns()
+    }
+
+    if (!(this.campaignAddress in this.campaigns)) {
+      this.hasError = true
+      return
     }
 
     // Update campaign info in state
@@ -382,7 +403,7 @@ export default {
       const donors = donationRecords[0]
       const donationAmounts = donationRecords[1]
       for (let i = 0; i < donors.length; i++) {
-        this.sampleDonationRecords[donors[i]] = ethers.utils.formatEther(donationAmounts[i])
+        this.donationRecords[donors[i]] = ethers.utils.formatEther(donationAmounts[i])
       }
       this.noOfDonors = donors.length
     },
@@ -395,18 +416,23 @@ export default {
     },
     async loadBlockchainCampaignDetails () {
       // Retrieve information from campaign on the blockchain
-      const results = await Promise.all(
-        [
-          this.getDonationRecords(this.campaignInstance),
-          this.getTotalDonations(this.campaignInstance),
-          this.getWithdrawRecords(this.campaignInstance),
-          this.getWithdrawalBalance(this.campaignInstance)
-        ]
-      )
-      this.setDonationRecords(results[0])
-      this.totalDonationAmount = results[1]
-      this.setWithdrawRecords(results[2])
-      this.withdrawalBalance = results[3]
+      try {
+        const results = await Promise.all(
+          [
+            this.getDonationRecords(this.campaignInstance),
+            this.getTotalDonations(this.campaignInstance),
+            this.getWithdrawRecords(this.campaignInstance),
+            this.getWithdrawalBalance(this.campaignInstance)
+          ]
+        )
+        this.setDonationRecords(results[0])
+        this.totalDonationAmount = results[1]
+        this.setWithdrawRecords(results[2])
+        this.withdrawalBalance = results[3]
+      } catch (err) {
+        this.hasError = true
+        console.error(err)
+      }
     },
     setFixedCampaignDetails () {
       // Update campaign info in state

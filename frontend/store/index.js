@@ -69,7 +69,8 @@ export const actions = {
     if (!context.rootGetters.hasProvider) {
       return false
     }
-    await this.$wallet.init()
+    this.$wallet.init()
+    await this.$wallet.connect()
 
     if (!context.state.hasRegisteredEvents) {
       context.getters.getProvider.on('chainChanged', async (chainId) => {
@@ -160,5 +161,11 @@ export const actions = {
       this.commit('setPreviouslyConnected', false)
       return false
     }
+  },
+  async getUserWalletAmount (context, userAddress) {
+    const provider = this.$wallet.provider
+    const amountPromise = await provider.getBalance(userAddress)
+    const amount = ethers.utils.formatEther(amountPromise)
+    return amount
   }
 }
