@@ -181,12 +181,12 @@
           <b-tabs position="is-centered" class="block">
             <b-tab-item label="Donations">
               <div v-if="Object.keys(donationRecords).length">
-                <div v-for="(donationAmount, donor) in donationRecords" :key="donor" class="media">
+                <div v-for="donation in donationRecords" :key="donation.transactionHash" class="media">
                   <div class="media-left">
-                    <NuxtLink :to="`/user/${donor}`">
-                      {{ donor }}
+                    <NuxtLink :to="`/user/${donation.donorAddress}`">
+                      {{ donation.donorAddress }}
                     </NuxtLink>
-                    donated {{ donationAmount }} ETH
+                    donated {{ donation.amount }} ETH
                   </div>
                 </div>
               </div>
@@ -240,7 +240,6 @@ export default {
       targetDonationAmount: null,
       campaignDescription: null,
       // Information from blockchain
-      noOfDonors: null,
       totalDonationAmount: null,
       withdrawalBalance: null,
       donationRecords: {},
@@ -275,6 +274,9 @@ export default {
     },
     isCampaignOwnerOrBeneficiary () {
       return this.$wallet.account === this.campaignOwnerAddress || this.$wallet.account === this.beneficiaryAddress
+    },
+    noOfDonors () {
+      return this.donationRecords === null ? null : this.donationRecords.length
     }
   },
   async mounted () {
@@ -310,7 +312,8 @@ export default {
   },
   methods: {
     ...mapActions('api', [
-      'getCampaigns'
+      'getCampaigns',
+      'getDonationsByCampaign'
     ]),
     ...mapActions('contract/campaign', [
       'getTargetAmount',
@@ -400,12 +403,11 @@ export default {
       }
     },
     setDonationRecords (donationRecords) {
-      const donors = donationRecords[0]
-      const donationAmounts = donationRecords[1]
-      for (let i = 0; i < donors.length; i++) {
-        this.donationRecords[donors[i]] = ethers.utils.formatEther(donationAmounts[i])
-      }
-      this.noOfDonors = donors.length
+      donationRecords = donationRecords.map((m) => {
+        m.amount = ethers.utils.formatEther(m.amount)
+        return m
+      })
+      this.donationRecords = donationRecords
     },
     setWithdrawRecords (withdrawRecords) {
       const withdrawInstantiators = withdrawRecords[0]
@@ -419,7 +421,7 @@ export default {
       try {
         const results = await Promise.all(
           [
-            this.getDonationRecords(this.campaignInstance),
+            this.getDonationsByCampaign(this.campaignAddress),
             this.getTotalDonations(this.campaignInstance),
             this.getWithdrawRecords(this.campaignInstance),
             this.getWithdrawalBalance(this.campaignInstance)

@@ -25,8 +25,7 @@ schemaComposer.Query.addFields({
   donations: DonationTC.mongooseResolvers.findMany({
     lean: true,
     filter: {
-      requiredFields: ['donorAddress'],
-      removeFields: ['transactionHash', 'campaignAddress', 'amount'],
+      removeFields: ['transactionHash', 'amount'],
       isRequired: true,
       operators: false
     }

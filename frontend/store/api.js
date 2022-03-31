@@ -119,5 +119,26 @@ export const actions = {
     }
     const res = await this.$graphql.default.request(jsonToGraphQLQuery(query))
     return res.donations
+  },
+
+  async getDonationsByCampaign ({ commit }, campaignAddress) {
+    campaignAddress = campaignAddress.toString()
+    const query = {
+      query: {
+        donations: {
+          __args: {
+            filter: {
+              campaignAddress
+            }
+          },
+          transactionHash: true,
+          donorAddress: true,
+          amount: true,
+          campaignAddress: true
+        }
+      }
+    }
+    const res = await this.$graphql.default.request(jsonToGraphQLQuery(query))
+    return res.donations
   }
 }
