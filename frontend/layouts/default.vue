@@ -1,7 +1,7 @@
 <template>
   <div>
     <eleos-navbar />
-    <section class="main-content columns">
+    <section class="main-content columns minheight">
       <div class="column is-12">
         <Nuxt />
       </div>
@@ -22,3 +22,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.minheight {
+  min-height: 82vh;
+}
+</style>

@@ -6,12 +6,20 @@
         <p>Please check if the address is a valid Campaign contract created by Eleos.</p>
       </b-message>
       <div class="card">
-        <div class="card-image">
+        <!-- <div class="card-image">
           <figure class="image is-16by9">
             <img src="https://bulma.io/images/placeholders/640x360.png" alt="Placeholder image">
           </figure>
-        </div>
+        </div> -->
         <div class="card-content">
+          <ethereum-address
+            prefix="Contract Address"
+            class="mb-0"
+            :address="campaignAddress"
+            address-type="is-success is-light"
+            size="is-small"
+            type="campaign"
+          />
           <div class="columns">
             <div class="column is-two-thirds">
               <p class="title is-3">
@@ -21,32 +29,26 @@
                 <b-skeleton :active="!campaignName" size="is-large" />
               </p>
               <div class="subtitle is-6">
-                <p>{{ campaignAddress }}</p>
                 <a :href="organisationUrl" target="_blank">{{ organisationUrl }}</a>
               </div>
               <div class="subtitle is-6">
-                <p>
-                  <template v-if="campaignOwnerAddress">
-                    Started by:
-                    <NuxtLink :to="`/user/${campaignOwnerAddress}`">
-                      {{ campaignOwnerAddress }}
-                    </NuxtLink>
-                  </template>
-                  <b-skeleton :active="!campaignOwnerAddress" width="50%" />
-                </p>
-                <p>
+                <p class="my-1">
                   <template v-if="beneficiaryAddress">
-                    Beneficiary:
-                    <NuxtLink :to="`/user/${beneficiaryAddress}`">
-                      {{ beneficiaryAddress }}
-                    </NuxtLink>
+                    <span class="has-text-weight-medium">Beneficiary:</span>
+                    <ethereum-address
+                      :address="beneficiaryAddress"
+                      address-type="is-light"
+                      show-reputation
+                      class="is-inline-flex"
+                      size="is-medium"
+                    />
                   </template>
                   <b-skeleton :active="!beneficiaryAddress" width="50%" />
                 </p>
               </div>
             </div>
             <div v-if="hasProvider" class="column is-one-third">
-              <b-field v-if="!isBeneficiary" grouped>
+              <b-field v-if="!isBeneficiary" grouped :message="currentBalance">
                 <b-numberinput
                   v-model="newDonationAmount"
                   controls-position="compact"
@@ -172,7 +174,13 @@
           </div>
           <b-tabs position="is-centered" class="block">
             <b-tab-item label="Description">
-              <p>
+              <p class="block">
+                <template v-if="campaignOwnerAddress">
+                  <span class="has-text-weight-medium">Started By:</span> <ethereum-address :address="campaignOwnerAddress" address-type="is-light" show-reputation class="is-inline-flex" size="is-small" />
+                </template>
+                <b-skeleton :active="!campaignOwnerAddress" width="50%" />
+              </p>
+              <p class="block">
                 <template v-if="campaignDescription">
                   {{ campaignDescription }}
                 </template>
@@ -183,9 +191,7 @@
               <div v-if="Object.keys(donationRecords).length">
                 <div v-for="(donationAmount, donor) in donationRecords" :key="donor" class="media">
                   <div class="media-left">
-                    <NuxtLink :to="`/user/${donor}`">
-                      {{ donor }}
-                    </NuxtLink>
+                    <ethereum-address :address="donor" address-type="is-primary is-light" size="is-small" class="is-inline" />
                     donated {{ donationAmount }} ETH
                   </div>
                 </div>
@@ -199,13 +205,15 @@
               <div v-if="Object.keys(withdrawRecords).length">
                 <div v-for="withdrawRecord, i in withdrawRecords" :key="i" class="media">
                   <div class="media-left">
-                    <NuxtLink :to="`/user/${withdrawRecord[0]}`">
-                      {{ withdrawRecord[0] }}
-                    </NuxtLink>
+                    <ethereum-address :address="withdrawRecord[0]" address-type="is-primary is-light" show-reputation size="is-small" class="is-inline-flex" />
                     initiated a withdrawal of {{ withdrawRecord[1] }} ETH to
-                    <NuxtLink :to="`/user/${beneficiaryAddress}`">
-                      {{ beneficiaryAddress }}
-                    </NuxtLink>
+                    <ethereum-address
+                      :address="beneficiaryAddress"
+                      address-type="is-primary is-light"
+                      show-reputation
+                      size="is-small"
+                      class="is-inline-flex"
+                    />
                   </div>
                 </div>
               </div>
@@ -223,9 +231,13 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import { ethers } from 'ethers'
+import EthereumAddress from '~/components/EthereumAddress'
 
 export default {
   name: 'InfoPage',
+  components: {
+    EthereumAddress
+  },
   middleware: 'validCampaign',
   data () {
     return {
@@ -261,6 +273,8 @@ export default {
     timeLeft () {
       if (this.endTimestamp === 8640000000000000) {
         return 'Indefinite'
+      } else if (this.$dayjs(this.endTimestamp).isBefore(this.$dayjs())) {
+        return 'Ended'
       }
       return this.$dayjs(this.endTimestamp).fromNow(true)
     },
@@ -275,6 +289,9 @@ export default {
     },
     isCampaignOwnerOrBeneficiary () {
       return this.$wallet.account === this.campaignOwnerAddress || this.$wallet.account === this.beneficiaryAddress
+    },
+    currentBalance () {
+      return this.$wallet.balance ? 'Balance: ' + this.$wallet.balance + ' ETH' : ''
     }
   },
   async mounted () {

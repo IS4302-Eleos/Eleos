@@ -69,9 +69,8 @@ export default {
     if (!userAddress || !ethers.utils.isAddress(userAddress)) {
       return redirect('/')
     }
-    const repRate = 0.01
     try {
-      const [walletAmount, beneficiary, rawReputation, rawDonations] = await Promise.all([
+      const [walletAmount, beneficiary, reputation, rawDonations] = await Promise.all([
         store.dispatch('getUserWalletAmount', userAddress),
         store.dispatch('api/getCampaignByBeneficiaryAddress', userAddress),
         store.dispatch('contract/reputation/getReputation', userAddress),
@@ -81,7 +80,6 @@ export default {
         d.amount = ethers.utils.formatEther(d.amount, 'ether')
         return d
       })
-      const reputation = rawReputation / repRate
       return {
         donations,
         beneficiary,
@@ -93,7 +91,7 @@ export default {
         donations: null,
         beneficiary: null,
         walletAmount: -1,
-        reputation: -1
+        reputation: ethers.BigNumber.from('-1')
       }
     }
   }

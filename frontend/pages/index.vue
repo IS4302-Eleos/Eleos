@@ -16,44 +16,46 @@
         </div>
       </div>
     </section>
-    <section class="section container">
-      <h3 class="title is-3">
-        Active Campaigns
-      </h3>
-      <div v-if="activeCampaigns.length" class="columns is-multiline">
-        <campaign-card
-          v-for="campaign in activeCampaigns"
-          :key="campaign.campaignAddress"
-          class="column is-one-third"
-          :address="campaign.campaignAddress"
-          :title="campaign.campaignName"
-          :target-amount="campaign.targetDonationAmount"
-          :end-date="campaign.endTimestamp"
-        />
-      </div>
-      <div v-else class="block has-text-grey">
-        No active campaigns found!
-      </div>
-    </section>
-    <section class="section container">
-      <h3 class="title is-3">
-        Past Campaigns
-      </h3>
-      <div v-if="pastCampaigns.length" class="columns is-multiline">
-        <campaign-card
-          v-for="campaign in pastCampaigns"
-          :key="campaign.campaignAddress"
-          class="column is-one-third"
-          :address="campaign.campaignAddress"
-          :title="campaign.campaignName"
-          :target-amount="campaign.targetDonationAmount"
-          :end-date="campaign.endTimestamp"
-        />
-      </div>
-      <div v-else class="block has-text-grey">
-        No past campaigns found!
-      </div>
-    </section>
+    <div class="minheight">
+      <section class="section container">
+        <h3 class="title is-3">
+          Active Campaigns
+        </h3>
+        <div v-if="activeCampaigns.length" class="columns is-multiline">
+          <campaign-card
+            v-for="campaign in activeCampaigns"
+            :key="campaign.campaignAddress"
+            class="column is-one-third"
+            :address="campaign.campaignAddress"
+            :title="campaign.campaignName"
+            :target-amount="campaign.targetDonationAmount"
+            :end-date="campaign.endTimestamp"
+          />
+        </div>
+        <div v-else class="block has-text-grey">
+          No active campaigns found!
+        </div>
+      </section>
+      <section class="section container">
+        <h3 class="title is-3">
+          Past Campaigns
+        </h3>
+        <div v-if="pastCampaigns.length" class="columns is-multiline">
+          <campaign-card
+            v-for="campaign in pastCampaigns"
+            :key="campaign.campaignAddress"
+            class="column is-one-third"
+            :address="campaign.campaignAddress"
+            :title="campaign.campaignName"
+            :target-amount="campaign.targetDonationAmount"
+            :end-date="campaign.endTimestamp"
+          />
+        </div>
+        <div v-else class="block has-text-grey">
+          No past campaigns found!
+        </div>
+      </section>
+    </div>
     <eleos-footer class="mt-6" />
   </div>
 </template>
@@ -103,3 +105,9 @@ export default {
 }
 
 </script>
+
+<style scoped>
+.minheight {
+  min-height: 30vh;
+}
+</style>
