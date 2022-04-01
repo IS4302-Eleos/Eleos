@@ -240,6 +240,7 @@ export default {
       beneficiaryURL: '',
       targetAmount: 0,
       endDate: null,
+      endDateDayJS: null,
       isLoading: false,
       isCompleted: false,
       campaignPath: ''
@@ -266,10 +267,10 @@ export default {
       return true
     },
     endDatePretty () {
-      if (this.endDate === null) {
+      if (this.endDateDayJS === null) {
         return 'None'
       }
-      return this.$dayjs(this.endDate).format('YYYY/MM/DD')
+      return this.endDateDayJS.format('YYYY/MM/DD HH:mm Z [UTC]')
     }
   },
   async mounted () {
@@ -302,6 +303,7 @@ export default {
     moveToReview () {
       if (this.isValidated) {
         this.activeStep = 2
+        this.endDateDayJS = this.$dayjs(this.endDate).endOf('day')
       }
     },
     async deploy () {
@@ -311,7 +313,7 @@ export default {
       const campaignDetails = {
         campaignName: this.campaignName,
         beneficiaryUrl: this.beneficiaryURL,
-        endDate: this.endDate,
+        endDate: this.endDateDayJS.toDate(),
         beneficiaryAddress: this.beneficiaryAddress,
         campaignOwnerAddress: this.selectedWalletAddress, // Perhaps to be removed if we using the sender address
         targetAmount: this.targetAmount,
