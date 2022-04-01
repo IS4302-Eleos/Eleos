@@ -79,18 +79,13 @@ export default {
       pastCampaigns: []
     }
   },
-  computed: {
-    dateNow () {
-      return new Date()
-    }
-  },
   async mounted () {
     // Get all campaigns
     try {
       const campaigns = await this.getCampaigns()
       // Filter active and past campaigns
       campaigns.forEach((campaign) => {
-        if (campaign.endTimestamp > this.dateNow) {
+        if (!this.$dayjs().isAfter(this.$dayjs(campaign.endTimestamp), 'day')) {
           this.activeCampaigns.push(campaign)
         } else {
           this.pastCampaigns.push(campaign)

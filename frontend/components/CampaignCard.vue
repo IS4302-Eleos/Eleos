@@ -7,9 +7,7 @@
         </template>
         <b-skeleton :active="title == null" />
       </h4>
-      <campaign-card-donation v-if="hasProvider" :address="address" :target-amount="targetAmount" />
-      <b-skeleton :active="!hasProvider" />
-      <b-skeleton :active="!hasProvider" size="is-small" />
+      <campaign-card-donation :address="address" :target-amount="targetAmount" />
       <p>
         <template v-if="endDate != null ">
           <span v-if="Date.parse(endDate) !== 8640000000000000">{{ endDate > dateNow ? 'Ending' : 'Ended' }} on: {{ endDatePretty }}</span>
@@ -50,12 +48,6 @@ export default {
     }
   },
   computed: {
-    // ...mapState([
-    //   'isConnected'
-    // ]),
-    hasProvider () {
-      return !!this.$wallet.provider
-    },
     dateNow () {
       return new Date()
     },

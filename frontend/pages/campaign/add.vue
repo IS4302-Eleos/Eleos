@@ -53,7 +53,7 @@
               Use External Wallet Address
             </h4>
             <b-field label="External Wallet Address">
-              <b-input v-model="externalAddress" validation-message="Please check your wallet address!" pattern="0x[0-9a-fA-F]{40}" />
+              <b-input v-model="externalAddress" validation-message="Please check your wallet address is an Ethereum checksum address!" pattern="0x[0-9a-fA-F]{40}" />
             </b-field>
             <b-button type="is-success" @click="moveToBasicInfo(externalAddress)">
               Continue
@@ -206,6 +206,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { ethers } from 'ethers'
 
 export default {
   name: 'AddPage',
@@ -239,6 +240,7 @@ export default {
       beneficiaryURL: '',
       targetAmount: 0,
       endDate: null,
+      endDateDayJS: null,
       isLoading: false,
       isCompleted: false,
       campaignPath: ''
@@ -265,14 +267,14 @@ export default {
       return true
     },
     endDatePretty () {
-      if (this.endDate === null) {
+      if (this.endDateDayJS === null) {
         return 'None'
       }
-      return this.$dayjs(this.endDate).format('YYYY/MM/DD')
+      return this.endDateDayJS.format('YYYY/MM/DD HH:mm Z [UTC]')
     }
   },
   async mounted () {
-    this.walletAddresses = await this.$store.dispatch('safelyRequestAccounts')
+    this.walletAddresses = (await this.$store.dispatch('safelyRequestAccounts')).map(x => ethers.utils.getAddress(x))
     this.selectedWalletAddress = this.walletAddresses[0]
   },
   methods: {
@@ -288,9 +290,11 @@ export default {
       return url.protocol === 'http:' || url.protocol === 'https:'
     },
     moveToBasicInfo (beneficiaryAddress) {
-      if (beneficiaryAddress.match(/0x[0-9a-zA-Z]{40}/g)) {
+      if (ethers.utils.isAddress(beneficiaryAddress) && ethers.utils.getAddress(beneficiaryAddress) === beneficiaryAddress) {
         this.beneficiaryAddress = beneficiaryAddress
         this.activeStep = 1
+      } else {
+        this.externalAddress = this.externalAddress.trim() + ' '
       }
     },
     moveBack () {
@@ -299,6 +303,7 @@ export default {
     moveToReview () {
       if (this.isValidated) {
         this.activeStep = 2
+        this.endDateDayJS = this.endDate ? this.$dayjs(this.endDate).endOf('day') : null
       }
     },
     async deploy () {
@@ -308,7 +313,7 @@ export default {
       const campaignDetails = {
         campaignName: this.campaignName,
         beneficiaryUrl: this.beneficiaryURL,
-        endDate: this.endDate,
+        endDate: this.endDate ? this.endDateDayJS.toDate() : null,
         beneficiaryAddress: this.beneficiaryAddress,
         campaignOwnerAddress: this.selectedWalletAddress, // Perhaps to be removed if we using the sender address
         targetAmount: this.targetAmount,
@@ -330,10 +335,9 @@ export default {
         this.isLoading = false
         this.$buefy.toast.open({
           duration: 5000,
-          message: 'Unable to deploy contract. Please try again.',
+          message: 'Unable to deploy contract. Please try again later.',
           type: 'is-danger'
         })
-        console.error(err)
       }
     }
   }

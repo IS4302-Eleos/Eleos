@@ -6,7 +6,10 @@
           Reputation
         </p>
         <p class="title">
-          {{ reputation }}
+          <template v-if="reputation > -1">
+            {{ reputation }}
+          </template>
+          <b-skeleton :active="reputation < 0" size="is-large" />
         </p>
       </div>
     </div>
@@ -16,7 +19,10 @@
           No. of Donations Made
         </p>
         <p class="title">
-          {{ noOfDonations }}
+          <template v-if="noOfDonations > -1">
+            {{ noOfDonations }}
+          </template>
+          <b-skeleton :active="noOfDonations < 0" size="is-large" />
         </p>
       </div>
     </div>
@@ -26,7 +32,10 @@
           Wallet Amt
         </p>
         <p class="title">
-          {{ walletAmount }}
+          <template v-if="walletAmount > -1">
+            {{ walletAmount }}
+          </template>
+          <b-skeleton :active="walletAmount < 0" size="is-large" />
         </p>
       </div>
     </div>
