@@ -1,9 +1,17 @@
 <template>
   <div>
     <h6 class="subtitle is-5">
-      <strong>{{ currentAmount }}</strong> ETH raised <span v-if="targetAmount > 0">of {{ targetAmount }} ETH</span>
+      <template v-if="currentAmount > -1">
+        <strong>{{ currentAmount }}</strong> ETH raised <span v-if="targetAmount > 0">of {{ targetAmount }} ETH</span>
+      </template>
+      <b-skeleton :active="currentAmount < 0" />
     </h6>
-    <b-progress class="mb-1" size="is-small" :type="progressBarColor" :value="donationPercentage" />
+    <p class="mb-1">
+      <template v-if="currentAmount > -1">
+        <b-progress size="is-small" :type="progressBarColor" :value="donationPercentage" />
+      </template>
+      <b-skeleton :active="currentAmount < 0" size="is-small" />
+    </p>
   </div>
 </template>
 
@@ -52,7 +60,7 @@ export default {
     }
   },
   async mounted () {
-    if (this.$wallet.provider) {
+    if (this.$wallet.provider && await this.$wallet.isCorrectChain(this.$config)) {
       // Get current donation amount of campaign
       const campaignInstance = await this.getCampaignInstance(this.address)
       const totalDonationAmount = await this.getTotalDonations(campaignInstance)

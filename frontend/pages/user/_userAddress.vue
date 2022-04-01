@@ -9,14 +9,14 @@
               <div class="media-content">
                 <user-stats
                   :reputation="reputation"
-                  :no-of-donations="donations.length"
+                  :no-of-donations="donations ? donations.length : -1"
                   :wallet-amount="walletAmount"
                 />
               </div>
             </div>
             <b-tabs position="is-centered" class="block">
               <b-tab-item label="Donation Records">
-                <div v-if="donations.length">
+                <div v-if="donations && donations.length">
                   <user-donation-record
                     v-for="donation in donations"
                     :key="donation.transactionHash"
@@ -29,7 +29,7 @@
                 </div>
               </b-tab-item>
               <b-tab-item label="Benefitted Campaigns">
-                <div v-if="beneficiary.length">
+                <div v-if="beneficiary && beneficiary.length">
                   <user-beneficiary-record
                     v-for="b in beneficiary"
                     :key="b.campaignAddress"
@@ -70,19 +70,31 @@ export default {
       return redirect('/')
     }
     const repRate = 0.01
-    const walletAmount = await store.dispatch('getUserWalletAmount', userAddress)
-    const beneficiary = await store.dispatch('api/getCampaignByBeneficiaryAddress', userAddress)
-    const reputation = await store.dispatch('contract/reputation/getReputation', userAddress) / repRate
-    let donations = await store.dispatch('api/getDonations', userAddress)
-    donations = donations.map((d) => {
-      d.amount = ethers.utils.formatEther(d.amount, 'ether')
-      return d
-    })
-    return {
-      donations,
-      beneficiary,
-      walletAmount,
-      reputation
+    try {
+      const [walletAmount, beneficiary, rawReputation, rawDonations] = await Promise.all([
+        store.dispatch('getUserWalletAmount', userAddress),
+        store.dispatch('api/getCampaignByBeneficiaryAddress', userAddress),
+        store.dispatch('contract/reputation/getReputation', userAddress),
+        store.dispatch('api/getDonations', userAddress)
+      ])
+      const donations = rawDonations.map((d) => {
+        d.amount = ethers.utils.formatEther(d.amount, 'ether')
+        return d
+      })
+      const reputation = rawReputation / repRate
+      return {
+        donations,
+        beneficiary,
+        walletAmount,
+        reputation
+      }
+    } catch (err) {
+      return {
+        donations: null,
+        beneficiary: null,
+        walletAmount: -1,
+        reputation: -1
+      }
     }
   }
 }

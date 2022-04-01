@@ -12,9 +12,9 @@
           </figure>
         </div>
         <div class="card-content">
-          <div class="media">
-            <div class="media-content">
-              <p class="title is-4">
+          <div class="columns">
+            <div class="column is-two-thirds">
+              <p class="title is-3">
                 <template v-if="campaignName">
                   {{ campaignName }}
                 </template>
@@ -44,20 +44,15 @@
                   <b-skeleton :active="!beneficiaryAddress" width="50%" />
                 </p>
               </div>
-              <p>
-                <template v-if="campaignDescription">
-                  {{ campaignDescription }}
-                </template>
-                <b-skeleton :active="!campaignDescription" :count="3" />
-              </p>
             </div>
-            <div v-if="hasProvider" class="media-right">
+            <div v-if="hasProvider" class="column is-one-third">
               <b-field v-if="!isBeneficiary" grouped>
                 <b-numberinput
                   v-model="newDonationAmount"
                   controls-position="compact"
                   :min="0"
                   :step="0.01"
+                  expanded
                 />
                 <p class="control">
                   <b-button class="button is-success" @click="submitDonation">
@@ -72,6 +67,7 @@
                   :min="0"
                   :max="withdrawalBalance"
                   :step="0.01"
+                  expanded
                 />
                 <p class="control">
                   <b-button class="button is-success" @click="submitWithdrawal">
@@ -107,78 +103,82 @@
             </template>
             <b-skeleton :active="!hasProvider" size="is-large" />
           </div>
-          <div class="media">
-            <div class="media-content">
-              <div class="level">
-                <div class="level-item has-text-centered">
-                  <div>
-                    <p class="heading">
-                      No. of Donors
-                    </p>
-                    <p class="title">
-                      <template v-if="noOfDonors !== null">
-                        {{ noOfDonors }}
-                      </template>
-                      <b-skeleton :active="noOfDonors === null" size="is-large" />
-                    </p>
-                  </div>
-                </div>
-                <div v-if="isCampaignOwnerOrBeneficiary" class="level-item has-text-centered">
-                  <div>
-                    <p class="heading">
-                      Withdrawal Balance
-                    </p>
-                    <p class="title">
-                      <template v-if="withdrawalBalance">
-                        {{ withdrawalBalance }} ETH
-                      </template>
-                      <b-skeleton :active="!withdrawalBalance" size="is-large" />
-                    </p>
-                  </div>
-                </div>
-                <div class="level-item has-text-centered">
-                  <div>
-                    <p class="heading">
-                      Total Amount
-                    </p>
-                    <p class="title">
-                      <template v-if="totalDonationAmount !== null">
-                        {{ totalDonationAmount }} ETH
-                      </template>
-                      <b-skeleton :active="totalDonationAmount === null" size="is-large" />
-                    </p>
-                  </div>
-                </div>
-                <div v-if="targetDonationAmount === null || targetDonationAmount" class="level-item has-text-centered">
-                  <div>
-                    <p class="heading">
-                      Target Amount
-                    </p>
-                    <p class="title">
-                      <template v-if="targetDonationAmount !== null">
-                        <span>{{ targetDonationAmount }} ETH</span>
-                      </template>
-                      <b-skeleton :active="targetDonationAmount === null" size="is-large" />
-                    </p>
-                  </div>
-                </div>
-                <div class="level-item has-text-centered">
-                  <div>
-                    <p class="heading">
-                      Time Left
-                    </p>
-                    <p class="title">
-                      <template v-if="endTimestamp">
-                        {{ timeLeft }}
-                      </template>
-                      <b-skeleton :active="!endTimestamp" size="is-large" />
-                    </p>
-                  </div>
-                </div>
+          <div class="level">
+            <div class="level-item has-text-centered">
+              <div>
+                <p class="heading">
+                  No. of Donors
+                </p>
+                <p class="title">
+                  <template v-if="noOfDonors !== null">
+                    {{ noOfDonors }}
+                  </template>
+                  <b-skeleton :active="noOfDonors === null" size="is-large" />
+                </p>
+              </div>
+            </div>
+            <div v-if="isCampaignOwnerOrBeneficiary" class="level-item has-text-centered">
+              <div>
+                <p class="heading">
+                  Withdrawal Balance
+                </p>
+                <p class="title">
+                  <template v-if="withdrawalBalance">
+                    {{ withdrawalBalance }} ETH
+                  </template>
+                  <b-skeleton :active="!withdrawalBalance" size="is-large" />
+                </p>
+              </div>
+            </div>
+            <div class="level-item has-text-centered">
+              <div>
+                <p class="heading">
+                  Total Amount
+                </p>
+                <p class="title">
+                  <template v-if="totalDonationAmount !== null">
+                    {{ totalDonationAmount }} ETH
+                  </template>
+                  <b-skeleton :active="totalDonationAmount === null" size="is-large" />
+                </p>
+              </div>
+            </div>
+            <div v-if="targetDonationAmount === null || targetDonationAmount" class="level-item has-text-centered">
+              <div>
+                <p class="heading">
+                  Target Amount
+                </p>
+                <p class="title">
+                  <template v-if="targetDonationAmount !== null">
+                    <span>{{ targetDonationAmount }} ETH</span>
+                  </template>
+                  <b-skeleton :active="targetDonationAmount === null" size="is-large" />
+                </p>
+              </div>
+            </div>
+            <div class="level-item has-text-centered">
+              <div>
+                <p class="heading">
+                  Time Left
+                </p>
+                <p class="title">
+                  <template v-if="endTimestamp">
+                    {{ timeLeft }}
+                  </template>
+                  <b-skeleton :active="!endTimestamp" size="is-large" />
+                </p>
               </div>
             </div>
           </div>
           <b-tabs position="is-centered" class="block">
+            <b-tab-item label="Description">
+              <p>
+                <template v-if="campaignDescription">
+                  {{ campaignDescription }}
+                </template>
+                <b-skeleton :active="!campaignDescription" :count="3" />
+              </p>
+            </b-tab-item>
             <b-tab-item label="Donations">
               <div v-if="Object.keys(donationRecords).length">
                 <div v-for="donation in donationRecords" :key="donation.transactionHash" class="media">
@@ -287,27 +287,30 @@ export default {
         type: 'is-warning'
       })
     }
-    console.log(this.donationRecords.length)
 
     // Set campaign address from route
     this.campaignAddress = this.$route.params.campaignAddress
 
-    // Retrieve campaigns if not already in api store's state
-    // To be replaced with graphql api call to get single campaign if possible
-    if (Object.entries(this.campaigns).length === 0 || !(this.campaignAddress in this.campaigns)) {
-      await this.getCampaigns()
-    }
+    try {
+      // Retrieve campaigns if not already in api store's state
+      // To be replaced with graphql api call to get single campaign if possible
+      if (Object.entries(this.campaigns).length === 0 || !(this.campaignAddress in this.campaigns)) {
+        await this.getCampaigns()
+      }
 
-    if (!(this.campaignAddress in this.campaigns)) {
+      if (!(this.campaignAddress in this.campaigns)) {
+        this.hasError = true
+        return
+      }
+
+      // Update campaign info in state
+      this.setFixedCampaignDetails()
+      if (this.hasProvider && await this.$wallet.provider.ready) {
+        this.campaignInstance = await this.getCampaignInstance(this.campaignAddress)
+        this.loadBlockchainCampaignDetails()
+      }
+    } catch (err) {
       this.hasError = true
-      return
-    }
-
-    // Update campaign info in state
-    this.setFixedCampaignDetails()
-    if (this.hasProvider && await this.$wallet.provider.ready) {
-      this.campaignInstance = await this.getCampaignInstance(this.campaignAddress)
-      this.loadBlockchainCampaignDetails()
     }
   },
   methods: {
@@ -351,7 +354,6 @@ export default {
           type: 'is-success'
         })
       } catch (err) {
-        console.log(err)
         this.$buefy.toast.open({
           duration: 5000,
           message: 'Unable to donate. Please try again later.',
@@ -394,7 +396,6 @@ export default {
           type: 'is-success'
         })
       } catch (err) {
-        console.log(err)
         this.$buefy.toast.open({
           duration: 5000,
           message: 'Unable to withdraw. Please try again later.',
@@ -433,7 +434,6 @@ export default {
         this.withdrawalBalance = results[3]
       } catch (err) {
         this.hasError = true
-        console.error(err)
       }
     },
     setFixedCampaignDetails () {

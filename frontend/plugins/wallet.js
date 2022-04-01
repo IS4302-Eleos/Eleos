@@ -55,7 +55,7 @@ export default ({ env }, inject) => {
     },
 
     async switchNetwork (config) {
-      if (this.network?.chainId === config.chain_id || `0x${this.network?.chainId.toString(16)}` === config.chain_id) {
+      if (this.network?.chainId === Number(config.chain_id) || `0x${this.network?.chainId.toString(16)}` === Number(config.chain_id)) {
         return // since we are on correct network
       }
 
@@ -71,6 +71,13 @@ export default ({ env }, inject) => {
           throw err
         }
       }
+    },
+    async isCorrectChain (config) {
+      const network = await this.network
+      if (network?.chainId === Number(config.chain_id) || `0x${network?.chainId.toString(16)}` === Number(config.chain_id)) {
+        return true// since we are on correct network
+      }
+      return false
     }
   })
 

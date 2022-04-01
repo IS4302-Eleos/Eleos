@@ -7,8 +7,8 @@ export const state = () => ({
 })
 
 export const getters = {
-  isAuthenticated (state, getters) {
-    return !!state.jwt
+  isAuthenticated (state, getters, $wallet) {
+    return !!state.jwt && $wallet.account
   }
 }
 

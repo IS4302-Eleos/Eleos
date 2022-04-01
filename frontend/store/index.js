@@ -70,7 +70,11 @@ export const actions = {
       return false
     }
     this.$wallet.init()
-    await this.$wallet.connect()
+    try {
+      await this.$wallet.connect()
+    } catch (err) {
+      return false
+    }
 
     if (!context.state.hasRegisteredEvents) {
       context.getters.getProvider.on('chainChanged', async (chainId) => {
