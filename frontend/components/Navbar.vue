@@ -9,8 +9,10 @@
     </template>
     <template #start>
       <b-navbar-item tag="div">
-        <b-message v-if="!isAPIEndpointActive" type="is-danger" has-icon size="is-small">
-          We are unable to connect to our backend API services. Please check if you are connected to the network.
+        <b-message v-if="error.length" type="is-danger" has-icon size="is-small">
+          <p v-for="e in error" :key="e">
+            {{ e }}
+          </p>
         </b-message>
       </b-navbar-item>
     </template>
@@ -30,7 +32,7 @@
           <b-button v-if="isConnected && isAuthenticated" type="is-primary" icon-left="plus-circle" tag="NuxtLink" to="/campaign/add">
             Start a Campaign
           </b-button>
-          <b-button v-if="!isConnected" type="is-success" :disabled="!hasProvider || isConnected || !isCorrectChain" :loading="isConnecting" @click="login">
+          <b-button v-if="!isLoggedIn" type="is-success" :disabled="!hasProvider || isConnected || !isCorrectChain || !isAPIEndpointActive" :loading="isConnecting" @click="login">
             {{ hasProvider ? (isConnected ? 'Connected' : 'Connect') : 'No Provider' }}
           </b-button>
           <b-button
@@ -55,12 +57,18 @@ import { mapState, mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'EleosNavbar',
+  data () {
+    return {
+      error: []
+    }
+  },
   computed: {
     ...mapState({
       isConnected: 'isConnected',
       isConnecting: 'isConnecting',
       isCorrectChain: 'isCorrectChain',
-      isAPIEndpointActive: state => state.auth.isAPIEndpointActive
+      isAPIEndpointActive: state => state.auth.isAPIEndpointActive,
+      isLoggedIn: state => state.auth.jwt
     }),
     ...mapGetters({
       hasProvider: 'hasProvider',
@@ -73,12 +81,18 @@ export default {
   mounted () {
     this['auth/init']().then(() => {
       this.$store.commit('setConnecting', false)
-    }).catch((err) => {
-      console.error(err)
+    }).catch(() => {
       this.$store.commit('setConnecting', false)
     })
-    this['auth/checkAPIEndpoint']().catch((err) => {
-      console.error(err)
+    this['auth/checkAPIEndpoint']().then(() => {
+      if (!this.isAPIEndpointActive) {
+        this.error.push('We are unable to connect to our backend API services. Please check if you are connected to the network. ')
+      }
+    })
+    this.$wallet.isCorrectChain(this.$config).then((res) => {
+      if (!res) {
+        this.error.push(`Please change the your provider's chain to the supported chain (Supported Chain ID :${Number(this.$config.chain_id)}). `)
+      }
     })
   },
   methods: {

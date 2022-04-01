@@ -285,27 +285,30 @@ export default {
         type: 'is-warning'
       })
     }
-    console.log(this.donationRecords.length)
 
     // Set campaign address from route
     this.campaignAddress = this.$route.params.campaignAddress
 
-    // Retrieve campaigns if not already in api store's state
-    // To be replaced with graphql api call to get single campaign if possible
-    if (Object.entries(this.campaigns).length === 0 || !(this.campaignAddress in this.campaigns)) {
-      await this.getCampaigns()
-    }
+    try {
+      // Retrieve campaigns if not already in api store's state
+      // To be replaced with graphql api call to get single campaign if possible
+      if (Object.entries(this.campaigns).length === 0 || !(this.campaignAddress in this.campaigns)) {
+        await this.getCampaigns()
+      }
 
-    if (!(this.campaignAddress in this.campaigns)) {
+      if (!(this.campaignAddress in this.campaigns)) {
+        this.hasError = true
+        return
+      }
+
+      // Update campaign info in state
+      this.setFixedCampaignDetails()
+      if (this.hasProvider && await this.$wallet.provider.ready) {
+        this.campaignInstance = await this.getCampaignInstance(this.campaignAddress)
+        this.loadBlockchainCampaignDetails()
+      }
+    } catch (err) {
       this.hasError = true
-      return
-    }
-
-    // Update campaign info in state
-    this.setFixedCampaignDetails()
-    if (this.hasProvider && await this.$wallet.provider.ready) {
-      this.campaignInstance = await this.getCampaignInstance(this.campaignAddress)
-      this.loadBlockchainCampaignDetails()
     }
   },
   methods: {
@@ -348,7 +351,6 @@ export default {
           type: 'is-success'
         })
       } catch (err) {
-        console.log(err)
         this.$buefy.toast.open({
           duration: 5000,
           message: 'Unable to donate. Please try again later.',
@@ -391,7 +393,6 @@ export default {
           type: 'is-success'
         })
       } catch (err) {
-        console.log(err)
         this.$buefy.toast.open({
           duration: 5000,
           message: 'Unable to withdraw. Please try again later.',
@@ -431,7 +432,6 @@ export default {
         this.withdrawalBalance = results[3]
       } catch (err) {
         this.hasError = true
-        console.error(err)
       }
     },
     setFixedCampaignDetails () {

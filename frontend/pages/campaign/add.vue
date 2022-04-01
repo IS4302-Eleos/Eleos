@@ -330,10 +330,9 @@ export default {
         this.isLoading = false
         this.$buefy.toast.open({
           duration: 5000,
-          message: 'Unable to deploy contract. Please try again.',
+          message: 'Unable to deploy contract. Please try again later.',
           type: 'is-danger'
         })
-        console.error(err)
       }
     }
   }
