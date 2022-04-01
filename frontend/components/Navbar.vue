@@ -32,7 +32,7 @@
           <b-button v-if="isConnected && isAuthenticated" type="is-primary" icon-left="plus-circle" tag="NuxtLink" to="/campaign/add">
             Start a Campaign
           </b-button>
-          <b-button v-if="!isLoggedIn" type="is-success" :disabled="!hasProvider || isConnected || !isCorrectChain || !isAPIEndpointActive" :loading="isConnecting" @click="login">
+          <b-button v-if="!isConnected || !isAuthenticated" type="is-success" :disabled="!hasProvider || isConnected || !isCorrectChain || !isAPIEndpointActive" :loading="isConnecting" @click="login">
             {{ hasProvider ? (isConnected ? 'Connected' : 'Connect') : 'No Provider' }}
           </b-button>
           <b-button
@@ -67,8 +67,7 @@ export default {
       isConnected: 'isConnected',
       isConnecting: 'isConnecting',
       isCorrectChain: 'isCorrectChain',
-      isAPIEndpointActive: state => state.auth.isAPIEndpointActive,
-      isLoggedIn: state => state.auth.jwt
+      isAPIEndpointActive: state => state.auth.isAPIEndpointActive
     }),
     ...mapGetters({
       hasProvider: 'hasProvider',
