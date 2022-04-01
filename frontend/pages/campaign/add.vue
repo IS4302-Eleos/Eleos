@@ -303,7 +303,7 @@ export default {
     moveToReview () {
       if (this.isValidated) {
         this.activeStep = 2
-        this.endDateDayJS = this.$dayjs(this.endDate).endOf('day')
+        this.endDateDayJS = this.endDate ? this.$dayjs(this.endDate).endOf('day') : null
       }
     },
     async deploy () {
@@ -313,7 +313,7 @@ export default {
       const campaignDetails = {
         campaignName: this.campaignName,
         beneficiaryUrl: this.beneficiaryURL,
-        endDate: this.endDateDayJS.toDate(),
+        endDate: this.endDate ? this.endDateDayJS.toDate() : null,
         beneficiaryAddress: this.beneficiaryAddress,
         campaignOwnerAddress: this.selectedWalletAddress, // Perhaps to be removed if we using the sender address
         targetAmount: this.targetAmount,
