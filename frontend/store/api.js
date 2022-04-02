@@ -142,7 +142,7 @@ export const actions = {
     const res = await this.$graphql.default.request(jsonToGraphQLQuery(query))
     return res.donations
   },
-  getWithdrawals ({ commit }, campaignAddress) {
+  async getWithdrawals ({ commit }, campaignAddress) {
     campaignAddress = campaignAddress.toString()
     const query = {
       query: {
@@ -162,6 +162,6 @@ export const actions = {
       }
     }
     const res = await this.$graphql.default.request(jsonToGraphQLQuery(query))
-    return res.donations
+    return res.withdrawals
   }
 }
