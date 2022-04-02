@@ -2,16 +2,16 @@
   <div class="block">
     <div class="columns is-mobile mb-0">
       <div class="column">
-        <ethereum-address
-          prefix="Campaign"
-          :address="campaignAddress"
-          type="campaign"
-          address-type="is-light is-success"
-          class="is-inline-flex mb-0"
-          size="is-medium"
-        />
+        <p>
+          <ethereum-address :address="withdrawerAddress" address-type="is-primary is-light" show-reputation class="mb-0 is-inline-flex" />
+          <b-icon
+            icon="chevron-triple-right"
+            style="vertical-align: sub"
+          />
+          <ethereum-address :address="beneficiaryAddress" address-type="is-primary is-light" show-reputation class="mb-0 is-inline-flex" />
+        </p>
         <p class="subtitle has-text-grey is-size-7">
-          Donated on: {{ timestampPretty }}
+          Withdrawn on: {{ timestampPretty }}
         </p>
       </div>
       <div class="column is-narrow">
@@ -35,21 +35,27 @@
 </template>
 
 <script>
-
 export default {
-  name: 'UserDonationRecords',
+  name: 'CampaigWithdrawRecord',
   props: {
-    amount: {
-      type: [Number, String],
-      default: 0
-    },
-    campaignAddress: {
+    withdrawerAddress: {
       type: String,
-      default: null
+      default: null,
+      required: true
+    },
+    beneficiaryAddress: {
+      type: String,
+      default: null,
+      required: true
+    },
+    amount: {
+      type: String,
+      default: null,
+      required: true
     },
     timestamp: {
-      type: [Number, String],
-      default: 0
+      type: String,
+      default: null
     }
   },
   computed: {

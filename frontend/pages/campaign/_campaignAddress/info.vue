@@ -6,12 +6,20 @@
         <p>Please check if the address is a valid Campaign contract created by Eleos.</p>
       </b-message>
       <div class="card">
-        <div class="card-image">
+        <!-- <div class="card-image">
           <figure class="image is-16by9">
             <img src="https://bulma.io/images/placeholders/640x360.png" alt="Placeholder image">
           </figure>
-        </div>
+        </div> -->
         <div class="card-content">
+          <ethereum-address
+            prefix="Contract Address"
+            class="mb-0"
+            :address="campaignAddress"
+            address-type="is-success is-light"
+            size="is-small"
+            type="campaign"
+          />
           <div class="columns">
             <div class="column is-two-thirds">
               <p class="title is-3">
@@ -21,32 +29,26 @@
                 <b-skeleton :active="!campaignName" size="is-large" />
               </p>
               <div class="subtitle is-6">
-                <p>{{ campaignAddress }}</p>
                 <a :href="organisationUrl" target="_blank">{{ organisationUrl }}</a>
               </div>
               <div class="subtitle is-6">
-                <p>
-                  <template v-if="campaignOwnerAddress">
-                    Started by:
-                    <NuxtLink :to="`/user/${campaignOwnerAddress}`">
-                      {{ campaignOwnerAddress }}
-                    </NuxtLink>
-                  </template>
-                  <b-skeleton :active="!campaignOwnerAddress" width="50%" />
-                </p>
-                <p>
+                <p class="my-1">
                   <template v-if="beneficiaryAddress">
-                    Beneficiary:
-                    <NuxtLink :to="`/user/${beneficiaryAddress}`">
-                      {{ beneficiaryAddress }}
-                    </NuxtLink>
+                    <span class="has-text-weight-medium">Beneficiary:</span>
+                    <ethereum-address
+                      :address="beneficiaryAddress"
+                      address-type="is-light"
+                      show-reputation
+                      class="is-inline-flex"
+                      size="is-medium"
+                    />
                   </template>
                   <b-skeleton :active="!beneficiaryAddress" width="50%" />
                 </p>
               </div>
             </div>
             <div v-if="hasProvider" class="column is-one-third">
-              <b-field v-if="!isBeneficiary" grouped>
+              <b-field v-if="!isBeneficiary" grouped :message="currentBalance">
                 <b-numberinput
                   v-model="newDonationAmount"
                   controls-position="compact"
@@ -57,8 +59,9 @@
                 <p class="control">
                   <b-button
                     class="button is-success"
+                    :disabled="!$store.state.isConnected || endTimestamp < Date.now()"
                     @click="submitDonation"
-                    :disabled="!this.$store.state.isConnected || this.endTimestamp < Date.now()">
+                  >
                     Donate
                   </b-button>
                 </p>
@@ -75,8 +78,9 @@
                 <p class="control">
                   <b-button
                     class="button is-success"
+                    :disabled="!$store.state.isConnected"
                     @click="submitWithdrawal"
-                    :disabled="!this.$store.state.isConnected">
+                  >
                     Withdraw
                   </b-button>
                 </p>
@@ -178,7 +182,13 @@
           </div>
           <b-tabs position="is-centered" class="block">
             <b-tab-item label="Description">
-              <p>
+              <p class="block">
+                <template v-if="campaignOwnerAddress">
+                  <span class="has-text-weight-medium">Started By:</span> <ethereum-address :address="campaignOwnerAddress" address-type="is-light" show-reputation class="is-inline-flex" size="is-small" />
+                </template>
+                <b-skeleton :active="!campaignOwnerAddress" width="50%" />
+              </p>
+              <p class="block">
                 <template v-if="campaignDescription">
                   {{ campaignDescription }}
                 </template>
@@ -186,14 +196,12 @@
               </p>
             </b-tab-item>
             <b-tab-item label="Donations">
-              <div v-if="Object.keys(donationRecords).length">
-                <div v-for="donation in donationRecords" :key="donation.transactionHash" class="media">
-                  <div class="media-left">
-                    <NuxtLink :to="`/user/${donation.donorAddress}`">
-                      {{ donation.donorAddress }}
-                    </NuxtLink>
-                    donated {{ donation.amount }} ETH
-                  </div>
+              <h5 class="title is-5">
+                List of Donations
+              </h5>
+              <div v-if="donationRecords.length">
+                <div v-for="donation in donationRecords" :key="donation.transactionHash">
+                  <campaign-donation-record :address="donation.donorAddress" :amount="donation.amount" :timestamp="donation.timestamp" />
                 </div>
               </div>
               <div v-else>
@@ -202,17 +210,12 @@
             </b-tab-item>
 
             <b-tab-item label="Withdraws">
+              <h5 class="title is-5">
+                List of Withdrawals
+              </h5>
               <div v-if="Object.keys(withdrawRecords).length">
-                <div v-for="withdrawRecord, i in withdrawRecords" :key="i" class="media">
-                  <div class="media-left">
-                    <NuxtLink :to="`/user/${withdrawRecord.withdrawerAddress}`">
-                      {{ withdrawRecord.withdrawerAddress }}
-                    </NuxtLink>
-                    initiated a withdrawal of {{ withdrawRecord.amount }} ETH to
-                    <NuxtLink :to="`/user/${beneficiaryAddress}`">
-                      {{ beneficiaryAddress }}
-                    </NuxtLink>
-                  </div>
+                <div v-for="withdrawRecord, i in withdrawRecords" :key="i">
+                  <campaign-withdraw-record :withdrawer-address="withdrawRecord.withdrawerAddress" :beneficiary-address="beneficiaryAddress" :amount="withdrawRecord.amount" :timestamp="withdrawRecord.timestamp" />
                 </div>
               </div>
               <div v-else>
@@ -229,9 +232,15 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import { ethers } from 'ethers'
+import EthereumAddress from '~/components/EthereumAddress'
+import CampaignDonationRecord from '~/components/CampaignDonationRecord.vue'
 
 export default {
   name: 'InfoPage',
+  components: {
+    EthereumAddress,
+    CampaignDonationRecord
+  },
   middleware: 'validCampaign',
   data () {
     return {
@@ -266,6 +275,8 @@ export default {
     timeLeft () {
       if (this.endTimestamp === 8640000000000000) {
         return 'Indefinite'
+      } else if (this.$dayjs(this.endTimestamp).isBefore(this.$dayjs())) {
+        return 'Ended'
       }
       return this.$dayjs(this.endTimestamp).fromNow(true)
     },
@@ -280,6 +291,9 @@ export default {
     },
     isCampaignOwnerOrBeneficiary () {
       return this.$wallet.account === this.campaignOwnerAddress || this.$wallet.account === this.beneficiaryAddress
+    },
+    currentBalance () {
+      return this.$wallet.balance ? 'Balance: ' + this.$wallet.balance + ' ETH' : ''
     },
     noOfDonors () {
       return this.donationRecords === null ? null : this.donationRecords.map(x => x.donorAddress).filter((v, i, a) => a.indexOf(v) === i).length
@@ -335,6 +349,9 @@ export default {
       'donate',
       'withdraw'
     ]),
+    ...mapActions('contract/reputation', [
+      'getReputation'
+    ]),
     async submitDonation () {
       if (this.newDonationAmount === 0) {
         this.$buefy.toast.open({
@@ -351,6 +368,8 @@ export default {
           campaignInstance: this.campaignInstance,
           amountInEth: this.newDonationAmount
         })
+
+        this.getReputation(this.beneficiaryAddress)
 
         // Update donation records
         this.loadBlockchainCampaignDetails()

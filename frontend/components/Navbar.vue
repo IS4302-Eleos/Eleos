@@ -88,11 +88,15 @@ export default {
         this.error.push('We are unable to connect to our backend API services. Please check if you are connected to the network. ')
       }
     })
-    this.$wallet.isCorrectChain(this.$config).then((res) => {
-      if (!res) {
-        this.error.push(`Please change the your provider's chain to the supported chain (Supported Chain ID :${Number(this.$config.chain_id)}). `)
-      }
-    })
+    if (!this.hasProvider) {
+      this.error.push('No Ethereum provider detected! Please install one to use Eleos (e.g. Metamask).')
+    } else {
+      this.$wallet.isCorrectChain(this.$config).then((res) => {
+        if (!res) {
+          this.error.push(`Please change the your provider's chain to the supported chain (Supported Chain ID :${Number(this.$config.chain_id)}). `)
+        }
+      })
+    }
   },
   methods: {
     ...mapActions([

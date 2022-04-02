@@ -51,8 +51,8 @@ export default {
       default: 0
     },
     reputation: {
-      type: Number,
-      default: 0
+      type: String,
+      default: '0'
     },
     walletAmount: {
       type: [Number, String],

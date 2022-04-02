@@ -2,14 +2,7 @@
   <div class="block">
     <div class="columns is-mobile mb-0">
       <div class="column">
-        <ethereum-address
-          prefix="Campaign"
-          :address="campaignAddress"
-          type="campaign"
-          address-type="is-light is-success"
-          class="is-inline-flex mb-0"
-          size="is-medium"
-        />
+        <ethereum-address :address="address" address-type="is-primary is-light" size="is-medium" show-reputation class="mb-0" />
         <p class="subtitle has-text-grey is-size-7">
           Donated on: {{ timestampPretty }}
         </p>
@@ -35,21 +28,22 @@
 </template>
 
 <script>
-
 export default {
-  name: 'UserDonationRecords',
+  name: 'CampaignDonationRecord',
   props: {
-    amount: {
-      type: [Number, String],
-      default: 0
-    },
-    campaignAddress: {
+    address: {
       type: String,
-      default: null
+      default: null,
+      required: true
+    },
+    amount: {
+      type: String,
+      default: null,
+      required: true
     },
     timestamp: {
-      type: [Number, String],
-      default: 0
+      type: String,
+      default: null
     }
   },
   computed: {

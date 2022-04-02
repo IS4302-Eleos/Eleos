@@ -1,12 +1,17 @@
 import { ethers } from 'ethers'
+import Vue from 'vue'
 
 export const state = () => ({
-  reputationArtifact: null
+  reputationArtifact: null,
+  userReputations: {}
 })
 
 export const mutations = {
   setReputationArtifact (state, reputationArtifact) {
     state.reputationArtifact = reputationArtifact
+  },
+  updateUserReputation (state, { userAddress, reputation }) {
+    Vue.set(state.userReputations, userAddress, reputation)
   }
 }
 
@@ -22,7 +27,8 @@ export const actions = {
       context.state.reputationArtifact.abi,
       provider
     )
-    const reputation = ethers.utils.formatEther(await reputationContract.getReputation(userAddress))
+    const reputation = ethers.utils.formatUnits(await reputationContract.getReputation(userAddress), 16)
+    context.commit('updateUserReputation', { userAddress, reputation })
     return reputation
   }
 }

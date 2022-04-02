@@ -5,14 +5,12 @@
         <div class="card">
           <user-header :address="$route.params.userAddress" />
           <div class="card-content">
-            <div class="media">
-              <div class="media-content">
-                <user-stats
-                  :reputation="reputation"
-                  :no-of-donations="donations ? donations.length : -1"
-                  :wallet-amount="walletAmount"
-                />
-              </div>
+            <div class="block">
+              <user-stats
+                :reputation="reputation"
+                :no-of-donations="donations ? donations.length : -1"
+                :wallet-amount="walletAmount"
+              />
             </div>
             <b-tabs position="is-centered" class="block">
               <b-tab-item label="Donation Records">
@@ -22,6 +20,7 @@
                     :key="donation.transactionHash"
                     :campaign-address="donation.campaignAddress"
                     :amount="donation.amount"
+                    :timestamp="donation.timestamp"
                   />
                 </div>
                 <div v-else>
@@ -69,9 +68,8 @@ export default {
     if (!userAddress || !ethers.utils.isAddress(userAddress)) {
       return redirect('/')
     }
-    const repRate = 0.01
     try {
-      const [walletAmount, beneficiary, rawReputation, rawDonations] = await Promise.all([
+      const [walletAmount, beneficiary, reputation, rawDonations] = await Promise.all([
         store.dispatch('getUserWalletAmount', userAddress),
         store.dispatch('api/getCampaignByBeneficiaryAddress', userAddress),
         store.dispatch('contract/reputation/getReputation', userAddress),
@@ -81,7 +79,6 @@ export default {
         d.amount = ethers.utils.formatEther(d.amount, 'ether')
         return d
       })
-      const reputation = rawReputation / repRate
       return {
         donations,
         beneficiary,
@@ -93,7 +90,7 @@ export default {
         donations: null,
         beneficiary: null,
         walletAmount: -1,
-        reputation: -1
+        reputation: '-1'
       }
     }
   }
