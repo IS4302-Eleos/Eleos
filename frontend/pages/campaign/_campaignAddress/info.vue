@@ -55,7 +55,11 @@
                   expanded
                 />
                 <p class="control">
-                  <b-button class="button is-success" @click="submitDonation">
+                  <b-button
+                    class="button is-success"
+                    :disabled="!this.$store.state.isConnected || this.endTimestamp < Date.now()"
+                    @click="submitDonation"
+                    >
                     Donate
                   </b-button>
                 </p>
@@ -70,7 +74,11 @@
                   expanded
                 />
                 <p class="control">
-                  <b-button class="button is-success" @click="submitWithdrawal">
+                  <b-button
+                    class="button is-success"
+                    :disabled="!this.$store.state.isConnected"
+                    @click="submitWithdrawal"
+                    >
                     Withdraw
                   </b-button>
                 </p>

@@ -55,7 +55,7 @@ async function extractCampaignInfoFromEvent (event) {
 
   const res = await Promise.all([
     campaignInstance.getCampaignName.call(),
-    campaignInstance.getorganisationUrl.call(),
+    campaignInstance.getOrganisationUrl.call(),
     campaignInstance.getEndTimeStamp.call(),
     campaignInstance.getBeneficiaryAddress.call(),
     campaignInstance.getCampaignOwnerAddress.call(),
