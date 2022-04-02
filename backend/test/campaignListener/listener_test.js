@@ -6,10 +6,17 @@ import { spawn } from 'child_process'
 import constants from '../../campaignListener/constants.js'
 import Campaign from '../../src/models/campaign.js'
 import Donation from '../../src/models/donation.js'
+import Withdrawal from '../../src/models/withdrawal.js'
 import initdb from '../../src/database.js'
 
 const assert = chai.assert
 initdb()
+
+const SLEEP_TIME = 2000
+
+function sleep (delay) {
+  return new Promise(resolve => setTimeout(resolve, delay))
+}
 
 describe('Testing campaignListener', () => {
   let accounts, contractOwner, beneficiary, campaignOwner, donor
@@ -56,13 +63,14 @@ describe('Testing campaignListener', () => {
         detached: true
       })
 
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      await sleep(SLEEP_TIME)
     })
 
     after(async () => {
       listenerProcess.kill('SIGINT')
       await Campaign.collection.drop()
       await Donation.collection.drop()
+      await Withdrawal.collection.drop()
     })
 
     it('should detect and save 1 Campaign', async () => {
@@ -78,7 +86,7 @@ describe('Testing campaignListener', () => {
       )
 
       campaignAddress = tx.logs[0].args.campaignAddress
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await sleep(SLEEP_TIME)
 
       const count = await Campaign.count()
       assert.equal(count, 1)
@@ -95,7 +103,7 @@ describe('Testing campaignListener', () => {
         value: 10
       })
 
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await sleep(SLEEP_TIME)
 
       const count = await Donation.count()
       assert.equal(count, 1)
@@ -103,12 +111,30 @@ describe('Testing campaignListener', () => {
       const storedDonation = await Donation.findOne()
       assert.equal(tx.tx, storedDonation.transactionHash.toString())
     })
+
+    it('should detect and save 1 Withdrawal', async () => {
+      const campaignInstance = await constants.campaignContract.at(campaignAddress)
+
+      const tx = await campaignInstance.withdraw(10, {
+        from: beneficiary
+      })
+
+      await sleep(SLEEP_TIME)
+
+      const count = await Withdrawal.count()
+      assert.equal(count, 1)
+
+      const storedWithdrawal = await Withdrawal.findOne()
+      assert.equal(tx.tx, storedWithdrawal.transactionHash.toString())
+    })
   })
 
   describe('Multi test', () => {
     let campaignAddresses
     let listenerProcess
     let campaignFactoryInstance
+
+    const CAMPAIGN_COUNT = 10
 
     before(async () => {
       campaignFactoryInstance = await constants.campaignFactoryContract.new({
@@ -130,57 +156,44 @@ describe('Testing campaignListener', () => {
         detached: true
       })
 
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      await sleep(SLEEP_TIME)
     })
 
     after(async () => {
       listenerProcess.kill('SIGINT')
       await Campaign.collection.drop()
       await Donation.collection.drop()
+      await Withdrawal.collection.drop()
     })
 
-    it('should detect and save 3 Campaigns', async () => {
-      const txs = await Promise.all([
-        campaignFactoryInstance.startCampaign(
-          campaignName,
-          organisationUrl,
-          endTimestamp,
-          beneficiaryAddress,
-          campaignOwnerAddress,
-          targetDonationAmount,
-          campaignDescription,
-          { from: contractOwner }
-        ),
-        campaignFactoryInstance.startCampaign(
-          campaignName,
-          organisationUrl,
-          endTimestamp,
-          beneficiaryAddress,
-          campaignOwnerAddress,
-          targetDonationAmount,
-          campaignDescription,
-          { from: contractOwner }
-        ),
-        campaignFactoryInstance.startCampaign(
-          campaignName,
-          organisationUrl,
-          endTimestamp,
-          beneficiaryAddress,
-          campaignOwnerAddress,
-          targetDonationAmount,
-          campaignDescription,
-          { from: contractOwner }
+    it(`should detect and save ${CAMPAIGN_COUNT} Campaigns`, async () => {
+      const promises = []
+
+      for (let i = 0; i < CAMPAIGN_COUNT; i++) {
+        promises.push(
+          campaignFactoryInstance.startCampaign(
+            campaignName,
+            organisationUrl,
+            endTimestamp,
+            beneficiaryAddress,
+            campaignOwnerAddress,
+            targetDonationAmount,
+            campaignDescription,
+            { from: contractOwner }
+          )
         )
-      ])
+      }
+
+      const txs = await Promise.all(promises)
 
       campaignAddresses = txs.map((tx) => tx.logs[0].args.campaignAddress)
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await sleep(SLEEP_TIME)
 
       const count = await Campaign.count()
-      assert.equal(count, 3)
+      assert.equal(count, CAMPAIGN_COUNT)
     })
 
-    it('should detect and save 3 Donations', async () => {
+    it(`should detect and save ${CAMPAIGN_COUNT} Donations`, async () => {
       const campaignInstances = await Promise.all(campaignAddresses.map(
         (campaignAddress) => {
           return constants.campaignContract.at(campaignAddress)
@@ -194,12 +207,34 @@ describe('Testing campaignListener', () => {
         })
       ))
 
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await sleep(SLEEP_TIME)
 
       const count = await Donation.count()
-      assert.equal(count, 3)
+      assert.equal(count, CAMPAIGN_COUNT)
 
       const countForOneCampaign = await Donation.count({ campaignAddress: campaignInstances[0].address })
+      assert.equal(countForOneCampaign, 1)
+    })
+
+    it(`should detect and save ${CAMPAIGN_COUNT} Withdrawals`, async () => {
+      const campaignInstances = await Promise.all(campaignAddresses.map(
+        (campaignAddress) => {
+          return constants.campaignContract.at(campaignAddress)
+        }
+      ))
+
+      await Promise.all(campaignInstances.map(
+        (campaignInstance) => campaignInstance.withdraw(10, {
+          from: beneficiary
+        })
+      ))
+
+      await sleep(SLEEP_TIME)
+
+      const count = await Withdrawal.count()
+      assert.equal(count, CAMPAIGN_COUNT)
+
+      const countForOneCampaign = await Withdrawal.count({ campaignAddress: campaignInstances[0].address })
       assert.equal(countForOneCampaign, 1)
     })
   })
