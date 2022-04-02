@@ -115,6 +115,7 @@ contract Campaign {
         withdrawInstantiators.push(msg.sender);
         withdrawAmounts.push(amount);
         emit Withdraw(msg.sender, amount, beneficiaryAddress);
+        origin.emitWithdrawEvent(msg.sender, amount, beneficiaryAddress);
     }
 
     function getCampaignName() public view returns (string memory) {

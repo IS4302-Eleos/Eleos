@@ -6,6 +6,7 @@ const DonationSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  timestamp: Date,
   campaignAddress: String,
   donorAddress: String,
   amount: String

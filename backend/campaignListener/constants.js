@@ -5,6 +5,7 @@ import Web3 from 'web3'
 
 const EVENT_CAMPAIGN_STARTED = 'CampaignStarted'
 const EVENT_DONATE = 'Donate'
+const EVENT_WITHDRAW = 'Withdraw'
 
 const PROVIDER_ENDPOINT = `ws://${config.bc.host}:${config.bc.port}`
 
@@ -22,6 +23,7 @@ reputationContract.setProvider(provider)
 export default {
   EVENT_CAMPAIGN_STARTED,
   EVENT_DONATE,
+  EVENT_WITHDRAW,
   PROVIDER_ENDPOINT,
   campaignFactoryContract,
   campaignContract,

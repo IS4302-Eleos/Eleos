@@ -1,25 +1,4 @@
-async function getCampaignInfo (campaignInstance) {
-  const res = await Promise.all([
-    campaignInstance.getCampaignName.call(),
-    campaignInstance.getOrganisationUrl.call(),
-    campaignInstance.getEndTimeStamp.call(),
-    campaignInstance.getBeneficiaryAddress.call(),
-    campaignInstance.getCampaignOwnerAddress.call(),
-    campaignInstance.getTargetDonationAmount.call(),
-    campaignInstance.getCampaignDescription.call()
-  ])
-
-  return {
-    campaignAddress: campaignInstance.address,
-    campaignName: res[0],
-    organisationUrl: res[1],
-    endTimestamp: res[2].toNumber(),
-    beneficiaryAddress: res[3],
-    campaignOwnerAddress: res[4],
-    targetDonationAmount: res[5].toString(),
-    campaignDescription: res[6]
-  }
-}
+import constants from './constants.js'
 
 async function writeSingleDocument (json, model) {
   try {
@@ -43,8 +22,63 @@ function subscribeToContract (contractInstance, eventName, callback) {
     .on('data', callback)
 }
 
+async function extractDonationInfoFromEvent (event) {
+  const { campaignAddress, donorAddress, amount } = event.returnValues
+  const transactionHash = event.transactionHash
+  const timestamp = (await constants.web3.eth.getBlock(event.blockNumber)).timestamp * 1000
+  return {
+    transactionHash,
+    timestamp,
+    campaignAddress,
+    donorAddress,
+    amount
+  }
+}
+
+async function extractWithdrawalInfoFromEvent (event) {
+  const { campaignAddress, withdrawerAddress, amount, toAddress: beneficiaryAddress } = event.returnValues
+  const transactionHash = event.transactionHash
+  const timestamp = (await constants.web3.eth.getBlock(event.blockNumber)).timestamp * 1000
+  return {
+    transactionHash,
+    timestamp,
+    campaignAddress,
+    withdrawerAddress,
+    amount,
+    beneficiaryAddress
+  }
+}
+
+async function extractCampaignInfoFromEvent (event) {
+  const campaignAddress = event.returnValues.campaignAddress
+  const campaignInstance = await constants.campaignContract.at(campaignAddress)
+
+  const res = await Promise.all([
+    campaignInstance.getCampaignName.call(),
+    campaignInstance.getorganisationUrl.call(),
+    campaignInstance.getEndTimeStamp.call(),
+    campaignInstance.getBeneficiaryAddress.call(),
+    campaignInstance.getCampaignOwnerAddress.call(),
+    campaignInstance.getTargetDonationAmount.call(),
+    campaignInstance.getCampaignDescription.call()
+  ])
+
+  return {
+    campaignAddress: campaignInstance.address,
+    campaignName: res[0],
+    organisationUrl: res[1],
+    endTimestamp: res[2].toNumber(),
+    beneficiaryAddress: res[3],
+    campaignOwnerAddress: res[4],
+    targetDonationAmount: res[5].toString(),
+    campaignDescription: res[6]
+  }
+}
+
 export default {
-  getCampaignInfo,
+  extractDonationInfoFromEvent,
+  extractWithdrawalInfoFromEvent,
+  extractCampaignInfoFromEvent,
   writeSingleDocument,
   writeBulkDocuments,
   getAllEvents,
