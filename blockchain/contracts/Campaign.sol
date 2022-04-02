@@ -81,8 +81,17 @@ contract Campaign {
         _;
     }
 
+    // Checks if the donation made is to an expired campaign.
+    modifier noExpiredDonations() {
+      require(
+          endTimestamp / 1000 > block.timestamp,
+          "Cannot donate to expired campaign..."
+      );
+      _;
+    }
+
     // Donates eth to the campaign. The ether is held in this contract.
-    function donate() public payable notZeroDonationValue(msg.value) {
+    function donate() public payable noExpiredDonations() notZeroDonationValue(msg.value) {
         if (donations[msg.sender] == 0) {
             donorAddresses.push(msg.sender);
         }
@@ -112,7 +121,7 @@ contract Campaign {
         return campaignName;
     }
 
-    function getorganisationUrl() public view returns (string memory) {
+    function getOrganisationUrl() public view returns (string memory) {
         return organisationUrl;
     }
 
