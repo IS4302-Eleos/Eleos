@@ -188,12 +188,12 @@
               </p>
             </b-tab-item>
             <b-tab-item label="Donations">
-              <div v-if="Object.keys(donationRecords).length">
-                <div v-for="donation in donationRecords" :key="donation.transactionHash" class="media">
-                  <div class="media-left">
-                    <ethereum-address :address="donation.donorAddress" address-type="is-primary is-light" size="is-small" class="is-inline" />
-                    donated {{ donation.amount }} ETH
-                  </div>
+              <h5 class="title is-5">
+                List of Donations
+              </h5>
+              <div v-if="donationRecords.length">
+                <div v-for="donation in donationRecords" :key="donation.transactionHash">
+                  <campaign-donation-record :address="donation.donorAddress" :amount="donation.amount" :timestamp="donation.timestamp" />
                 </div>
               </div>
               <div v-else>
@@ -202,19 +202,12 @@
             </b-tab-item>
 
             <b-tab-item label="Withdraws">
+              <h5 class="title is-5">
+                List of Withdrawals
+              </h5>
               <div v-if="Object.keys(withdrawRecords).length">
-                <div v-for="withdrawRecord, i in withdrawRecords" :key="i" class="media">
-                  <div class="media-left">
-                    <ethereum-address :address="withdrawRecord.withdrawerAddress" address-type="is-primary is-light" show-reputation size="is-small" class="is-inline-flex" />
-                    initiated a withdrawal of {{ withdrawRecord.amount }} ETH to
-                    <ethereum-address
-                      :address="beneficiaryAddress"
-                      address-type="is-primary is-light"
-                      show-reputation
-                      size="is-small"
-                      class="is-inline-flex"
-                    />
-                  </div>
+                <div v-for="withdrawRecord, i in withdrawRecords" :key="i">
+                  <campaign-withdraw-record :withdrawer-address="withdrawRecord.withdrawerAddress" :beneficiary-address="beneficiaryAddress" :amount="withdrawRecord.amount" :timestamp="withdrawRecord.timestamp" />
                 </div>
               </div>
               <div v-else>
@@ -232,11 +225,13 @@
 import { mapState, mapActions } from 'vuex'
 import { ethers } from 'ethers'
 import EthereumAddress from '~/components/EthereumAddress'
+import CampaignDonationRecord from '~/components/CampaignDonationRecord.vue'
 
 export default {
   name: 'InfoPage',
   components: {
-    EthereumAddress
+    EthereumAddress,
+    CampaignDonationRecord
   },
   middleware: 'validCampaign',
   data () {

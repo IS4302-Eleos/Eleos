@@ -22,6 +22,7 @@
                     :key="donation.transactionHash"
                     :campaign-address="donation.campaignAddress"
                     :amount="donation.amount"
+                    :timestamp="donation.timestamp"
                   />
                 </div>
                 <div v-else>
