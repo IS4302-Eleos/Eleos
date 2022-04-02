@@ -16,7 +16,7 @@ contract("Reputation", (accounts) => {
     // Campaign details
     const campaignName = "Charity 1";
     const organisationUrl = "https://www.charity1.com";
-    const endTimestamp = 1672502399; // 31/12/2022 23:59:59 GMT+8
+    const endTimestamp = 1672502399000; // 31/12/2022 23:59:59 GMT+8
     const beneficiaryAddress = beneficiary;
     const campaignOwnerAddress = beneficiary;
     const targetDonationAmount = 10;
