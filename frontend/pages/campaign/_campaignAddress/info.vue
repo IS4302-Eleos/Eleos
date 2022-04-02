@@ -189,10 +189,10 @@
             </b-tab-item>
             <b-tab-item label="Donations">
               <div v-if="Object.keys(donationRecords).length">
-                <div v-for="(donationAmount, donor) in donationRecords" :key="donor" class="media">
+                <div v-for="donation in donationRecords" :key="donation.transactionHash" class="media">
                   <div class="media-left">
-                    <ethereum-address :address="donor" address-type="is-primary is-light" size="is-small" class="is-inline" />
-                    donated {{ donationAmount }} ETH
+                    <ethereum-address :address="donation.donorAddress" address-type="is-primary is-light" size="is-small" class="is-inline" />
+                    donated {{ donation.amount }} ETH
                   </div>
                 </div>
               </div>
@@ -205,8 +205,8 @@
               <div v-if="Object.keys(withdrawRecords).length">
                 <div v-for="withdrawRecord, i in withdrawRecords" :key="i" class="media">
                   <div class="media-left">
-                    <ethereum-address :address="withdrawRecord[0]" address-type="is-primary is-light" show-reputation size="is-small" class="is-inline-flex" />
-                    initiated a withdrawal of {{ withdrawRecord[1] }} ETH to
+                    <ethereum-address :address="withdrawRecord.withdrawerAddress" address-type="is-primary is-light" show-reputation size="is-small" class="is-inline-flex" />
+                    initiated a withdrawal of {{ withdrawRecord.amount }} ETH to
                     <ethereum-address
                       :address="beneficiaryAddress"
                       address-type="is-primary is-light"
@@ -252,11 +252,10 @@ export default {
       targetDonationAmount: null,
       campaignDescription: null,
       // Information from blockchain
-      noOfDonors: null,
       totalDonationAmount: null,
       withdrawalBalance: null,
-      donationRecords: {},
-      withdrawRecords: {},
+      donationRecords: [],
+      withdrawRecords: [],
       // Information on page
       newDonationAmount: 0,
       newWithdrawalAmount: 0,
@@ -292,6 +291,9 @@ export default {
     },
     currentBalance () {
       return this.$wallet.balance ? 'Balance: ' + this.$wallet.balance + ' ETH' : ''
+    },
+    noOfDonors () {
+      return this.donationRecords === null ? null : this.donationRecords.map(x => x.donorAddress).filter((v, i, a) => a.indexOf(v) === i).length
     }
   },
   async mounted () {
@@ -330,7 +332,9 @@ export default {
   },
   methods: {
     ...mapActions('api', [
-      'getCampaigns'
+      'getCampaigns',
+      'getDonationsByCampaign',
+      'getWithdrawals'
     ]),
     ...mapActions('contract/campaign', [
       'getTargetAmount',
@@ -418,28 +422,27 @@ export default {
       }
     },
     setDonationRecords (donationRecords) {
-      const donors = donationRecords[0]
-      const donationAmounts = donationRecords[1]
-      for (let i = 0; i < donors.length; i++) {
-        this.donationRecords[donors[i]] = ethers.utils.formatEther(donationAmounts[i])
-      }
-      this.noOfDonors = donors.length
+      donationRecords = donationRecords.map((m) => {
+        m.amount = ethers.utils.formatEther(m.amount)
+        return m
+      })
+      this.donationRecords = donationRecords
     },
     setWithdrawRecords (withdrawRecords) {
-      const withdrawInstantiators = withdrawRecords[0]
-      const withdrawAmounts = withdrawRecords[1]
-      for (let i = 0; i < withdrawInstantiators.length; i++) {
-        this.withdrawRecords[i] = [withdrawInstantiators[i], ethers.utils.formatEther(withdrawAmounts[i])]
-      }
+      withdrawRecords = withdrawRecords.map((m) => {
+        m.amount = ethers.utils.formatEther(m.amount)
+        return m
+      })
+      this.withdrawRecords = withdrawRecords
     },
     async loadBlockchainCampaignDetails () {
       // Retrieve information from campaign on the blockchain
       try {
         const results = await Promise.all(
           [
-            this.getDonationRecords(this.campaignInstance),
+            this.getDonationsByCampaign(this.campaignAddress),
             this.getTotalDonations(this.campaignInstance),
-            this.getWithdrawRecords(this.campaignInstance),
+            this.getWithdrawals(this.campaignAddress),
             this.getWithdrawalBalance(this.campaignInstance)
           ]
         )

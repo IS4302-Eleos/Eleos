@@ -1,5 +1,6 @@
 import initdb from '../src/database.js'
 import Donation from '../src/models/donation.js'
+import Withdrawal from '../src/models/withdrawal.js'
 import Campaign from '../src/models/campaign.js'
 
 import util from './util.js'
@@ -7,25 +8,35 @@ import constants from './constants.js'
 
 async function getPastCampaigns (campaignFactoryInstance) {
   const pastCampaignStartedEvents = await util.getAllEvents(campaignFactoryInstance, constants.EVENT_CAMPAIGN_STARTED)
-  return Promise.all(pastCampaignStartedEvents.map(async (event) => {
-    const campaignInstance = await constants.campaignContract.at(event.returnValues.campaignAddress)
-    return util.getCampaignInfo(campaignInstance)
-  }))
+  return Promise.all(pastCampaignStartedEvents.map(util.extractCampaignInfoFromEvent))
 }
 
 async function getPastDonations (campaignFactoryInstance) {
   const pastDonateEvents = await util.getAllEvents(campaignFactoryInstance, constants.EVENT_DONATE)
-  return Promise.all(pastDonateEvents.map(async (event) => {
-    const { donorAddress, amount } = event.returnValues
-    return { transactionHash: event.transactionHash, campaignAddress: event.address, donorAddress, amount }
-  }))
+  return pastDonateEvents.map(util.extractDonationInfoFromEvent)
+}
+
+async function getPastWithdrawals (campaignFactoryInstance) {
+  const pastWithdrawEvents = await util.getAllEvents(campaignFactoryInstance, constants.EVENT_WITHDRAW)
+  return pastWithdrawEvents.map(util.extractWithdrawalInfoFromEvent)
 }
 
 async function restorePastRecords (campaignFactoryInstance) {
-  return Promise.all([
-    util.writeBulkDocuments((await getPastCampaigns(campaignFactoryInstance)), Campaign),
-    util.writeBulkDocuments((await getPastDonations(campaignFactoryInstance)), Donation)
+  const [pastCampaigns, pastDonations, pastWithdrawals] = await Promise.all([
+    getPastCampaigns(campaignFactoryInstance),
+    getPastDonations(campaignFactoryInstance),
+    getPastWithdrawals(campaignFactoryInstance)
   ])
+
+  const promises = [
+    [pastCampaigns, Campaign],
+    [pastDonations, Donation],
+    [pastWithdrawals, Withdrawal]
+  ].map(
+    (records, model) => util.writeBulkDocuments(records, model)
+  )
+
+  return Promise.all(promises)
 }
 
 function getCampaignFactoryInstance () {
@@ -37,14 +48,16 @@ function getCampaignFactoryInstance () {
 function startListening (campaignFactoryInstance) {
   return {
     campaignStartedSubscription: util.subscribeToContract(campaignFactoryInstance, constants.EVENT_CAMPAIGN_STARTED, async (event) => {
-      const campaignInstance = await constants.campaignContract.at(event.returnValues.campaignAddress)
-      const campaignInfo = await util.getCampaignInfo(campaignInstance)
+      const campaignInfo = await util.extractCampaignInfoFromEvent(event)
       util.writeSingleDocument(campaignInfo, Campaign)
     }),
     donateSubscription: util.subscribeToContract(campaignFactoryInstance, constants.EVENT_DONATE, async (event) => {
-      const { campaignAddress, donorAddress, amount } = event.returnValues
-      const donationInfo = { transactionHash: event.transactionHash, campaignAddress, donorAddress, amount }
+      const donationInfo = await util.extractDonationInfoFromEvent(event)
       util.writeSingleDocument(donationInfo, Donation)
+    }),
+    withdrawSubscription: util.subscribeToContract(campaignFactoryInstance, constants.EVENT_WITHDRAW, async (event) => {
+      const withdrawalInfo = await util.extractWithdrawalInfoFromEvent(event)
+      util.writeSingleDocument(withdrawalInfo, Withdrawal)
     })
   }
 }

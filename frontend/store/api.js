@@ -110,6 +110,7 @@ export const actions = {
               donorAddress
             }
           },
+          timestamp: true,
           transactionHash: true,
           donorAddress: true,
           amount: true,
@@ -119,5 +120,48 @@ export const actions = {
     }
     const res = await this.$graphql.default.request(jsonToGraphQLQuery(query))
     return res.donations
+  },
+  async getDonationsByCampaign ({ commit }, campaignAddress) {
+    campaignAddress = campaignAddress.toString()
+    const query = {
+      query: {
+        donations: {
+          __args: {
+            filter: {
+              campaignAddress
+            }
+          },
+          timestamp: true,
+          transactionHash: true,
+          donorAddress: true,
+          amount: true,
+          campaignAddress: true
+        }
+      }
+    }
+    const res = await this.$graphql.default.request(jsonToGraphQLQuery(query))
+    return res.donations
+  },
+  async getWithdrawals ({ commit }, campaignAddress) {
+    campaignAddress = campaignAddress.toString()
+    const query = {
+      query: {
+        withdrawals: {
+          __args: {
+            filter: {
+              campaignAddress
+            }
+          },
+          timestamp: true,
+          transactionHash: true,
+          withdrawerAddress: true,
+          amount: true,
+          campaignAddress: true,
+          beneficiaryAddress: true
+        }
+      }
+    }
+    const res = await this.$graphql.default.request(jsonToGraphQLQuery(query))
+    return res.withdrawals
   }
 }
