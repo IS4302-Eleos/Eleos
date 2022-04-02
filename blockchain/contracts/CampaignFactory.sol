@@ -12,6 +12,12 @@ contract CampaignFactory {
 
     event CampaignStarted(address ownerAddress, address campaignAddress);
     event Donate(address campaignAddress, address donorAddress, uint256 amount);
+    event Withdraw(
+        address campaignAddress,
+        address withdrawerAddress,
+        uint256 amount,
+        address toAddress
+    );
 
     AddressSet.Set createdCampaigns;
 
@@ -55,6 +61,15 @@ contract CampaignFactory {
         _;
     }
 
+    // Checks if caller is a Campaign created from this CampaignFactory
+    modifier isBelongToCampaignFactory(address caller) {
+        require(
+            createdCampaigns.exists(caller), 
+            "Sender must be a Campaign created from this CampaignFactory"
+        );
+        _;
+    }
+
     // Deploys a new campaign contract with user provided data
     function startCampaign(
         string memory _campaignName,
@@ -88,18 +103,24 @@ contract CampaignFactory {
         return address(newCampaign);
     }
 
-    function emitDonateEvent(address donorAddress, uint256 amount) public {
-        require(createdCampaigns.exists(msg.sender), "Sender must be a Campaign created from this CampaignFactory");
+    function emitDonateEvent(address donorAddress, uint256 amount) 
+        public 
+        isBelongToCampaignFactory(msg.sender) 
+    {
         emit Donate(msg.sender, donorAddress, amount);
+    }
+
+    function emitWithdrawEvent(address withdrawerAddress, uint256 amount, address beneficiaryAddress)
+        public
+        isBelongToCampaignFactory(msg.sender) 
+    {
+        emit Withdraw(msg.sender, withdrawerAddress, amount, beneficiaryAddress);
     }
 
     function updateReputation(address beneficiaryAddress, uint256 value)
         public
+        isBelongToCampaignFactory(msg.sender)
     {
-        require(
-            createdCampaigns.exists(msg.sender),
-            "Sender must be a Campaign created from this CampaignFactory"
-        );
         reputation.updateReputation(beneficiaryAddress, value);
     }
 }
