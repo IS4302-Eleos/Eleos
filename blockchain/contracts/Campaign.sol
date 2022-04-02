@@ -17,14 +17,6 @@ contract Campaign {
     // Default starting donated sum
     uint256 totalDonationAmount = 0;
 
-    // Mappings of address to donation amount
-    mapping(address => uint256) public donations;
-    address[] donorAddresses;
-
-    // Double array of withdraw records
-    address[] withdrawInstantiators;
-    uint256[] withdrawAmounts;
-
     event Donate(address donorAddress, uint256 amount);
     event Withdraw(
         address withdrawerAddress,
@@ -92,11 +84,7 @@ contract Campaign {
 
     // Donates eth to the campaign. The ether is held in this contract.
     function donate() public payable noExpiredDonations() notZeroDonationValue(msg.value) {
-        if (donations[msg.sender] == 0) {
-            donorAddresses.push(msg.sender);
-        }
         totalDonationAmount += msg.value;
-        donations[msg.sender] += msg.value;
         emit Donate(msg.sender, msg.value);
         origin.emitDonateEvent(msg.sender, msg.value);
 
@@ -112,8 +100,6 @@ contract Campaign {
         hasAvailableDonationBalance(amount)
     {
         beneficiaryAddress.transfer(amount);
-        withdrawInstantiators.push(msg.sender);
-        withdrawAmounts.push(amount);
         emit Withdraw(msg.sender, amount, beneficiaryAddress);
         origin.emitWithdrawEvent(msg.sender, amount, beneficiaryAddress);
     }
@@ -146,48 +132,8 @@ contract Campaign {
         return totalDonationAmount;
     }
 
-    function getOwnDonationAmount() public view returns (uint256) {
-        return donations[msg.sender];
-    }
-
     function getCampaignDescription() public view returns (string memory) {
         return campaignDescription;
-    }
-
-    function getDonationRecords()
-        public
-        view
-        returns (
-            address[] memory,
-            uint256[] memory
-        )
-    {
-        uint256 noOfUniqueDonors = donorAddresses.length;
-        uint256[] memory donationAmounts = new uint256[](noOfUniqueDonors);
-        for (uint256 i = 0; i < noOfUniqueDonors; i++) {
-            address currAddressPtr = donorAddresses[i];
-            donationAmounts[i] = donations[currAddressPtr];
-        }
-        return (donorAddresses, donationAmounts);
-    }
-
-    function getWithdrawRecords()
-        public
-        view
-        returns (
-            address[] memory,
-            uint256[] memory
-        )
-    {
-        return (withdrawInstantiators, withdrawAmounts);
-    }
-
-    function getDonationAmountByAddress(address donorAddress)
-        public
-        view
-        returns (uint256)
-    {
-        return donations[donorAddress];
     }
 
     function getWithdrawalBalance() public view returns (uint256) {
