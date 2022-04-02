@@ -2,6 +2,7 @@ import { schemaComposer } from 'graphql-compose'
 import { composeMongoose } from 'graphql-compose-mongoose'
 import Campaign from '../models/campaign.js'
 import Donation from '../models/donation.js'
+import Withdrawal from '../models/withdrawal.js'
 
 // Converting a mongoose model to a graphql schema object
 const options = {
@@ -9,11 +10,13 @@ const options = {
 }
 const CampaignTC = composeMongoose(Campaign, options)
 const DonationTC = composeMongoose(Donation, options)
+const WithdrawalTC = composeMongoose(Withdrawal, options)
 
 // Adding a new field to the enable queries of the schema
 schemaComposer.Query.addFields({
   // Creating the find many campaigns route to search and filter by endTimestamp
   campaigns: CampaignTC.mongooseResolvers.findMany({
+    lean: true,
     filter: {
       removeFields: ['campaignAddress', 'campaignName', 'organisationUrl', 'campaignOwnerAddress', 'targetDonationAmount', 'campaignDescription'],
       operators: {
@@ -25,8 +28,16 @@ schemaComposer.Query.addFields({
   donations: DonationTC.mongooseResolvers.findMany({
     lean: true,
     filter: {
-      requiredFields: ['donorAddress'],
-      removeFields: ['transactionHash', 'campaignAddress', 'amount'],
+      removeFields: ['transactionHash', 'amount', 'timestamp'],
+      isRequired: true,
+      operators: false
+    }
+  }),
+  withdrawals: WithdrawalTC.mongooseResolvers.findMany({
+    lean: true,
+    filter: {
+      requiredFields: ['campaignAddress'],
+      removeFields: ['transactionHash', 'amount', 'timestamp', 'withdrawerAddress', 'amount', 'beneficiaryAddress'],
       isRequired: true,
       operators: false
     }
