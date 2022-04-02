@@ -4,7 +4,6 @@ import Campaign from '../models/campaign.js'
 import Donation from '../models/donation.js'
 import Withdrawal from '../models/withdrawal.js'
 
-
 // Converting a mongoose model to a graphql schema object
 const options = {
   removeFields: ['_id', '__v']
@@ -38,7 +37,7 @@ schemaComposer.Query.addFields({
     lean: true,
     filter: {
       requiredFields: ['campaignAddress'],
-      removeFields: ['transactionHash', 'amount','timestamp','withdrawerAddress','amount','beneficiaryAddress'],
+      removeFields: ['transactionHash', 'amount', 'timestamp', 'withdrawerAddress', 'amount', 'beneficiaryAddress'],
       isRequired: true,
       operators: false
     }
