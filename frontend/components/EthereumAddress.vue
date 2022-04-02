@@ -51,19 +51,17 @@ export default {
       default: 'is-small'
     }
   },
-  data () {
-    return {
-      reputation: this.$store.state.contract.reputation.userReputations[this.address]
-    }
-  },
   computed: {
+    reputation () {
+      return this.$store.state.contract.reputation.userReputations[this.address]
+    },
     hasReputation () {
       return this.showReputation && this.reputation
     }
   },
   mounted () {
     if (this.showReputation && !this.reputation) {
-      this.$store.dispatch('contract/reputation/getReputation', this.address).then((rep) => { this.reputation = rep })
+      this.$store.dispatch('contract/reputation/getReputation', this.address).catch(() => {})
     }
   }
 }

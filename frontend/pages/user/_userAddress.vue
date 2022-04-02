@@ -5,14 +5,12 @@
         <div class="card">
           <user-header :address="$route.params.userAddress" />
           <div class="card-content">
-            <div class="media">
-              <div class="media-content">
-                <user-stats
-                  :reputation="reputation"
-                  :no-of-donations="donations ? donations.length : -1"
-                  :wallet-amount="walletAmount"
-                />
-              </div>
+            <div class="block">
+              <user-stats
+                :reputation="reputation"
+                :no-of-donations="donations ? donations.length : -1"
+                :wallet-amount="walletAmount"
+              />
             </div>
             <b-tabs position="is-centered" class="block">
               <b-tab-item label="Donation Records">
@@ -92,7 +90,7 @@ export default {
         donations: null,
         beneficiary: null,
         walletAmount: -1,
-        reputation: ethers.BigNumber.from('-1')
+        reputation: '-1'
       }
     }
   }

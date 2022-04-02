@@ -341,6 +341,9 @@ export default {
       'donate',
       'withdraw'
     ]),
+    ...mapActions('contract/reputation', [
+      'getReputation'
+    ]),
     async submitDonation () {
       if (this.newDonationAmount === 0) {
         this.$buefy.toast.open({
@@ -357,6 +360,8 @@ export default {
           campaignInstance: this.campaignInstance,
           amountInEth: this.newDonationAmount
         })
+
+        this.getReputation(this.beneficiaryAddress)
 
         // Update donation records
         this.loadBlockchainCampaignDetails()

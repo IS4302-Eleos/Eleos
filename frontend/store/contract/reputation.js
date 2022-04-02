@@ -1,4 +1,5 @@
 import { ethers } from 'ethers'
+import Vue from 'vue'
 
 export const state = () => ({
   reputationArtifact: null,
@@ -10,7 +11,7 @@ export const mutations = {
     state.reputationArtifact = reputationArtifact
   },
   updateUserReputation (state, { userAddress, reputation }) {
-    state.userReputations[userAddress] = reputation
+    Vue.set(state.userReputations, userAddress, reputation)
   }
 }
 
