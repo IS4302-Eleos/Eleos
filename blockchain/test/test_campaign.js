@@ -84,15 +84,7 @@ contract("Campaign", (accounts) => {
     }, "Donate event should be emitted with correct parameters");
 
     // Balances after donation
-    const donorDonatedAmount = await campaignInstance.getOwnDonationAmount({ from: donor });
     const campaignTotalDonations = await campaignInstance.getTotalDonationAmount();
-
-    // Verify donor donation amount
-    assert.deepEqual(
-      donorDonatedAmount,
-      donationAmount,
-      "Donor donation amount incorrect"
-    );
 
     // Verify campaign total donations
     assert.deepEqual(
