@@ -1,0 +1,23 @@
+@startuml Architecture
+skinparam classAttributeIconSize 0
+hide circle
+
+class CampaignFactory {
+  + startCampaign(): address
+}
+
+
+class Campaign {
+  + donate(): void
+  + withdraw(): void
+}
+
+class Reputation {
+  + updateReputation(): void
+}
+
+CampaignFactory "1\norigin" <---> "createdCampaigns" Campaign
+CampaignFactory "1" <---> "1" Reputation
+
+
+@enduml
