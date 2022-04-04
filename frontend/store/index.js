@@ -5,7 +5,7 @@ export const state = () => ({
   isConnected: false,
   isConnecting: true,
   isCorrectChain: true,
-  hasRegisteredEvents: false,
+  hasRegisteredEvents: (window.sessionStorage.getItem('hasRegisteredEvents') === 'true') || false,
   hasPreviouslyConnected: (window.localStorage.getItem('hasPreviouslyConnected') === 'true') || false,
   account: null
 })
@@ -34,6 +34,7 @@ export const mutations = {
     state.isCorrectChain = isCorrectChain
   },
   setRegisteredEvents (state, hasRegisteredEvents) {
+    window.sessionStorage.setItem('hasRegisteredEvents', hasRegisteredEvents)
     state.hasRegisteredEvents = hasRegisteredEvents
   },
   setConnecting (state, isConnecting) {

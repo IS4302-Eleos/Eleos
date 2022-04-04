@@ -98,9 +98,6 @@
           <b-field label="Beneficiary URL" horizontal>
             <b-input v-model="beneficiaryURL" type="url" placeholder="https://example.com" />
           </b-field>
-          <b-field label="Description" horizontal>
-            <b-input v-model="campaignDescription" type="textarea" />
-          </b-field>
           <hr>
           <h6 class="title is-5">
             Optional Details
@@ -194,8 +191,27 @@
             Your contract has been successfully deployed.
           </h1>
         </div>
-        <div class="has-text-centered my-6">
-          <b-button type="is-primary" tag="NuxtLink" :to="campaignPath">
+        <div class="block mt-5">
+          <h4 class="title is-4">
+            Edit Additional Details
+          </h4>
+          <h4 class="subtitle is-6">
+            You may add additional details about your campaign that will be stored on our Eleos backend.
+          </h4>
+          <eleos-markdown-editor v-model="campaignDescription" class="mb-5" :disabled="isLoading" />
+          <b-button type="is-success" :disabled="isLoading || !hasContent" class="mb-5" @click="saveDescription">
+            Save / Update
+          </b-button>
+        </div>
+        <hr>
+        <div class="">
+          <h4 class="title is-4">
+            Edit Details Later
+          </h4>
+          <h4 class="subtitle is-6">
+            If you wish to edit the details later, you may press the button below to view your newly created contract.
+          </h4>
+          <b-button type="is-primary" :disabled="isLoading" tag="NuxtLink" :to="campaignPath">
             Go to Campaign
           </b-button>
         </div>
@@ -207,9 +223,13 @@
 <script>
 import { mapState } from 'vuex'
 import { ethers } from 'ethers'
+import EleosMarkdownEditor from '~/components/MarkdownEditor'
 
 export default {
   name: 'AddPage',
+  components: {
+    EleosMarkdownEditor
+  },
   beforeRouteLeave (to, from, next) {
     if (this.activeStep === 3) {
       next()
@@ -243,7 +263,8 @@ export default {
       endDateDayJS: null,
       isLoading: false,
       isCompleted: false,
-      campaignPath: ''
+      campaignPath: '',
+      campaignAddress: null
     }
   },
   computed: {
@@ -254,8 +275,6 @@ export default {
       if (this.beneficiaryAddress === null || this.beneficiaryAddress.length === 0) {
         return false
       } else if (this.campaignName === null || this.campaignName.length === 0) {
-        return false
-      } else if (this.campaignDescription === null || this.campaignDescription.length === 0) {
         return false
       } else if (this.beneficiaryURL === null || this.beneficiaryURL.length === 0 || !this.isValidURL(this.beneficiaryURL)) {
         return false
@@ -271,6 +290,9 @@ export default {
         return 'None'
       }
       return this.endDateDayJS.format('YYYY/MM/DD HH:mm Z [UTC]')
+    },
+    hasContent () {
+      return this.description && this.description.trim()
     }
   },
   async mounted () {
@@ -317,7 +339,7 @@ export default {
         beneficiaryAddress: this.beneficiaryAddress,
         campaignOwnerAddress: this.selectedWalletAddress, // Perhaps to be removed if we using the sender address
         targetAmount: this.targetAmount,
-        campaignDescription: this.campaignDescription
+        campaignDescription: ''
       }
 
       try {
@@ -331,6 +353,7 @@ export default {
         this.isLoading = false
         this.activeStep = 3
         this.isCompleted = true
+        this.campaignAddress = newCampaignAddress
       } catch (err) {
         this.isLoading = false
         this.$buefy.toast.open({
@@ -338,6 +361,42 @@ export default {
           message: 'Unable to deploy contract. Please try again later.',
           type: 'is-danger'
         })
+      }
+    },
+    async saveDescription () {
+      if (!this.campaignAddress) {
+        return
+      }
+
+      this.isLoading = true
+      try {
+        const res = await this.$store.dispatch('auth/saveDescription', {
+          contractAddress: this.campaignAddress,
+          description: this.campaignDescription
+        })
+        this.isLoading = false
+        if (res) {
+          this.$buefy.toast.open({
+            duration: 5000,
+            message: 'Description updated!',
+            type: 'is-success'
+          })
+          await this.$store.dispatch('api/getCampaigns')
+          this.$router.push('/campaign/' + this.campaignAddress)
+        } else {
+          this.$buefy.toast.open({
+            duration: 5000,
+            message: 'Unable to update description, please try again later.',
+            type: 'is-danger'
+          })
+        }
+      } catch (err) {
+        this.$buefy.toast.open({
+          duration: 5000,
+          message: 'Unable to update description, please try again later.',
+          type: 'is-danger'
+        })
+        this.isLoading = false
       }
     }
   }
