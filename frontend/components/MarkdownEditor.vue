@@ -83,6 +83,10 @@ export default {
 </script>
 
 <style>
+.markdown-body ul {
+  list-style: revert;
+}
+
 .markdown-body-preview {
   min-width: 200px;
   max-width: 980px;
