@@ -43,9 +43,9 @@
 │   └── ...  
 |
 ├── scripts              
-│   ├── start-eleos.sh         # Startup script
-│   ├── stop-eleos.sh          # Shutdown script
-│   └── get-ganache-account.sh # Script to get generated wallet accounts 
+│   ├── start-eleos.sh           # Startup script
+│   ├── stop-eleos.sh            # Shutdown script
+│   └── get-ganache-accounts.sh  # Script to get generated wallet accounts 
 |           
 ├── README.md
 ├── .gitignore
@@ -89,7 +89,7 @@
 
 2) Get list of wallet addresses and private keys
     ```bash
-    scripts/get-ganache-account.sh
+    scripts/get-ganache-accounts.sh 
     ```
 
 3) Interact with the application at `http://localhost:80`
