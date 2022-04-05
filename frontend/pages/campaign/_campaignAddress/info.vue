@@ -182,17 +182,37 @@
           </div>
           <b-tabs position="is-centered" class="block">
             <b-tab-item label="Description">
-              <p class="block">
+              <div class="block">
                 <template v-if="campaignOwnerAddress">
-                  <span class="has-text-weight-medium">Started By:</span> <ethereum-address :address="campaignOwnerAddress" address-type="is-light" show-reputation class="is-inline-flex" size="is-small" />
+                  <div class="columns">
+                    <div class="column">
+                      <span class="has-text-weight-medium">Started By:</span> <ethereum-address :address="campaignOwnerAddress" address-type="is-light" show-reputation class="is-inline-flex" size="is-small" />
+                    </div>
+                    <div v-if="isCampaignOwner" class="column is-narrow">
+                      <b-button
+                        type="is-success"
+                        icon-left="pencil"
+                        outlined
+                        rounded
+                        tag="NuxtLink"
+                        to="edit"
+                        size="is-small"
+                      >
+                        Edit
+                      </b-button>
+                    </div>
+                  </div>
                 </template>
                 <b-skeleton :active="!campaignOwnerAddress" width="50%" />
-              </p>
+              </div>
               <p class="block">
-                <template v-if="campaignDescription">
-                  {{ campaignDescription }}
+                <template v-if="campaignDescription !== null">
+                  <div v-if="campaignDescription" class="markdown-body" v-html="$md.render(campaignDescription)" />
+                  <div v-else class="has-text-grey is-italic">
+                    No description found...
+                  </div>
                 </template>
-                <b-skeleton :active="!campaignDescription" :count="3" />
+                <b-skeleton :active="!campaignDescription === null" :count="3" />
               </p>
             </b-tab-item>
             <b-tab-item label="Donations">
@@ -288,6 +308,9 @@ export default {
     },
     isBeneficiary () {
       return this.$wallet.account === this.beneficiaryAddress
+    },
+    isCampaignOwner () {
+      return this.$wallet.account === this.campaignOwnerAddress
     },
     isCampaignOwnerOrBeneficiary () {
       return this.$wallet.account === this.campaignOwnerAddress || this.$wallet.account === this.beneficiaryAddress

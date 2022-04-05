@@ -23,7 +23,7 @@ router.post('/edit', bodySchema({
     // update description if result is found
     const result = await Campaign.findOneAndUpdate({
       campaignOwnerAddress: ctx.state.user.publickey,
-      campaignAddress: ctx.request.body.contractAddress.toLowerCase()
+      campaignAddress: ctx.request.body.contractAddress
     }, {
       campaignDescription: ctx.request.body.description
     })

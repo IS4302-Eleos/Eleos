@@ -21,6 +21,7 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
+    'github-markdown-css/github-markdown-light.css'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -43,8 +44,10 @@ export default {
     'nuxt-buefy',
     '@nuxt/http',
     '@nuxtjs/dayjs',
-    'nuxt-graphql-request'
+    'nuxt-graphql-request',
+    '@nuxtjs/markdownit'
   ],
+
   graphql: {
     clients: {
       default: {
@@ -57,6 +60,17 @@ export default {
 
   http: {
     baseURL: process.env.API_BASEURL || 'http://localhost:3000'
+  },
+
+  dayjs: {
+    plugins: [
+      'relativeTime'
+    ]
+  },
+
+  markdownit: {
+    runtime: true,
+    linkify: true
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
@@ -74,12 +88,6 @@ export default {
         }
       }
     }
-  },
-
-  dayjs: {
-    plugins: [
-      'relativeTime'
-    ]
   },
 
   privateRuntimeConfig: {

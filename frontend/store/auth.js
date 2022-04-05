@@ -9,6 +9,18 @@ export const state = () => ({
 export const getters = {
   isAuthenticated (state, getters, $wallet) {
     return !!state.jwt && $wallet.account
+  },
+  isJWTExpired (state, getters, $wallet) {
+    if (!state.jwt) {
+      return true
+    }
+
+    const JWTdecoded = jwtDecode(state.jwt)
+    if (JWTdecoded.exp && JWTdecoded.exp > (Date.now() / 1000) && JWTdecoded.publickey) {
+      return false
+    }
+
+    return true
   }
 }
 
@@ -105,5 +117,13 @@ export const actions = {
       context.commit('setPreviouslyConnected', false, { root: true })
       return false
     }
+  },
+  async saveDescription (context, payload) {
+    if (context.getters.isJWTExpired && !await context.dispatch('handleLogin')) {
+      return false
+    }
+
+    const res = await this.$http.$post('/campaign/edit', payload)
+    return !!res.success
   }
 }
