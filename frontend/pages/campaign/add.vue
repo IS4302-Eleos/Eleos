@@ -292,7 +292,7 @@ export default {
       return this.endDateDayJS.format('YYYY/MM/DD HH:mm Z [UTC]')
     },
     hasContent () {
-      return this.description && this.description.trim()
+      return this.campaignDescription && this.campaignDescription.trim()
     }
   },
   async mounted () {
