@@ -82,8 +82,23 @@ contract Campaign {
       _;
     }
 
+    // Checks if donor is not beneficiary.
+    modifier noDonationAsBeneficiary() {
+      require(
+        beneficiaryAddress != msg.sender,
+        "Cannot donate to own dedicated campaign..."
+      );
+      _;
+    }
+
     // Donates eth to the campaign. The ether is held in this contract.
-    function donate() public payable noExpiredDonations() notZeroDonationValue(msg.value) {
+    function donate()
+        public
+        payable
+        noDonationAsBeneficiary()
+        noExpiredDonations()
+        notZeroDonationValue(msg.value)
+    {
         totalDonationAmount += msg.value;
         emit Donate(msg.sender, msg.value);
         origin.emitDonateEvent(msg.sender, msg.value);
