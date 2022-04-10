@@ -12,6 +12,8 @@
     - [Summary of settings](#summary-of-settings-1)
     - [Project Setup](#project-setup-1)
     - [Workflow](#workflow-1)
+  - [Accessing Ethereum Network Data on Frontend](#accessing-ethereum-network-data-on-frontend)
+    - [Setting Up Metamask](#setting-up-metamask)
 
 ## Project structure
 ```
@@ -181,4 +183,21 @@ __Note: Same steps can be taken for `backend` / `frontend` / `blockchain`__
     ```
 8) Commit and push your code to your remote branch.
 9) Create pull request and merge after PR reviews.
+
+
+## Accessing Ethereum Network Data on Frontend
+
+We use [MetaMask](https://metamask.io) as our Ethereum gateway and wallet management during our development. If you wish to use a different extension, do ensure that it supports [Ethers.js](https://docs.ethers.io/v5/).
+
+### Setting Up Metamask
+
+1. Install [Metamask](https://metamask.io/download/) and set up a wallet account.
+2. Enable test networks in Metamask under `Settings > Advanced > Show Test Networks`.
+3. Add the network you plan to use in MetmMask under `Settings > Networks > Add Network`.
+      - If you are planning to run Eleos locally with default settings, you may skip this step as `localhost:8545` will be added by default for you.
+      - The default chain ID is `1337`, you may change it in the Ganache docker environment settings. If you do change it, please rebuild the frontend with the environment variable `CHAIN_ID=0x??` where `0x??` is the hexadecimal representation of the chain ID you chose.
+4. Switch your network in MetaMask to your newly added network.
+5. Import or create the necessary accounts.
+      - `scripts/get-ganache-accounts.sh` will provide accounts that contains 100 ETH each in your local Ganache network.
+6. Go to the frontend webpage (http://localhost/ for production, http://localhost:3000/ for development).
 
